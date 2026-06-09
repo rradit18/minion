@@ -1,49 +1,58 @@
-import Link from "next/link";
+import React from 'react';
 
 const services = [
-  { name: "Classic Cut", price: "Rp 35.000", desc: "Potongan klasik bersih dan rapi." },
-  { name: "Fade & Taper", price: "Rp 50.000", desc: "Teknik fade presisi tinggi." },
-  { name: "Beard Trim", price: "Rp 30.000", desc: "Grooming jenggot & kumis." },
-  { name: "Hair Wash", price: "Rp 25.000", desc: "Keramas + perawatan rambut." },
+  {
+    title: 'Haircut',
+    desc: 'Potongan rambut presisi yang disesuaikan dengan bentuk wajahmu.',
+    icon: '✂️',
+  },
+  {
+    title: 'Hair Coloring',
+    desc: 'Tampil berani dengan pilihan warna premium yang tahan lama.',
+    icon: '🎨',
+  },
+  {
+    title: 'Beard Treatment',
+    desc: 'Perawatan jenggot agar rapi, lembut, dan tampak maskulin.',
+    icon: '🧔',
+  },
+  {
+    title: 'Hair Wash',
+    desc: 'Relaksasi total dengan pijatan kepala dan produk kualitas salon.',
+    icon: '🚿',
+  },
 ];
 
-export default function ServicesSection() {
+const ServicesSection = () => {
   return (
-    <section className="bg-[#0e0e0e] py-20 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white uppercase tracking-tight">
-              Gaya Elit, Harga Irit
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm">
-              Starting from Rp 35.000. Expert grooming doesn&apos;t have to break the bank.
-            </p>
-          </div>
-          <Link
-            href="/contact"
-            className="self-start md:self-auto bg-yellow-400 text-black font-bold px-6 py-2 rounded text-sm uppercase tracking-wide hover:bg-yellow-300 transition-colors"
-          >
-            Book Now
-          </Link>
+    <section className="py-20 bg-[#FCFBF7] px-6 md:px-12">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
+            Layanan Kami
+          </h2>
+          <p className="text-[#555] max-w-2xl mx-auto">
+            Kami menyediakan berbagai layanan grooming profesional untuk memastikan kamu tampil percaya diri setiap saat.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {services.map((s) => (
-            <div
-              key={s.name}
-              className="bg-[#161616] border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group"
+        {/* Grid Kartu Layanan */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {services.map((service, index) => (
+            <div 
+              key={index} 
+              className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-shadow duration-300 group"
             >
-              <div className="w-10 h-10 bg-yellow-400/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-yellow-400/20 transition-colors">
-                <span className="text-yellow-400 text-lg">✂️</span>
-              </div>
-              <h3 className="text-white font-bold mb-1">{s.name}</h3>
-              <p className="text-gray-500 text-xs mb-3 leading-relaxed">{s.desc}</p>
-              <p className="text-yellow-400 font-bold text-sm">{s.price}</p>
+              <div className="text-4xl mb-6">{service.icon}</div>
+              <h3 className="text-xl font-bold text-black mb-3">{service.title}</h3>
+              <p className="text-[#555] text-sm leading-relaxed">{service.desc}</p>
             </div>
           ))}
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default ServicesSection;
