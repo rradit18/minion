@@ -1,73 +1,196 @@
 "use client";
 
 import { useState } from "react";
-import ProductCard from "./ProductCard";
-import CartPanel from "./CartPanel";
 import { formatRupiah } from "@/utils/formatRupiah";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-}
+interface Product { id: number; name: string; category: string; price: number; emoji: string; }
+interface CartItem extends Product { qty: number; }
 
-interface CartItem extends Product {
-  qty: number;
-}
-
-const sampleProducts: Product[] = [
-  { id: 1, name: "Classic Cut", price: 35000 },
-  { id: 2, name: "Fade & Taper", price: 50000 },
-  { id: 3, name: "Beard Trim", price: 30000 },
-  { id: 4, name: "Hair Wash", price: 25000 },
-  { id: 5, name: "Color Treatment", price: 120000 },
-  { id: 6, name: "Scalp Treatment", price: 85000 },
+const products: Product[] = [
+  { id: 1, name: "Classic Cut",      category: "Layanan",   price: 35000,  emoji: "✂️" },
+  { id: 2, name: "Fade & Taper",     category: "Layanan",   price: 50000,  emoji: "💈" },
+  { id: 3, name: "Beard Trim",       category: "Layanan",   price: 30000,  emoji: "🪒" },
+  { id: 4, name: "Hair Wash",        category: "Layanan",   price: 25000,  emoji: "🚿" },
+  { id: 5, name: "Color Treatment",  category: "Perawatan", price: 120000, emoji: "🎨" },
+  { id: 6, name: "Scalp Treatment",  category: "Perawatan", price: 85000,  emoji: "💆" },
+  { id: 7, name: "Obsidian Clay",    category: "Produk",    price: 42000,  emoji: "🧴" },
+  { id: 8, name: "Pomade Light",     category: "Produk",    price: 38000,  emoji: "🧴" },
+  { id: 9, name: "Beard Oil",        category: "Produk",    price: 55000,  emoji: "🫙" },
 ];
+
+const categories = ["Semua", "Layanan", "Perawatan", "Produk"];
+
+const catAccent: Record<string, string> = {
+  Layanan:   "bg-yellow-100 text-yellow-700",
+  Perawatan: "bg-purple-100 text-purple-700",
+  Produk:    "bg-blue-100 text-blue-700",
+};
 
 export default function CashierClient() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [activeCategory, setActiveCategory] = useState("Semua");
+  const [search, setSearch] = useState("");
+
+  const filtered = products.filter((p) => {
+    const matchCat = activeCategory === "Semua" || p.category === activeCategory;
+    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    return matchCat && matchSearch;
+  });
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
-        );
-      }
+      const ex = prev.find((i) => i.id === product.id);
+      if (ex) return prev.map((i) => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
       return [...prev, { ...product, qty: 1 }];
     });
   };
 
   const updateQty = (id: number, qty: number) => {
-    if (qty < 1) {
-      setCart((prev) => prev.filter((item) => item.id !== id));
-    } else {
-      setCart((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, qty } : item))
-      );
-    }
+    if (qty < 1) setCart((prev) => prev.filter((i) => i.id !== id));
+    else setCart((prev) => prev.map((i) => i.id === id ? { ...i, qty } : i));
   };
 
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const tax      = Math.round(subtotal * 0.11);
+  const total    = subtotal + tax;
+
   const handleCheckout = () => {
-    if (cart.length === 0) return;
-    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    // TODO: POST ke backend API
-    alert(`Checkout berhasil! Total: ${formatRupiah(total)}`);
+    if (!cart.length) return;
+    alert(`✅ Transaksi berhasil!\nTotal: ${formatRupiah(total)}`);
     setCart([]);
   };
 
   return (
-    <div className="flex gap-6 h-full">
-      <div className="flex-1">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Kasir</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {sampleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} onClick={addToCart} />
+    <div className="flex gap-5 h-[calc(100vh-7rem)]">
+
+      {/* ── Left: Products ── */}
+      <div className="flex-1 flex flex-col gap-4 min-w-0">
+
+        {/* Search */}
+        <div className="relative">
+          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Cari produk atau layanan..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-800 shadow-sm"
+          />
+        </div>
+
+        {/* Category tabs */}
+        <div className="flex gap-2 flex-wrap">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all border ${
+                activeCategory === cat
+                  ? "bg-yellow-400 text-gray-900 border-yellow-400 shadow-sm"
+                  : "bg-white border-gray-200 text-gray-500 hover:border-yellow-300 hover:text-gray-700"
+              }`}
+            >
+              {cat}
+            </button>
           ))}
         </div>
+
+        {/* Product grid */}
+        <div className="flex-1 overflow-y-auto pr-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {filtered.map((product) => (
+              <button
+                key={product.id}
+                onClick={() => addToCart(product)}
+                className="bg-white border border-gray-100 rounded-2xl p-4 text-left hover:border-yellow-400 hover:shadow-md transition-all group shadow-sm"
+              >
+                <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-yellow-100 transition-colors text-2xl">
+                  {product.emoji}
+                </div>
+                <p className="font-semibold text-gray-800 text-sm leading-snug mb-2">{product.name}</p>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${catAccent[product.category] ?? "bg-gray-100 text-gray-500"}`}>
+                  {product.category}
+                </span>
+                <p className="text-yellow-600 font-extrabold text-sm mt-2">{formatRupiah(product.price)}</p>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <CartPanel cart={cart} onUpdateQty={updateQty} onCheckout={handleCheckout} />
+
+      {/* ── Right: Cart ── */}
+      <div className="w-72 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col flex-shrink-0">
+
+        <div className="px-5 py-4 border-b border-gray-50">
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-gray-900">Keranjang</h2>
+            {cart.length > 0 && (
+              <span className="w-6 h-6 bg-yellow-400 rounded-full text-xs font-bold text-gray-900 flex items-center justify-center">
+                {cart.length}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Cart items */}
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center py-10">
+              <div className="w-14 h-14 bg-yellow-50 rounded-2xl flex items-center justify-center text-2xl mb-3">🛒</div>
+              <p className="text-gray-500 text-sm font-medium">Keranjang kosong</p>
+              <p className="text-gray-300 text-xs mt-1">Klik produk untuk menambahkan</p>
+            </div>
+          ) : (
+            cart.map((item) => (
+              <div key={item.id} className="flex items-center gap-3 bg-gray-50 rounded-xl p-2.5">
+                <div className="w-9 h-9 bg-yellow-100 rounded-lg flex items-center justify-center text-base flex-shrink-0">
+                  {item.emoji}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-gray-800 truncate">{item.name}</p>
+                  <p className="text-xs text-yellow-600 font-bold">{formatRupiah(item.price)}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => updateQty(item.id, item.qty - 1)}
+                    className="w-6 h-6 rounded-lg bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-gray-600 font-bold text-sm transition-colors shadow-sm"
+                  >−</button>
+                  <span className="w-5 text-center text-sm font-bold text-gray-800">{item.qty}</span>
+                  <button
+                    onClick={() => updateQty(item.id, item.qty + 1)}
+                    className="w-6 h-6 rounded-lg bg-white border border-gray-200 hover:border-green-300 hover:text-green-600 text-gray-600 font-bold text-sm transition-colors shadow-sm"
+                  >+</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Summary */}
+        <div className="px-5 py-4 border-t border-gray-50 space-y-2">
+          <div className="flex justify-between text-xs text-gray-400">
+            <span>Subtotal</span>
+            <span className="font-medium text-gray-600">{formatRupiah(subtotal)}</span>
+          </div>
+          <div className="flex justify-between text-xs text-gray-400">
+            <span>PPN 11%</span>
+            <span className="font-medium text-gray-600">{formatRupiah(tax)}</span>
+          </div>
+          <div className="flex justify-between font-extrabold text-gray-900 pt-2 border-t border-gray-100 text-sm">
+            <span>Total</span>
+            <span className="text-yellow-600">{formatRupiah(total)}</span>
+          </div>
+          <button
+            onClick={handleCheckout}
+            disabled={cart.length === 0}
+            className="w-full mt-1 bg-yellow-400 text-gray-900 py-3 rounded-xl font-extrabold text-sm hover:bg-yellow-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-sm"
+          >
+            Proses Pembayaran
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

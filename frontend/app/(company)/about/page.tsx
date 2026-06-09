@@ -1,10 +1,5 @@
-import AboutSection from '@/components/company/AboutSection';
-import Footer from '@/components/company/Footer';
+import AboutSection from "@/components/company/AboutSection";
 
 export default function AboutPage() {
-  return (
-    <main>
-      <AboutSection />
-    </main>
-  );
+  return <AboutSection />;
 }

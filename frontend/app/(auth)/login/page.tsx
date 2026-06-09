@@ -1,0 +1,251 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+// ─── Dummy accounts (hapus setelah backend Laravel tersambung) ───────────────
+const DUMMY_ACCOUNTS = [
+  { email: "admin@minion.com",  password: "admin123",  role: "admin",  name: "Admin Minion"   },
+  { email: "kasir@minion.com",  password: "kasir123",  role: "kasir",  name: "Kasir Minion"   },
+  { email: "user@minion.com",   password: "user123",   role: "user",   name: "Pelanggan Demo" },
+];
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [form, setForm]     = useState({ email: "", password: "" });
+  const [show, setShow]     = useState(false);
+  const [error, setError]   = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Simulasi delay network
+    setTimeout(() => {
+      const match = DUMMY_ACCOUNTS.find(
+        (a) => a.email === form.email && a.password === form.password
+      );
+
+      if (!match) {
+        setError("Email atau password salah. Coba lagi.");
+        setLoading(false);
+        return;
+      }
+
+      // Simpan session sementara di localStorage
+      localStorage.setItem(
+        "auth_user",
+        JSON.stringify({ email: match.email, role: match.role, name: match.name })
+      );
+
+      // Redirect berdasarkan role
+      if (match.role === "admin" || match.role === "kasir") {
+        router.push("/pos");
+      } else {
+        router.push("/");
+      }
+    }, 600);
+  };
+
+  return (
+    <div className="min-h-screen flex">
+
+      {/* ── Left Panel ── */}
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14">
+        <div>
+          <p
+            className="text-[42px] font-bold text-white leading-none"
+            style={{ fontFamily: "'Dancing Script', cursive" }}
+          >
+            Minion
+          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="flex-1 h-px bg-white/30" />
+            <span className="text-[10px] font-bold tracking-[3px] text-white/60 uppercase">
+              Barbershop
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6">
+            Good Hair.<br />Good Vibes.<br />Everyday.
+          </p>
+
+          {/* Dummy account hints */}
+          <div className="bg-white/5 rounded-2xl p-4 space-y-3">
+            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
+              Akun Demo
+            </p>
+            {DUMMY_ACCOUNTS.map((a) => (
+              <button
+                key={a.email}
+                type="button"
+                onClick={() => {
+                  setForm({ email: a.email, password: a.password });
+                  setError("");
+                }}
+                className="w-full text-left bg-white/5 hover:bg-white/10 rounded-xl px-3 py-2.5 transition-colors"
+              >
+                <p className="text-white text-xs font-bold">{a.name}</p>
+                <p className="text-white/40 text-[10px] mt-0.5">{a.email}</p>
+                <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 ${
+                  a.role === "admin"  ? "bg-yellow-400 text-black" :
+                  a.role === "kasir" ? "bg-blue-400 text-black"   :
+                  "bg-green-400 text-black"
+                }`}>
+                  {a.role.toUpperCase()}
+                </span>
+              </button>
+            ))}
+            <p className="text-white/25 text-[9px] text-center mt-1">
+              Klik akun untuk auto-fill
+            </p>
+          </div>
+        </div>
+
+        <div className="text-white/10 text-7xl select-none">✂️</div>
+      </div>
+
+      {/* ── Right Panel ── */}
+      <div className="flex-1 flex items-center justify-center px-6 py-14 bg-[#F5EFE4]">
+        <div className="w-full max-w-md">
+
+          <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">
+            Selamat Datang Kembali
+          </p>
+          <h1
+            className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            Sign In
+          </h1>
+          <p className="text-gray-500 text-sm mb-8">
+            Belum punya akun?{" "}
+            <Link href="/signup" className="text-[#F9C74F] font-bold hover:underline">
+              Daftar di sini
+            </Link>
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Error message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
+                {error}
+              </div>
+            )}
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email" name="email" type="email" required
+                value={form.email} onChange={handleChange}
+                placeholder="email@kamu.com"
+                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="password">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password" name="password"
+                  type={show ? "text" : "password"}
+                  required
+                  value={form.password} onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 pr-12 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm"
+                />
+                <button
+                  type="button" onClick={() => setShow(!show)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {show ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <div className="text-right mt-1.5">
+                <a href="#" className="text-xs text-gray-400 hover:text-[#F9C74F] transition-colors">
+                  Lupa password?
+                </a>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Memproses...
+                </>
+              ) : (
+                "Masuk"
+              )}
+            </button>
+          </form>
+
+          {/* Mobile dummy hint */}
+          <div className="lg:hidden mt-6 bg-white border border-gray-200 rounded-2xl p-4">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-3">
+              Akun Demo
+            </p>
+            <div className="space-y-2">
+              {DUMMY_ACCOUNTS.map((a) => (
+                <button
+                  key={a.email}
+                  type="button"
+                  onClick={() => {
+                    setForm({ email: a.email, password: a.password });
+                    setError("");
+                  }}
+                  className="w-full flex items-center justify-between bg-gray-50 hover:bg-yellow-50 rounded-xl px-3 py-2 transition-colors text-left"
+                >
+                  <div>
+                    <p className="text-xs font-bold text-gray-800">{a.name}</p>
+                    <p className="text-[10px] text-gray-400">{a.email}</p>
+                  </div>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                    a.role === "admin"  ? "bg-yellow-400 text-black" :
+                    a.role === "kasir" ? "bg-blue-400 text-black"   :
+                    "bg-green-400 text-black"
+                  }`}>
+                    {a.role.toUpperCase()}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
