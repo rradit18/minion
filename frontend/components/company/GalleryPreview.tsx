@@ -14,7 +14,7 @@ export default function GallerySection() {
         <button className="text-xs font-medium text-black">Lihat Semua →</button>
       </div>
 
-      <div className="grid grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {galleryImages.map((img, index) => (
           <div key={index} className="overflow-hidden rounded-3xl aspect-square">
             <img src={img} alt="" className="w-full h-full object-cover" />

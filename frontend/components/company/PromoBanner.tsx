@@ -2,7 +2,7 @@ import React from 'react';
 
 const PromoBanner = () => {
   return (
-    <section className="max-w-7xl mx-auto px-6 pt-0 pb-8">
+    <section className="max-w-7xl mx-auto px-6 pt-0">
       <div className="relative">
         <div
           className="rounded-2xl flex items-center pr-6 overflow-hidden"

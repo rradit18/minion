@@ -15,7 +15,7 @@ export default function BarberPreview() {
         KENALAN SAMA BARBERMAN KECE KAMI
       </h2>
 
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {barbers.map((barber, index) => (
           <div key={index} className="bg-white rounded-3xl p-4 flex items-center gap-4 shadow-sm">
             <div className="relative">

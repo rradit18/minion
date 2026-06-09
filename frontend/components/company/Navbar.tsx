@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 interface NavbarProps {
@@ -11,7 +12,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
         <div style={{ fontFamily: "'Dancing Script', cursive" }} className="text-[26px] font-bold text-[#1a1a1a] leading-none">
           Minion
         </div>
-        <div className="text-[10px] font-bold tracking-[3px] border-t border-[#1a1a1a] mt-1 pt-1">
+        <div className="text-[10px] font-bold tracking-[3px] border-t border-[#1a1a1a] mt-1 pt-1 text-black">
           — BARBERSHOP —
         </div>
       </div>
