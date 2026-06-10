@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import Navbar from './Navbar';
+"use client";
 
 const SprayBottle = () => (
   <svg viewBox="0 0 40 60" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" className="w-full h-full">
@@ -44,13 +43,7 @@ const FaceDoodle = () => (
   </svg>
 );
 
-interface HeroSectionProps {
-  onMenuClick: () => void;
-}
-
-const HeroSection = ({ onMenuClick }: HeroSectionProps) => {
-  const [showBanner, setShowBanner] = useState(true);
-
+const HeroSection = () => {
   return (
     <>
       {/* Google Fonts */}
@@ -59,26 +52,8 @@ const HeroSection = ({ onMenuClick }: HeroSectionProps) => {
       `}</style>
 
       <div className="bg-[#FAFAF6] font-sans">
-        {/* Announcement Bar — 40px fixed height, dismissable */}
-        {showBanner && (
-          <div
-            className="bg-[#178E81] text-white flex items-center justify-center relative"
-            style={{ height: '40px' }}
-          >
-            <span className="text-[13px] font-semibold">Promo Hari Ini!</span>
-            <button
-              onClick={() => setShowBanner(false)}
-              className="absolute right-4 text-white/80 hover:text-white transition text-lg leading-none"
-              aria-label="Tutup banner"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        {/* Container utama untuk Navbar */}
+        {/* Container utama — tanpa Navbar (sudah di layout) */}
         <div className="max-w-7xl mx-auto px-6">
-          <Navbar onMenuClick={onMenuClick} />
 
           {/* Hero */}
           <section className="relative flex flex-col md:flex-row items-center justify-between pt-10 pb-16 min-h-[440px]">

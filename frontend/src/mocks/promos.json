@@ -1,0 +1,86 @@
+[
+  {
+    "id": "promo-1",
+    "code": "NEWCUT20",
+    "title": "Diskon 20% Pelanggan Baru",
+    "description": "Khusus untuk pelanggan yang pertama kali booking di Minion Barbershop. Berlaku untuk semua layanan.",
+    "type": "percentage",
+    "value": 20,
+    "min_transaction": 35000,
+    "max_discount": 50000,
+    "valid_from": "2026-01-01",
+    "valid_until": "2026-12-31",
+    "applicable_services": ["all"],
+    "applicable_branches": ["all"],
+    "image": "/images/promo-1.jpg",
+    "is_active": true,
+    "terms": [
+      "Hanya untuk booking pertama",
+      "Tidak berlaku bersamaan dengan promo lain",
+      "Berlaku semua cabang"
+    ]
+  },
+  {
+    "id": "promo-2",
+    "code": "WEEKEND15",
+    "title": "Weekend Special 15% Off",
+    "description": "Nikmati potongan harga 15% untuk booking di hari Sabtu dan Minggu.",
+    "type": "percentage",
+    "value": 15,
+    "min_transaction": 50000,
+    "max_discount": 30000,
+    "valid_from": "2026-06-01",
+    "valid_until": "2026-08-31",
+    "applicable_services": ["all"],
+    "applicable_branches": ["all"],
+    "image": "/images/promo-2.jpg",
+    "is_active": true,
+    "terms": [
+      "Berlaku Sabtu & Minggu",
+      "Min. transaksi Rp 50.000",
+      "Tidak bisa digabung promo lain"
+    ]
+  },
+  {
+    "id": "promo-3",
+    "code": "PACKAGE10K",
+    "title": "Hemat Rp 10.000 Full Package",
+    "description": "Booking Full Package (Classic Cut + Beard Trim + Hair Wash) dan hemat Rp 10.000.",
+    "type": "fixed",
+    "value": 10000,
+    "min_transaction": 80000,
+    "max_discount": 10000,
+    "valid_from": "2026-06-01",
+    "valid_until": "2026-07-31",
+    "applicable_services": ["svc-7"],
+    "applicable_branches": ["all"],
+    "image": "/images/promo-3.jpg",
+    "is_active": true,
+    "terms": [
+      "Khusus layanan Full Package",
+      "Berlaku semua cabang",
+      "Tidak berlaku bersamaan promo lain"
+    ]
+  },
+  {
+    "id": "promo-4",
+    "code": "LOYALTY50K",
+    "title": "Reward Loyalty — Gratis Haircut",
+    "description": "Tukarkan 10 punch loyalty kamu dengan 1x Classic Cut gratis!",
+    "type": "free_service",
+    "value": 35000,
+    "min_transaction": 0,
+    "max_discount": 35000,
+    "valid_from": "2026-01-01",
+    "valid_until": "2026-12-31",
+    "applicable_services": ["svc-1"],
+    "applicable_branches": ["all"],
+    "image": "/images/promo-4.jpg",
+    "is_active": true,
+    "terms": [
+      "Hanya untuk pemegang loyalty card 10 punch",
+      "1 reward per periode",
+      "Berlaku semua cabang"
+    ]
+  }
+]

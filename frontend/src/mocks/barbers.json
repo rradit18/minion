@@ -1,0 +1,62 @@
+[
+  {
+    "id": "barber-1",
+    "name": "Hendra Schevenko",
+    "nickname": "Fade King",
+    "specialty": "Fade Specialist",
+    "bio": "Master fade dengan pengalaman 7 tahun. Spesialis skin fade dan mid fade presisi tinggi.",
+    "rating": 4.9,
+    "total_reviews": 2300,
+    "experience_years": 7,
+    "image": "/barber1.png",
+    "color": "bg-teal-400",
+    "branch_ids": ["branch-1", "branch-3"],
+    "available_days": ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+    "skills": ["Skin Fade", "Mid Fade", "High Fade", "Textured Cut"]
+  },
+  {
+    "id": "barber-2",
+    "name": "Juan Samudra",
+    "nickname": "The Sculptor",
+    "specialty": "Classic & Modern Cut",
+    "bio": "Ahli potongan klasik dan modern dengan sentuhan artistik tinggi.",
+    "rating": 4.9,
+    "total_reviews": 1850,
+    "experience_years": 5,
+    "image": "/barber2.png",
+    "color": "bg-purple-400",
+    "branch_ids": ["branch-1", "branch-2"],
+    "available_days": ["Senin", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"],
+    "skills": ["Classic Cut", "Modern Cut", "Pompadour", "Quiff"]
+  },
+  {
+    "id": "barber-3",
+    "name": "Yoga Harahap",
+    "nickname": "Sharpie",
+    "specialty": "Line Up & Design",
+    "bio": "Spesialis line up tajam dan desain rambut kreatif. Andalan para pecinta gaya edgy.",
+    "rating": 4.8,
+    "total_reviews": 1420,
+    "experience_years": 4,
+    "image": "/barber3.png",
+    "color": "bg-yellow-400",
+    "branch_ids": ["branch-2", "branch-4"],
+    "available_days": ["Selasa", "Rabu", "Jumat", "Sabtu", "Minggu"],
+    "skills": ["Line Up", "Design Cut", "Curly Hair", "Mohawk"]
+  },
+  {
+    "id": "barber-4",
+    "name": "Bastian Narendra",
+    "nickname": "The Artist",
+    "specialty": "Color & Beard Art",
+    "bio": "Maestro pewarnaan rambut dan beard art. Transformasi total dalam satu sesi.",
+    "rating": 4.9,
+    "total_reviews": 1980,
+    "experience_years": 6,
+    "image": "/barber4.png",
+    "color": "bg-orange-400",
+    "branch_ids": ["branch-3", "branch-4"],
+    "available_days": ["Senin", "Selasa", "Kamis", "Jumat", "Sabtu"],
+    "skills": ["Hair Coloring", "Beard Art", "Beard Trim", "Highlights"]
+  }
+]

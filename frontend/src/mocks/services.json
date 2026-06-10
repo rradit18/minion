@@ -1,0 +1,114 @@
+[
+  {
+    "id": "svc-1",
+    "name": "Classic Cut",
+    "category": "Haircut",
+    "description": "Potongan rambut klasik bersih dan rapi, cocok untuk semua bentuk wajah.",
+    "duration_minutes": 30,
+    "icon": "✂️",
+    "prices": {
+      "branch-1": 35000,
+      "branch-2": 35000,
+      "branch-3": 32000,
+      "branch-4": 35000
+    }
+  },
+  {
+    "id": "svc-2",
+    "name": "Fade & Taper",
+    "category": "Haircut",
+    "description": "Teknik fade presisi tinggi dari skin fade hingga high fade, dikerjakan dengan clipper premium.",
+    "duration_minutes": 45,
+    "icon": "💈",
+    "prices": {
+      "branch-1": 50000,
+      "branch-2": 50000,
+      "branch-3": 45000,
+      "branch-4": 50000
+    }
+  },
+  {
+    "id": "svc-3",
+    "name": "Beard Trim",
+    "category": "Beard",
+    "description": "Grooming jenggot dan kumis agar terlihat rapi dan maskulin.",
+    "duration_minutes": 20,
+    "icon": "🪒",
+    "prices": {
+      "branch-1": 30000,
+      "branch-2": 30000,
+      "branch-3": 28000,
+      "branch-4": 30000
+    }
+  },
+  {
+    "id": "svc-4",
+    "name": "Hair Wash",
+    "category": "Treatment",
+    "description": "Keramas + pijatan kepala relaksasi dengan produk premium pilihan.",
+    "duration_minutes": 20,
+    "icon": "🚿",
+    "prices": {
+      "branch-1": 25000,
+      "branch-2": 25000,
+      "branch-3": 22000,
+      "branch-4": 25000
+    }
+  },
+  {
+    "id": "svc-5",
+    "name": "Color Treatment",
+    "category": "Color",
+    "description": "Pewarnaan rambut profesional dengan bahan berkualitas, tahan lama hingga 6 minggu.",
+    "duration_minutes": 90,
+    "icon": "🎨",
+    "prices": {
+      "branch-1": 120000,
+      "branch-2": 120000,
+      "branch-3": 110000,
+      "branch-4": 120000
+    }
+  },
+  {
+    "id": "svc-6",
+    "name": "Scalp Treatment",
+    "category": "Treatment",
+    "description": "Perawatan intensif kulit kepala untuk mengatasi ketombe dan rambut rontok.",
+    "duration_minutes": 45,
+    "icon": "💆",
+    "prices": {
+      "branch-1": 85000,
+      "branch-2": 85000,
+      "branch-3": 80000,
+      "branch-4": 85000
+    }
+  },
+  {
+    "id": "svc-7",
+    "name": "Full Package",
+    "category": "Package",
+    "description": "Classic Cut + Beard Trim + Hair Wash. Paket lengkap terbaik dengan harga spesial.",
+    "duration_minutes": 75,
+    "icon": "⭐",
+    "prices": {
+      "branch-1": 80000,
+      "branch-2": 80000,
+      "branch-3": 75000,
+      "branch-4": 80000
+    }
+  },
+  {
+    "id": "svc-8",
+    "name": "Line Up & Design",
+    "category": "Haircut",
+    "description": "Line up presisi tajam dengan opsi tambahan desain rambut custom.",
+    "duration_minutes": 45,
+    "icon": "✏️",
+    "prices": {
+      "branch-1": 55000,
+      "branch-2": 55000,
+      "branch-3": 50000,
+      "branch-4": 55000
+    }
+  }
+]

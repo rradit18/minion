@@ -1,0 +1,90 @@
+[
+  {
+    "id": "style-1",
+    "name": "Mid Fade",
+    "description": "Potongan fade di tengah kepala dengan sisi bersih. Cocok untuk wajah oval dan persegi.",
+    "suitable_for": ["oval", "square", "rectangle"],
+    "difficulty": "Medium",
+    "maintenance": "2-3 minggu sekali",
+    "image": "/hair-styles/mid-fade.jpg",
+    "tags": ["fade", "clean", "modern"],
+    "recommended_services": ["svc-2"]
+  },
+  {
+    "id": "style-2",
+    "name": "Textured Crop",
+    "description": "Potongan pendek dengan tekstur natural di atas. Kasual tapi tetap stylish.",
+    "suitable_for": ["oval", "round", "heart"],
+    "difficulty": "Easy",
+    "maintenance": "3-4 minggu sekali",
+    "image": "/hair-styles/textured-crop.jpg",
+    "tags": ["crop", "textured", "casual"],
+    "recommended_services": ["svc-1", "svc-4"]
+  },
+  {
+    "id": "style-3",
+    "name": "Pompadour",
+    "description": "Gaya klasik dengan volume tinggi di atas dan sisi pendek. Kesan maskulin dan elegan.",
+    "suitable_for": ["oval", "square", "diamond"],
+    "difficulty": "Medium",
+    "maintenance": "2-3 minggu sekali",
+    "image": "/hair-styles/pompadour.jpg",
+    "tags": ["classic", "volume", "elegant"],
+    "recommended_services": ["svc-1", "svc-4"]
+  },
+  {
+    "id": "style-4",
+    "name": "Skin Fade + Line Up",
+    "description": "Skin fade ekstrem dengan line up tajam di hairline. Tampilan edgy dan presisi tinggi.",
+    "suitable_for": ["oval", "square", "rectangle"],
+    "difficulty": "Hard",
+    "maintenance": "1-2 minggu sekali",
+    "image": "/hair-styles/skin-fade-lineup.jpg",
+    "tags": ["skin fade", "line up", "edgy", "sharp"],
+    "recommended_services": ["svc-2", "svc-8"]
+  },
+  {
+    "id": "style-5",
+    "name": "Curly Taper",
+    "description": "Mempertahankan tekstur keriting alami di atas dengan sisi taper yang bersih.",
+    "suitable_for": ["oval", "heart", "round"],
+    "difficulty": "Medium",
+    "maintenance": "3-4 minggu sekali",
+    "image": "/hair-styles/curly-taper.jpg",
+    "tags": ["curly", "taper", "natural"],
+    "recommended_services": ["svc-2", "svc-4"]
+  },
+  {
+    "id": "style-6",
+    "name": "Quiff Modern",
+    "description": "Kombinasi quiff klasik dengan sentuhan modern. Volume di depan, fade di sisi.",
+    "suitable_for": ["oval", "square", "long"],
+    "difficulty": "Medium",
+    "maintenance": "2-3 minggu sekali",
+    "image": "/hair-styles/quiff-modern.jpg",
+    "tags": ["quiff", "volume", "modern", "versatile"],
+    "recommended_services": ["svc-1", "svc-4"]
+  },
+  {
+    "id": "style-7",
+    "name": "French Crop",
+    "description": "Potongan fringe pendek di depan dengan back & sides sangat pendek. Minimalis tapi bold.",
+    "suitable_for": ["oval", "square", "round"],
+    "difficulty": "Easy",
+    "maintenance": "2-3 minggu sekali",
+    "image": "/hair-styles/french-crop.jpg",
+    "tags": ["crop", "fringe", "minimal", "bold"],
+    "recommended_services": ["svc-1"]
+  },
+  {
+    "id": "style-8",
+    "name": "Buzz Cut",
+    "description": "Potongan super pendek merata. Zero maintenance, maximum confidence.",
+    "suitable_for": ["oval", "square", "diamond"],
+    "difficulty": "Easy",
+    "maintenance": "3-4 minggu sekali",
+    "image": "/hair-styles/buzz-cut.jpg",
+    "tags": ["buzz", "minimal", "clean", "sporty"],
+    "recommended_services": ["svc-1"]
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "branch-1",
+    "name": "Jl. Pramuka",
+    "address": "Jl. Pramuka No. 12, Tanjungpinang",
+    "city": "Tanjungpinang",
+    "phone": "0771-123456",
+    "maps_url": "https://maps.google.com",
+    "hours": "09:00 - 23:00",
+    "days": "Senin - Minggu",
+    "image": "/images/branch-1.jpg",
+    "rating": 4.9,
+    "total_reviews": 320
+  },
+  {
+    "id": "branch-2",
+    "name": "Kijang Kota",
+    "address": "Jl. Kijang Raya No. 45, Bintan",
+    "city": "Bintan",
+    "phone": "0771-234567",
+    "maps_url": "https://maps.google.com",
+    "hours": "09:00 - 23:00",
+    "days": "Senin - Minggu",
+    "image": "/images/branch-2.jpg",
+    "rating": 4.8,
+    "total_reviews": 210
+  },
+  {
+    "id": "branch-3",
+    "name": "Bt. 9",
+    "address": "Jl. Batu 9 No. 7, Tanjungpinang",
+    "city": "Tanjungpinang",
+    "phone": "0771-345678",
+    "maps_url": "https://maps.google.com",
+    "hours": "09:00 - 23:00",
+    "days": "Senin - Minggu",
+    "image": "/images/branch-3.jpg",
+    "rating": 4.7,
+    "total_reviews": 185
+  },
+  {
+    "id": "branch-4",
+    "name": "Jl. Ganet",
+    "address": "Jl. Ganet No. 22, Tanjungpinang",
+    "city": "Tanjungpinang",
+    "phone": "0771-456789",
+    "maps_url": "https://maps.google.com",
+    "hours": "09:00 - 23:00",
+    "days": "Senin - Minggu",
+    "image": "/images/branch-4.jpg",
+    "rating": 4.8,
+    "total_reviews": 240
+  }
+]

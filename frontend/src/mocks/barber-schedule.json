@@ -1,0 +1,127 @@
+{
+  "barber_id": "barber-1",
+  "barber_name": "Hendra Schevenko",
+  "branch": "Jl. Pramuka",
+  "shift": "09:00 - 17:00",
+  "today_summary": {
+    "total_bookings": 8,
+    "completed": 3,
+    "upcoming": 5,
+    "estimated_revenue": 320000
+  },
+  "schedule": [
+    {
+      "id": "book-001",
+      "customer_name": "Ahmad Rizki",
+      "customer_phone": "08123456789",
+      "service": "Fade & Taper",
+      "service_id": "svc-2",
+      "date": "2026-06-10",
+      "time": "09:00",
+      "duration_minutes": 45,
+      "status": "Selesai",
+      "price": 50000,
+      "notes": ""
+    },
+    {
+      "id": "book-002",
+      "customer_name": "Budi Santoso",
+      "customer_phone": "08234567890",
+      "service": "Classic Cut",
+      "service_id": "svc-1",
+      "date": "2026-06-10",
+      "time": "10:00",
+      "duration_minutes": 30,
+      "status": "Selesai",
+      "price": 35000,
+      "notes": "Minta pendek di bagian samping"
+    },
+    {
+      "id": "book-003",
+      "customer_name": "Candra Wijaya",
+      "customer_phone": "08345678901",
+      "service": "Full Package",
+      "service_id": "svc-7",
+      "date": "2026-06-10",
+      "time": "11:00",
+      "duration_minutes": 75,
+      "status": "Selesai",
+      "price": 80000,
+      "notes": ""
+    },
+    {
+      "id": "book-004",
+      "customer_name": "Deni Pratama",
+      "customer_phone": "08456789012",
+      "service": "Fade & Taper",
+      "service_id": "svc-2",
+      "date": "2026-06-10",
+      "time": "13:00",
+      "duration_minutes": 45,
+      "status": "Upcoming",
+      "price": 50000,
+      "notes": "High fade"
+    },
+    {
+      "id": "book-005",
+      "customer_name": "Eko Purnomo",
+      "customer_phone": "08567890123",
+      "service": "Classic Cut",
+      "service_id": "svc-1",
+      "date": "2026-06-10",
+      "time": "14:00",
+      "duration_minutes": 30,
+      "status": "Upcoming",
+      "price": 35000,
+      "notes": ""
+    },
+    {
+      "id": "book-006",
+      "customer_name": "Fajar Nugroho",
+      "customer_phone": "08678901234",
+      "service": "Beard Trim",
+      "service_id": "svc-3",
+      "date": "2026-06-10",
+      "time": "15:00",
+      "duration_minutes": 20,
+      "status": "Upcoming",
+      "price": 30000,
+      "notes": ""
+    },
+    {
+      "id": "book-007",
+      "customer_name": "Gunawan Hadi",
+      "customer_phone": "08789012345",
+      "service": "Full Package",
+      "service_id": "svc-7",
+      "date": "2026-06-10",
+      "time": "16:00",
+      "duration_minutes": 75,
+      "status": "Upcoming",
+      "price": 80000,
+      "notes": "VIP customer"
+    },
+    {
+      "id": "book-008",
+      "customer_name": "Hadi Kurniawan",
+      "customer_phone": "08890123456",
+      "service": "Fade & Taper",
+      "service_id": "svc-2",
+      "date": "2026-06-10",
+      "time": "17:30",
+      "duration_minutes": 45,
+      "status": "Upcoming",
+      "price": 50000,
+      "notes": "Mid fade"
+    }
+  ],
+  "weekly_schedule": [
+    { "date": "2026-06-10", "day": "Selasa", "total_bookings": 8, "shift": "09:00 - 17:00" },
+    { "date": "2026-06-11", "day": "Rabu",   "total_bookings": 6, "shift": "09:00 - 17:00" },
+    { "date": "2026-06-12", "day": "Kamis",  "total_bookings": 7, "shift": "12:00 - 20:00" },
+    { "date": "2026-06-13", "day": "Jumat",  "total_bookings": 9, "shift": "09:00 - 17:00" },
+    { "date": "2026-06-14", "day": "Sabtu",  "total_bookings": 12, "shift": "09:00 - 21:00" },
+    { "date": "2026-06-15", "day": "Minggu", "total_bookings": 10, "shift": "10:00 - 21:00" },
+    { "date": "2026-06-16", "day": "Senin",  "total_bookings": 5, "shift": "12:00 - 20:00" }
+  ]
+}
