@@ -28,7 +28,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         className="absolute inset-0"
         style={{
           backgroundColor: "#F5EFE4",
-          backgroundImage: "url('/images/barber-pattern.png')",
+          backgroundImage: "url('/pattern.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -74,7 +74,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
 
         {/* Nav links */}
-        <nav className="mt-12 flex-1">
+        <nav className="mt-12 flex-1 pl-20">
           <ul className="space-y-6">
             {menuItems.map((item) => (
               <li key={item.name}>
@@ -91,18 +91,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </nav>
 
         {/* Sign In / Sign Up buttons */}
-        <div className="pb-8 pt-10 space-y-3">
+        <div className="pb-8 pt-10 space-y-3 flex flex-col items-center">
           <Link
             href="/login"
             onClick={onClose}
-            className="block w-full h-14 rounded-2xl bg-[#1a1a1a] text-white text-[17px] font-bold tracking-wide hover:bg-black transition-colors text-center leading-[3.5rem]"
+            className="block w-[25%] h-14 rounded-2xl bg-[#1a1a1a] text-white text-[17px] font-bold tracking-wide hover:bg-black transition-colors text-center leading-[3.5rem]"
           >
             Sign In
           </Link>
           <Link
             href="/signup"
             onClick={onClose}
-            className="block w-full h-14 rounded-2xl bg-[#1a1a1a] text-white text-[17px] font-bold tracking-wide hover:bg-black transition-colors text-center leading-[3.5rem]"
+            className="block w-[25%] h-14 rounded-2xl bg-[#1a1a1a] text-white text-[17px] font-bold tracking-wide hover:bg-black transition-colors text-center leading-[3.5rem]"
           >
             Sign Up
           </Link>

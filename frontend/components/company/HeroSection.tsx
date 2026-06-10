@@ -1,5 +1,11 @@
 "use client";
 
+import React from 'react';
+
+interface HeroSectionProps {
+  onMenuClick: () => void;
+}
+
 const SprayBottle = () => (
   <svg viewBox="0 0 40 60" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" className="w-full h-full">
     <rect x="12" y="20" width="20" height="32" rx="4"/>
@@ -43,7 +49,7 @@ const FaceDoodle = () => (
   </svg>
 );
 
-const HeroSection = () => {
+const HeroSection = ({ onMenuClick }: HeroSectionProps) => {
   return (
     <>
       {/* Google Fonts */}
