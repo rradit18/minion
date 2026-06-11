@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 
 interface HeroSectionProps {
   onMenuClick: () => void;
@@ -111,9 +112,12 @@ const HeroSection = ({ onMenuClick }: HeroSectionProps) => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-1 justify-center md:justify-start">
-                <button className="bg-[#F9C74F] text-[#1a1a1a] px-6 py-2.5 rounded-lg font-extrabold text-[14px] hover:bg-yellow-400 transition">
+                <Link
+                  href="/booking"
+                  className="bg-[#F9C74F] text-[#1a1a1a] px-6 py-2.5 rounded-lg font-extrabold text-[14px] hover:bg-yellow-400 transition text-center"
+                >
                   Book Now
-                </button>
+                </Link>
                 <button className="border-2 border-[#1a1a1a] text-[#1a1a1a] px-6 py-2.5 rounded-lg font-extrabold text-[14px] hover:bg-[#1a1a1a] hover:text-white transition">
                   Lihat Layanan
                 </button>

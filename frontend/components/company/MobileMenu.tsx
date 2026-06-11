@@ -15,7 +15,7 @@ const menuItems = [
   { name: "Products",         href: "/products"  },
   { name: "Branches",         href: "/branches"  },
   { name: "Blog",             href: "/blog"      },
-  { name: "contact & Booking",href: "/contact"   },
+  { name: "Contact & Booking",href: "/contact"   },
 ];
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {

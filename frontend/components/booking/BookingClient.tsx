@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { fetchBranches, fetchBarbersByBranch, fetchServices, fetchSlots } from "@/src/lib/mockData";
-import { saveBooking, getBookingPrefill, clearBookingPrefill, getActivePromo, clearActivePromo, fetchPromoByCode } from "@/src/lib/localStorage";
+import { fetchBranches, fetchBarbersByBranch, fetchServices, fetchSlots, fetchPromoByCode} from "@/src/lib/mockData";
+import { saveBooking, getBookingPrefill, clearBookingPrefill, getActivePromo, clearActivePromo} from "@/src/lib/localStorage";
 import type { Branch, Barber, Service } from "@/src/lib/mockData";
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
