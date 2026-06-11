@@ -22,7 +22,7 @@ const CompanyNavbar = ({ onMenuClick }: NavbarProps) => {
     <nav className="w-full bg-[#FAFAF6] sticky top-0 z-50">
       <div className="max-w-[1280px] mx-auto flex items-center justify-between py-5 px-6">
         <div className="flex-shrink-0">
-          <img src="/minion.png" alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
+          <img src="/minion.png" alt="Logo" className="h-16 md:h-20 w-auto object-contain" />
         </div>
 
         <div className="hidden lg:flex items-center justify-center gap-6 font-bold text-[#1a1a1a] text-sm">
