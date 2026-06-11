@@ -16,6 +16,7 @@ const menuItems = [
   { name: "Branches",         href: "/branches"  },
   { name: "Blog",             href: "/blog"      },
   { name: "Contact & Booking",href: "/contact"   },
+  { name: "Saran & Kritik",   href: "/feedback"     }
 ];
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
@@ -45,18 +46,10 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         <div className="flex items-start justify-between">
           {/* Logo */}
           <div>
-            <p
-              className="text-[52px] leading-none font-bold text-[#1a1a1a]"
-              style={{ fontFamily: "'Dancing Script', cursive" }}
-            >
-              Minion
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="flex-1 h-px bg-[#1a1a1a]" />
-              <span className="text-[11px] font-bold tracking-[3px] text-[#1a1a1a] uppercase">
-                Barbershop
-              </span>
-            </div>
+            <img
+              src="/minion.png"
+              alt="Minion Barbershop Logo"
+              className="h-24 w-auto object-contain"/>
           </div>
 
           {/* Close button — yellow rounded square */}

@@ -20,10 +20,10 @@ export default function BarberPreview() {
           <div key={index} className="bg-white rounded-3xl p-4 flex items-center gap-4 shadow-sm">
             <div className="relative">
               <div className={`absolute inset-0 rounded-full scale-110 ${barber.color}`} />
-              <img src={barber.image} alt={barber.name} className="relative w-20 h-20 object-cover rounded-full" />
+              <img src="/barber.png" alt="barber" className="relative w-20 h-20 object-cover rounded-full" />
             </div>
             <div className="flex-1">
-              <h3 className="font-bold text-base">{barber.name}</h3>
+              <h3 className="font-bold text-base text-black">{barber.name}</h3>
               <p className="text-xs text-gray-500 mb-2">{barber.role}</p>
               <span className="inline-block bg-[#0F766E] text-white text-[10px] px-3 py-1 rounded-full">
                 {barber.badge}
