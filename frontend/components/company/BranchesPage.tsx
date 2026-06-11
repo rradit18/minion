@@ -66,7 +66,7 @@ export default function BranchesPage() {
 
 
       {/* Header Section */}
-      <section className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 pt-8 pb-4 text-center relative">
+      <section className="max-w-7xl mx-auto px-6 pt-8 pb-4 text-center relative">
         {/* Doodles — hidden di mobile */}
         <div className="absolute top-4 left-4 w-7 h-7 opacity-60 hidden sm:block"><Spiral /></div>
         <div className="absolute top-2 right-20 w-8 h-9 -rotate-[20deg] opacity-70 hidden sm:block"><Scissors /></div>
@@ -108,7 +108,7 @@ export default function BranchesPage() {
       </section>
 
       {/* Branch Grid */}
-      <section className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 mb-16">
+      <section className="max-w-7xl mx-auto px-6 mb-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-5">
           {branches.map((branch, i) => (
             <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
@@ -153,7 +153,7 @@ export default function BranchesPage() {
       </section>
 
       {/* Map Section */}
-      <section className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 mb-16">
+      <section className="max-w-7xl mx-auto px-6 mb-16">
         <h2 className="text-xl sm:text-2xl font-black mb-2 text-[#1a1a1a]">Peta Lokasi</h2>
         <p className="text-sm text-gray-400 mb-5">Semua Cabang Tersebar Secara Strategis di Tanjungpinang</p>
         <div className="w-full h-[280px] sm:h-[350px] md:h-[400px] rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
