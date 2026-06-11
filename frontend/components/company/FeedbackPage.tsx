@@ -26,7 +26,7 @@ export default function FeedbackPage() {
   };
 
   return (
-    <div className="relative w-full py-12 px-6">
+    <div className="relative w-full py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
       
       {/* Background Pattern */}
       <div
@@ -46,30 +46,30 @@ export default function FeedbackPage() {
       <div className="relative z-10 max-w-5xl mx-auto">
         
         {/* Heading Section */}
-        <div className="mb-10">
-          <div className="flex items-start justify-between">
-            <h1 className="text-5xl font-black leading-tight text-[#1a1a1a] max-w-[600px]">
-              Keberhasilan Kami Bergantung<br />
+        <div className="mb-8 md:mb-10">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight text-[#1a1a1a] max-w-[600px]">
+              Keberhasilan Kami Bergantung<br className="hidden sm:block" />
               Pada <span className="text-[#2E9E8F]">Kritik</span> dan{' '}
               <span className="text-[#7C5CBF]">Saran</span> Anda
             </h1>
-            <div className="mt-2 ml-4 flex-shrink-0">
+            <div className="mt-0 md:mt-2 flex-shrink-0">
               <ScissorIcon />
             </div>
           </div>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-10 border-2 border-[#7C5CBF] shadow-lg">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-10 border-2 border-[#7C5CBF] shadow-lg">
           <div className="space-y-6">
             
             {/* Dropdown Kategori */}
             <div className="space-y-2">
-              <label className="block text-base font-semibold text-[#1a1a1a]">Kategori</label>
+              <label className="block text-sm sm:text-base font-semibold text-[#1a1a1a]">Kategori</label>
               <select
                 value={kategori}
                 onChange={(e) => setKategori(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg text-base border-[1.5px] border-[#1a1a1a] bg-transparent text-[#1a1a1a] outline-none focus:border-[#7C5CBF] transition-colors appearance-none cursor-pointer"
+                className="w-full px-4 py-3 rounded-lg text-sm sm:text-base border-[1.5px] border-[#1a1a1a] bg-transparent text-[#1a1a1a] outline-none focus:border-[#7C5CBF] transition-colors appearance-none cursor-pointer"
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231a1a1a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5em' }}
               >
                 <option value="Kritik" className="text-black">Kritik</option>
@@ -79,12 +79,12 @@ export default function FeedbackPage() {
 
             {/* Pesan Textarea */}
             <div className="space-y-2">
-              <label className="block text-base font-semibold text-[#1a1a1a]">Tulis Pesan Anda</label>
+              <label className="block text-sm sm:text-base font-semibold text-[#1a1a1a]">Tulis Pesan Anda</label>
               <textarea
                 rows={5}
                 value={pesan}
                 onChange={(e) => setPesan(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg text-base resize-none border-[1.5px] border-[#1a1a1a] bg-transparent text-[#1a1a1a] outline-none focus:border-[#7C5CBF] transition-colors"
+                className="w-full px-4 py-3 rounded-lg text-sm sm:text-base resize-none border-[1.5px] border-[#1a1a1a] bg-transparent text-[#1a1a1a] outline-none focus:border-[#7C5CBF] transition-colors"
               />
             </div>
 
@@ -92,7 +92,7 @@ export default function FeedbackPage() {
             <div className="flex justify-end pt-2">
               <button
                 onClick={handleSubmit}
-                className="px-8 py-3 rounded-lg font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#F9C74F] text-[#1a1a1a]"
+                className="px-6 sm:px-8 py-3 rounded-lg font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#F9C74F] text-[#1a1a1a]"
               >
                 {submitted ? 'Terkirim ✓' : 'Kirim →'}
               </button>
