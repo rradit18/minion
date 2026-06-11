@@ -1,94 +1,104 @@
 "use client";
 
 import React, { useState } from 'react';
-import { MessageSquareText, Send, Star, User, Mail } from 'lucide-react';
+
+// Scissor SVG icon
+const ScissorIcon = () => (
+  <svg width="72" height="56" viewBox="0 0 72 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="16" cy="40" r="12" stroke="#1a1a1a" strokeWidth="3" fill="none"/>
+    <circle cx="16" cy="16" r="12" stroke="#1a1a1a" strokeWidth="3" fill="none"/>
+    <line x1="25" y1="32" x2="68" y2="8" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round"/>
+    <line x1="25" y1="24" x2="68" y2="48" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round"/>
+  </svg>
+);
 
 export default function FeedbackPage() {
-  const [rating, setRating] = useState(0);
+  const [kategori, setKategori] = useState('Kritik');
+  const [pesan, setPesan] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = () => {
+    if (pesan.trim()) {
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 3000);
+      setPesan('');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#FCFBF7] py-12 px-6">
-      <div className="max-w-xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-black text-[#1a1a1a] mb-2">Kritik & Saran</h1>
-          <p className="text-gray-500 text-sm">
-            Masukan Anda sangat berarti untuk evolusi gaya kami.
-          </p>
+    <div className="relative w-full py-12 px-6">
+      
+      {/* Background Pattern */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundColor: "#F5EFE4",
+          backgroundImage: "url('/pattern.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-[#F5EFE4]/80" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 max-w-5xl mx-auto">
+        
+        {/* Heading Section */}
+        <div className="mb-10">
+          <div className="flex items-start justify-between">
+            <h1 className="text-5xl font-black leading-tight text-[#1a1a1a] max-w-[600px]">
+              Keberhasilan Kami Bergantung<br />
+              Pada <span className="text-[#2E9E8F]">Kritik</span> dan{' '}
+              <span className="text-[#7C5CBF]">Saran</span> Anda
+            </h1>
+            <div className="mt-2 ml-4 flex-shrink-0">
+              <ScissorIcon />
+            </div>
+          </div>
         </div>
 
-        {/* Card Form */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-          <form className="space-y-6">
+        {/* Form Card */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-10 border-2 border-[#7C5CBF] shadow-lg">
+          <div className="space-y-6">
             
-            {/* Nama Input */}
+            {/* Dropdown Kategori */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Lengkap</label>
-              <div className="relative">
-                <User className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                <input 
-                  type="text" 
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F9C74F] transition"
-                  placeholder="Masukkan nama Anda"
-                />
-              </div>
+              <label className="block text-base font-semibold text-[#1a1a1a]">Kategori</label>
+              <select
+                value={kategori}
+                onChange={(e) => setKategori(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg text-base border-[1.5px] border-[#1a1a1a] bg-transparent text-[#1a1a1a] outline-none focus:border-[#7C5CBF] transition-colors appearance-none cursor-pointer"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231a1a1a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5em' }}
+              >
+                <option value="Kritik" className="text-black">Kritik</option>
+                <option value="Saran" className="text-black">Saran</option>
+              </select>
             </div>
 
-            {/* Email Input */}
+            {/* Pesan Textarea */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                <input 
-                  type="email" 
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F9C74F] transition"
-                  placeholder="nama@email.com"
-                />
-              </div>
-            </div>
-
-            {/* Rating Section */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Rating Anda</label>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    onClick={() => setRating(star)}
-                    className={`w-8 h-8 cursor-pointer transition-colors ${
-                      star <= rating ? "fill-[#F9C74F] text-[#F9C74F]" : "text-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Message Textarea */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Kritik & Saran</label>
-              <div className="relative">
-                <MessageSquareText className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                <textarea 
-                  rows={4}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F9C74F] transition"
-                  placeholder="Ceritakan pengalaman Anda di sini..."
-                />
-              </div>
+              <label className="block text-base font-semibold text-[#1a1a1a]">Tulis Pesan Anda</label>
+              <textarea
+                rows={5}
+                value={pesan}
+                onChange={(e) => setPesan(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg text-base resize-none border-[1.5px] border-[#1a1a1a] bg-transparent text-[#1a1a1a] outline-none focus:border-[#7C5CBF] transition-colors"
+              />
             </div>
 
             {/* Submit Button */}
-            <button 
-              type="submit"
-              className="w-full bg-[#1a1a1a] text-white font-bold py-4 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition flex items-center justify-center gap-2"
-            >
-              Kirim Masukan <Send className="w-4 h-4" />
-            </button>
-          </form>
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={handleSubmit}
+                className="px-8 py-3 rounded-lg font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#F9C74F] text-[#1a1a1a]"
+              >
+                {submitted ? 'Terkirim ✓' : 'Kirim →'}
+              </button>
+            </div>
+          </div>
         </div>
-        
-        <p className="text-center text-[10px] text-gray-400 mt-8">
-          © 2026 Minion Barbershop. Terima kasih sudah membantu kami lebih baik.
-        </p>
       </div>
     </div>
   );
