@@ -8,13 +8,11 @@ interface NavbarProps {
 const Navbar = ({ onMenuClick }: NavbarProps) => {
   return (
     <nav className="flex items-center justify-between py-5 bg-[#FAFAF6] sticky top-0 z-50">
-      <div>
-        <div style={{ fontFamily: "'Dancing Script', cursive" }} className="text-[26px] font-bold text-[#1a1a1a] leading-none">
-          Minion
-        </div>
-        <div className="text-[10px] font-bold tracking-[3px] border-t border-[#1a1a1a] mt-1 pt-1 text-black">
-          — BARBERSHOP —
-        </div>
+      <div className="flex items-center">
+        <img
+          src="/minion.png"
+          alt="Minion Barbershop Logo"
+          className="h-12 w-auto object-contain"/>
       </div>
 
       <div className="flex items-center gap-3">

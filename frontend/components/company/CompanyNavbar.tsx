@@ -16,17 +16,13 @@ export default function CompanyNavbar() {
 
           {/* Logo */}
           <Link href="/" className="flex flex-col flex-shrink-0">
-            <span
-              style={{ fontFamily: "'Dancing Script', cursive" }}
-              className="text-[26px] font-bold text-[#1a1a1a] leading-none"
-            >
-              Minion
-            </span>
-            <span className="text-[10px] font-bold tracking-[3px] border-t border-[#1a1a1a] mt-1 pt-1 text-black">
-              — BARBERSHOP —
-            </span>
+            <img
+              src="/minion.png"
+              alt="Minion Barbershop"
+              className="h-12 w-auto object-contain"
+              />
           </Link>
-
+          
           {/* Right side */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <Link

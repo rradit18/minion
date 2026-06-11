@@ -7,9 +7,9 @@ const Footer = () => {
 
         {/* Kolom 1: Logo */}
         <div className="md:col-span-1">
-          <img src="/barber-pole-icon.png" alt="Minion Barbershop" className="h-20 mb-4" />
-          <h2 className="font-bold text-xl">Minion</h2>
-          <p className="text-sm">— BARBERSHOP</p>
+          <img src="/minion.png" 
+          alt="Minion Barbershop" 
+          className="h-20 w-auto mb-4 object-contain" />
         </div>
 
         {/* Kolom 2: Connect */}

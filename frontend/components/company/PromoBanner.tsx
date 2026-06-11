@@ -1,8 +1,9 @@
 import React from 'react';
+import Link from 'next/link';
 
 const PromoBanner = () => {
   return (
-    <section className="max-w-7xl mx-auto px-6 pt-0">
+    <section className="max-w-7xl mx-auto px-6 pt-0 mb-8">
       <div className="relative">
         <div
           className="rounded-2xl flex items-center pr-6 overflow-hidden"
@@ -66,9 +67,11 @@ const PromoBanner = () => {
               </p>
             </div>
 
-            <button className="bg-[#1a1a1a] text-white text-[13px] font-bold px-4 py-2.5 rounded-lg whitespace-nowrap hover:scale-105 transition-transform">
-              Book Now →
-            </button>
+            <Link href="/booking">
+              <button className="bg-[#1a1a1a] text-white text-[13px] font-bold px-4 py-2.5 rounded-lg whitespace-nowrap hover:scale-105 transition-transform">
+                Book Now →
+              </button>
+            </Link>
           </div>
 
           {/* Heart Maskot Kanan */}
