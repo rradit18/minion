@@ -1,14 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
-import Navbar from './Navbar';
-import MobileMenu from './MobileMenu';
-
 const branches = [
-  { name: "Jl. Pramuka", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", hours: "10 to 21" },
-  { name: "Kijang Kota", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#178E81] text-white", open: "Every day", hours: "10 to 21" },
-  { name: "Bt. 9",       address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "", tagColor: "", open: "Every day", hours: "10 to 21" },
-  { name: "Jl. Ganet",   address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Baru Dibuka", tagColor: "bg-[#7B5EA7] text-white", open: "Every day", hours: "10 to 21" },
+  { name: "Jl. Pramuka", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", hours: "10 to 21" },
+  { name: "Kijang Kota", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#178E81] text-white",      open: "Every day", hours: "10 to 21" },
+  { name: "Bt. 9",       address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "",           tagColor: "",                             open: "Every day", hours: "10 to 21" },
+  { name: "Jl. Ganet",   address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Baru Dibuka",tagColor: "bg-[#7B5EA7] text-white",       open: "Every day", hours: "10 to 21" },
 ];
 
 const Scissors = () => (
@@ -51,23 +47,18 @@ const FaceDoodle = () => (
 );
 
 export default function BranchesPage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
     <div
-      className="min-h-screen pb-10"
+      className="pb-10"
       style={{
         backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/images/barber-pattern.png')`,
-        backgroundSize: 'cover',
-        backgroundColor: '#FCFBF7',
+        backgroundSize: "cover",
+        backgroundColor: "#FCFBF7",
       }}
     >
-      <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-
-
       {/* Header Section */}
       <section className="max-w-7xl mx-auto px-6 pt-8 pb-4 text-center relative">
-        {/* Doodles — hidden di mobile */}
+        {/* Doodles */}
         <div className="absolute top-4 left-4 w-7 h-7 opacity-60 hidden sm:block"><Spiral /></div>
         <div className="absolute top-2 right-20 w-8 h-9 -rotate-[20deg] opacity-70 hidden sm:block"><Scissors /></div>
         <div className="absolute top-6 right-6 w-7 h-10 rotate-[10deg] opacity-70 hidden sm:block"><Clipper /></div>
@@ -79,8 +70,8 @@ export default function BranchesPage() {
         <p className="text-xs font-bold tracking-[0.2em] text-[#178E81] uppercase mb-3">Temukan Kami</p>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-[#1a1a1a]">Cabang Terdekat</h1>
         <p className="text-gray-500 text-sm max-w-lg mx-auto mb-8 leading-relaxed px-2">
-          Pembangkan kami tersebar di seluruh kota. Setiap cabang adalah lokasi di keterampilan,
-          memastikan cukur rambut elit dengan budaya jalanan yang murni.
+          Cabang kami tersebar di seluruh kota. Setiap cabang menghadirkan keahlian terbaik
+          dengan pengalaman grooming kelas atas yang autentik.
         </p>
 
         {/* Stats */}
@@ -97,22 +88,17 @@ export default function BranchesPage() {
           ))}
         </div>
 
-        {/* Barbershop image */}
+        {/* Illustration */}
         <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto mb-2">
-          <img
-            src="/illustration.png"
-            alt="Minion Barbershop"
-            className="w-full h-auto object-contain drop-shadow-sm"
-          />
+          <img src="/illustration.png" alt="Minion Barbershop" className="w-full h-auto object-contain drop-shadow-sm" />
         </div>
       </section>
 
       {/* Branch Grid */}
       <section className="max-w-7xl mx-auto px-6 mb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {branches.map((branch, i) => (
             <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-              {/* Image placeholder */}
               <div className="h-40 sm:h-44 bg-gray-900 relative flex items-center justify-center">
                 <span className="text-white/30 text-sm font-bold">Pict</span>
                 {branch.tag && (
@@ -121,7 +107,6 @@ export default function BranchesPage() {
                   </span>
                 )}
               </div>
-              {/* Card content */}
               <div className="p-5">
                 <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#1a1a1a]">{branch.name}</h3>
                 <p className="text-xs text-gray-400 mb-3 flex items-start gap-1">
@@ -152,7 +137,7 @@ export default function BranchesPage() {
         </div>
       </section>
 
-      {/* Map Section */}
+      {/* Map */}
       <section className="max-w-7xl mx-auto px-6 mb-16">
         <h2 className="text-xl sm:text-2xl font-black mb-2 text-[#1a1a1a]">Peta Lokasi</h2>
         <p className="text-sm text-gray-400 mb-5">Semua Cabang Tersebar Secara Strategis di Tanjungpinang</p>
