@@ -1,5 +1,4 @@
 import React from 'react';
-// Mengimpor ikon dari lucide-react
 import { Camera, Phone } from 'lucide-react';
 
 interface BarberProps {
@@ -7,7 +6,7 @@ interface BarberProps {
   role: string;
   specialty: string;
   rating: string;
-  imageColor: string; // Contoh: 'bg-teal-500', 'bg-purple-500', dll
+  imageColor: string;
 }
 
 const BarberPage = ({ name, role, specialty, rating, imageColor }: BarberProps) => (
@@ -25,14 +24,14 @@ const BarberPage = ({ name, role, specialty, rating, imageColor }: BarberProps) 
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-[#1a1a1a]">★ {rating}</span>
         
-        {/* Ikon Lucide */}
+        {/* Ikon Lucide — pakai button bukan <a> agar tidak nested di dalam <Link> */}
         <div className="flex gap-3 text-gray-400">
-          <a href="#" className="hover:text-pink-600 transition-colors">
+          <button className="hover:text-pink-600 transition-colors">
             <Camera size={20} />
-          </a>
-          <a href="#" className="hover:text-green-600 transition-colors">
+          </button>
+          <button className="hover:text-green-600 transition-colors">
             <Phone size={20} />
-          </a>
+          </button>
         </div>
       </div>
     </div>
