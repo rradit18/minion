@@ -5,53 +5,87 @@ const barbers = [
   {
     slug: "hendra",
     name: "Hendra Schevenko",
-    role: "Senior Barber",
-    specialty: "Fade & Texture",
+    role: "Fade King",
+    specialty: "Fade Specialist",
     rating: "4.9",
+    reviewCount: "2300+",
     imageColor: "bg-teal-500",
+    imageUrl: "/barber.png",
   },
   {
     slug: "juan",
     name: "Juan Samudra",
-    role: "Junior Barber",
-    specialty: "Classic Cut",
-    rating: "4.7",
+    role: "Fade King",
+    specialty: "Fade Specialist",
+    rating: "4.9",
+    reviewCount: "2300+",
     imageColor: "bg-purple-500",
+    imageUrl: "/barber.png",
   },
   {
     slug: "yoga",
     name: "Yoga Harahap",
-    role: "Senior Barber",
-    specialty: "Skin Fade",
-    rating: "4.8",
+    role: "Fade King",
+    specialty: "Fade Specialist",
+    rating: "4.9",
+    reviewCount: "2300+",
     imageColor: "bg-orange-400",
+    imageUrl: "/barber.png",
   },
   {
     slug: "bastian",
     name: "Bastian Narendra",
-    role: "Master Barber",
-    specialty: "Pompadour",
-    rating: "5.0",
-    imageColor: "bg-blue-500",
+    role: "Fade King",
+    specialty: "Fade Specialist",
+    rating: "4.9",
+    reviewCount: "2300+",
+    imageColor: "bg-orange-400",
+    imageUrl: "/barber.png",
   },
 ];
 
 export default function BarbersListPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-black mb-6">Pilih Barber Anda</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {barbers.map((barber) => (
-          <Link key={barber.slug} href={`/barberman/${barber.slug}`}>
-            <BarberPage
-              name={barber.name}
-              role={barber.role}
-              specialty={barber.specialty}
-              rating={barber.rating}
-              imageColor={barber.imageColor}
-            />
-          </Link>
-        ))}
+    <div className="min-h-screen bg-[#FAF7EF]">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+
+        {/* ── HEADING ── */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-16">
+          <div>
+            <p className="text-[#1a1a1a] text-lg font-semibold mb-1">
+              dibalik rambut kece, ada
+            </p>
+            <h1 className="text-5xl font-black leading-none">
+              <span className="text-[#7B5EA7]">BARBERMAN</span>
+              <span className="text-[#1a1a1a]"> Profesional!</span>
+            </h1>
+          </div>
+          <div className="md:max-w-sm lg:max-w-md">
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Lebih dari sekadar memangkas, mereka adalah seniman. Master barber yang
+              mendefinisikan ulang pengalaman mewah melalui presisi teknis dan ekspresi
+              kreatif yang murni.
+            </p>
+          </div>
+        </div>
+
+        {/* ── GRID BARBER ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-16 pt-10">
+          {barbers.map((barber) => (
+            <Link key={barber.slug} href={`/barberman/${barber.slug}`}>
+              <BarberPage
+                name={barber.name}
+                role={barber.role}
+                specialty={barber.specialty}
+                rating={barber.rating}
+                reviewCount={barber.reviewCount}
+                imageColor={barber.imageColor}
+                imageUrl={barber.imageUrl}
+              />
+            </Link>
+          ))}
+        </div>
+
       </div>
     </div>
   );
