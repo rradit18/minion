@@ -51,7 +51,7 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Email"
-              className="w-full bg-transparent px-4 py-2 text-sm outline-none"
+              className="w-full bg-transparent px-4 py-2 text-sm outline-none text-[#1a1a1a] placeholder-gray-400"
             />
             <button className="bg-amber-400 p-2 rounded-full">
               <span className="text-white">→</span>
