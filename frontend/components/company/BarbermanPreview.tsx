@@ -1,4 +1,3 @@
-// components/company/BarberPreview.tsx
 import React from "react";
 
 const barbers = [

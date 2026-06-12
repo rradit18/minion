@@ -1,30 +1,58 @@
-import BarberPage from "@/components/company/BarberPage";
+import Link from 'next/link';
+import BarberPage from '@/components/company/BarberPage';
 
 const barbers = [
-  { name: "Hendra Schevenko", role: "Fade King",    specialty: "Fade Specialist", rating: "4.9 (2300+)", imageColor: "bg-teal-400"   },
-  { name: "Juan Samudra",     role: "Fade King",    specialty: "Fade Specialist", rating: "4.9 (2300+)", imageColor: "bg-purple-400" },
-  { name: "Yoga Harahap",     role: "Fade King",    specialty: "Fade Specialist", rating: "4.9 (2300+)", imageColor: "bg-amber-400"  },
-  { name: "Bastian Narendra", role: "Fade King",    specialty: "Fade Specialist", rating: "4.9 (2300+)", imageColor: "bg-orange-400" },
+  {
+    slug: "hendra",
+    name: "Hendra Schevenko",
+    role: "Senior Barber",
+    specialty: "Fade & Texture",
+    rating: "4.9",
+    imageColor: "bg-teal-500",
+  },
+  {
+    slug: "juan",
+    name: "Juan Samudra",
+    role: "Junior Barber",
+    specialty: "Classic Cut",
+    rating: "4.7",
+    imageColor: "bg-purple-500",
+  },
+  {
+    slug: "yoga",
+    name: "Yoga Harahap",
+    role: "Senior Barber",
+    specialty: "Skin Fade",
+    rating: "4.8",
+    imageColor: "bg-orange-400",
+  },
+  {
+    slug: "bastian",
+    name: "Bastian Narendra",
+    role: "Master Barber",
+    specialty: "Pompadour",
+    rating: "5.0",
+    imageColor: "bg-blue-500",
+  },
 ];
 
-export default function BarbermanPage() {
+export default function BarbersListPage() {
   return (
-    <main className="min-h-screen bg-[#FCFBF7] py-16 px-6 md:px-12">
-      <div className="max-w-4xl mx-auto mb-16">
-        <p className="text-[#1a1a1a] font-bold mb-2">dibalik rambut kece, ada</p>
-        <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1a] mb-6">
-          <span className="text-[#6B46C1]">BARBERMAN</span> Profesional!
-        </h1>
-        <p className="text-gray-600 max-w-xl">
-          Lebih dari sekadar memangkas, mereka adalah seniman. Master barber yang mendefinisikan
-          ulang pengalaman mewah melalui presisi teknis dan ekspresi kreatif yang murni.
-        </p>
-      </div>
-      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
-        {barbers.map((barber, index) => (
-          <BarberPage key={index} {...barber} />
+    <div className="max-w-7xl mx-auto px-6 py-10">
+      <h1 className="text-3xl font-black mb-6">Pilih Barber Anda</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {barbers.map((barber) => (
+          <Link key={barber.slug} href={`/barberman/${barber.slug}`}>
+            <BarberPage
+              name={barber.name}
+              role={barber.role}
+              specialty={barber.specialty}
+              rating={barber.rating}
+              imageColor={barber.imageColor}
+            />
+          </Link>
         ))}
       </div>
-    </main>
+    </div>
   );
 }
