@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 // --- Tipe data ---
 const galleryColors = [
@@ -43,20 +44,24 @@ const GalleryPage = () => {
             PRESISI<br />
             <span className="text-[#D4AF37]">TANPA TANDING</span>
           </h1>
-          <p className="italic text-[13px] font-bold tracking-[3px] text-[#178E81] mt-1.5">
-            GALLERY KARYA
+          <p className="italic text-[13px] font-bold tracking-[3px] text-[#7B5EA7] mt-1.5">
+            GALLERY MASTERPIECE
           </p>
         </div>
-        <p className="flex-1 text-[13px] text-[#555] leading-relaxed max-w-sm pt-1.5">
-          Selamat datang di galeri mahakarya kami. Mulai dari taper klasik hingga desain
-          tepi tajam yang eksperimental, galeri ini menampilkan keahlian elit dari kolektif
-          Gold &amp; Grain.
+        <p className="flex-1 text-[14px] text-[#555] leading-relaxed max-w-sm pt-1.5 text-black">
+          Selamat datang di galeri kami. Mulai dari taper klasik hingga cornrow yang fenomenal. Galeri ini berisi masterpiece dari tangan maestro kami.
         </p>
       </div>
 
       {/* ── Highlight Before/After Card ── */}
       <div className="max-w-4xl mx-auto px-8 pb-7">
-        <div className="bg-white rounded-2xl flex overflow-hidden min-h-[300px]">
+        <div className="bg-white rounded-2xl flex overflow-hidden min-h-[300px] relative">
+          <div className="absolute inset-0 z-0 opacity-[10] pointer-events-none"
+          style={{
+            backgroundImage: "url('/pattern.png')",
+            backgroundRepeat: "repeat"
+          }}
+        />
 
           {/* Foto split */}
           <div className="w-72 flex-shrink-0 relative bg-[#d0c8bc] overflow-hidden">
@@ -77,30 +82,33 @@ const GalleryPage = () => {
 
           {/* Info */}
           <div className="flex-1 p-8 relative overflow-hidden">
-            <span className="absolute top-4 right-12 text-[#D4AF37] text-[28px] font-black">✦</span>
+            <span className="absolute top-4 right-12 text-[#D4AF37] text-[90px] font-black">✦</span>
             <h2 className="text-[28px] font-black leading-tight mb-1">
               Transformasi Khas<br />
               <span className="text-[#D4AF37]">Minion</span>
             </h2>
             <p className="text-[13px] text-[#555] leading-relaxed max-w-xs mt-3 mb-4">
-              Saksikan kekuatan presisi. Paket "Modern Executive" kami bukan sekadar
-              potongan rambut; ini adalah kalibrasi ulang dari citra diri Anda. Dikerjakan
-              oleh sang ahli
+              Buat lo yang gak mau tampil biasa aja. Potongan presisi, treatment premium, dan barber profesional yang siap ngasih look terbaik sesuai style lo.
             </p>
+         
             <p className="text-[11px] font-extrabold tracking-[1.5px] text-[#D4AF37] mb-2">
               BENEFIT UTAMA:
             </p>
             <div className="flex gap-1.5 flex-wrap mb-5">
-              <span className="bg-[#1a1a1a] text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-md">Cukur</span>
-              {['Pijat', 'Handuk Panas', 'Bebas Tunggu'].map(t => (
-                <span key={t} className="border-2 border-[#1a1a1a] text-[#1a1a1a] text-[11px] font-semibold px-3.5 py-1.5 rounded-md">
+              {['Cukur', 'Pijat', 'Handuk Panas', 'Bebas Tunggu'].map(t => (
+                <span 
+                  key={t} 
+                  className="bg-[#1A1A1A] text-white text-[11px] font-semibold px-4 py-1.5 rounded-md">
                   {t}
                 </span>
               ))}
             </div>
-            <button className="bg-[#D4AF37] text-[#1a1a1a] font-bold text-[14px] px-7 py-3 rounded-lg hover:bg-yellow-400 transition">
-              Book Now
-            </button>
+            
+            <Link href="/booking">
+              <button className="bg-[#D4AF37] text-[#1a1a1a] font-bold text-[14px] px-7 py-3 rounded-lg hover:bg-yellow-400 transition">
+                Book Sekarang
+              </button>
+            </Link>
           </div>
         </div>
       </div>
