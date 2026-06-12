@@ -3,27 +3,27 @@ import { MapPin, Award, Clock, Droplet } from 'lucide-react';
 
 const uspItems = [
   { 
-    title: '4 Cabang Siap Layani', 
-    desc: 'Strategically located across the city for your convenience',
+    title: '4 Cabang tersebar', 
+    desc: 'Cabang tersedua di seluruh Tanjungpinang, semuanya siap melayani dengan performa maksimal.',
     icon: MapPin,
     color: 'text-amber-400' 
   },
   { 
-    title: 'Barberman Bersertifikat', 
-    desc: 'Highly trained professionals dedicated to your style evolution',
+    title: 'Barberman Profesional', 
+    desc: 'Skill teruji, hasil rapi, dan siap bantu wujudin haircut sesuai ekspektasi.',
     icon: Award,
     color: 'text-teal-600' 
   },
   { 
     title: 'Booking 30 Detik', 
-    desc: 'Frictionless digital booking experience via our app or web.',
+    desc: 'Booking satset, anti ribet, solusi untuk kalian yang ga mau antri lama.',
     icon: Clock,
     color: 'text-orange-500' 
   },
   { 
     title: 'Produk Premium', 
-    desc: 'We only use high quality products for the best results.',
-    icon: Droplet, // Menggunakan Droplet untuk merepresentasikan botol
+    desc: 'Good hair day starts here. Produk premium pilihan yang bikin rambut tetap on point',
+    icon: Droplet,
     color: 'text-indigo-600' 
   },
 ];

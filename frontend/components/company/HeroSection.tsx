@@ -203,15 +203,18 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
                 className="leading-[1.1] text-[#1a1a1a] text-[28px] md:text-[48px]"
                 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700 }}
               >
-                Good Hair.<br />
-                Good Vibes.<br />
-                <span className="text-[#7B5EA7]">Everyday.</span>
+                "Pantang pulang<br />
+                sebelum<br />
+                <span className="text-[#7B5EA7]">gantenggg."</span>
               </h1>
               <p
                 className="text-[13px] text-[#666] leading-relaxed max-w-[280px]"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
-                Potongan Terbaik dari barber profesional untuk style terbaikmu setiap hari
+                Potongan terbaik bukan cuma soal gaya...
+              <br />
+                tapi self upgrade kali wakk...
+              <br />
               </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-1 justify-center md:justify-start">
                 <Link

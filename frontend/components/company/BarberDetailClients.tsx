@@ -1,209 +1,241 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
-const galleryImages = [
-  "/gallery1.jfif", "/gallery2.jfif", "/gallery3.jfif",
-  "/gallery4.jfif", "/gallery5.jfif", "/gallery6.jfif",
-  "/gallery1.jfif", "/gallery2.jfif", "/gallery3.jfif",
-  "/gallery4.jfif", "/gallery5.jfif", "/gallery6.jfif",
-  "/gallery1.jfif", "/gallery2.jfif", "/gallery3.jfif",
-  "/gallery4.jfif", "/gallery5.jfif", "/gallery6.jfif",
-];
-
-const leftTabs = ["Side part", "Low taper", "Perm"];
-
-interface BarberDetailClientProps {
+interface Props {
   barberName: string;
   barberSlug: string;
 }
 
-export default function BarberDetailClients({ barberName, barberSlug }: BarberDetailClientProps) {
-  const [activeTab, setActiveTab] = useState("Barber");
+const barberData: Record<string, any> = {
+  bastian: {
+    title: 'Top Rated',
+    rating: 4.9,
+    reviewCount: '2300+',
+    location: 'Jl. Ganet',
+    quote:
+      'Mengubah setiap potongan menjadi karya seni yang elit adalah passion. Saya tidak hanya memotong rambut, saya mendefinisikan identitas.',
+    experience: '8th+ Pengalaman',
+    clientReturns: '400 Client Returns',
+    speciality: [
+      'Skin Fade & Taper Fade',
+      'Hard Part & Line Up',
+      'Textured Crop',
+      'Pompadour & Quiff',
+    ],
+    tools: [
+      'Wahl Senior Clipper',
+      'Andis T Outliner',
+      'Feather Razor',
+      'Kamisori Shear',
+    ],
+    portfolio: [
+      '/port1.jpg',
+      '/port2.jpg',
+      '/port3.jpg',
+      '/port4.jpg',
+      '/port5.jpg',
+      '/port6.jpg',
+    ],
+    others: [
+      { slug: 'hendra', name: 'Hendra Schevenko', role: 'Fade King', badge: 'Fade Specialist', rating: '4.9', reviewCount: '2300+', img: '/hendra.jpg' },
+      { slug: 'yoga',   name: 'Yoga Harahap',     role: 'Fade King', badge: 'Fade Specialist', rating: '4.9', reviewCount: '2300+', img: '/yoga.jpg'   },
+      { slug: 'juan',   name: 'Juan Samudra',     role: 'Fade King', badge: 'Fade Specialist', rating: '4.9', reviewCount: '2300+', img: '/juan.jpg'   },
+    ],
+  },
+};
+
+const defaultData = barberData['bastian'];
+
+export default function BarberDetailClients({ barberName, barberSlug }: Props) {
+  const data = barberData[barberSlug] ?? defaultData;
+  const firstName = barberName.split(' ')[0];
 
   return (
-    <div className="min-h-screen bg-[#FAF7EF]">
+    <div className="bg-[#EAE6DF] min-h-screen font-sans">
 
-      {/* ── HERO HEADER ── */}
-      <section className="max-w-7xl mx-auto px-6 pt-10 pb-8">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          <div>
-            <h1 className="text-[40px] sm:text-[52px] font-black leading-none text-[#1a1a1a] uppercase">
-              PRESISI
-            </h1>
-            <h1 className="text-[40px] sm:text-[52px] font-black leading-none text-[#F9C74F] uppercase">
-              TANPA TANDING
-            </h1>
-            <p
-              className="text-[#7B5EA7] text-[13px] font-bold tracking-[4px] uppercase mt-2"
-              style={{ fontStyle: 'italic' }}
-            >
-              GALLERY KARYA
-            </p>
-          </div>
-          <div className="md:max-w-sm lg:max-w-md">
-            <p className="text-gray-500 text-sm leading-relaxed">
-              Selamat datang di galeri mahakarya kami. Mulai dari taper klasik hingga desain
-              tepi tajam yang eksperimental, galeri ini menampilkan keahlian elit dari kolektif
-              Gold & Grain.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── BEFORE/AFTER + FEATURE CARD ── */}
-      <section className="max-w-7xl mx-auto px-6 mb-12">
-        <div className="flex flex-col lg:flex-row rounded-3xl overflow-hidden shadow-md border border-gray-100">
-
-          {/* Before/After Image */}
-          <div className="relative w-full lg:w-[420px] flex-shrink-0 min-h-[360px] lg:min-h-[460px] bg-gray-200 overflow-hidden">
+      {/* ── Hero Section ── */}
+      <div className="max-w-4xl mx-auto px-6 pt-12 pb-8">
+        <div className="flex gap-10 items-start">
+          {/* Avatar */}
+          <div className="relative flex-shrink-0 w-52 h-52">
+            <div className="absolute inset-0 rounded-full bg-[#E8730A]" />
             <img
-              src="/gallery1.jfif"
-              alt="Before After"
-              className="absolute inset-0 w-full h-full object-cover"
+              src={`/${barberSlug}.jpg`}
+              alt={barberName}
+              className="absolute inset-0 w-full h-full object-cover rounded-full"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/placeholder-barber.jpg';
+              }}
             />
-            <div className="absolute inset-0 flex">
-              <div className="w-1/2 relative">
-                <span className="absolute top-4 left-4 bg-[#178E81] text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                  sebelum
-                </span>
-              </div>
-              <div className="w-1/2 relative">
-                <span className="absolute top-4 right-4 bg-[#7B5EA7] text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                  sesudah
-                </span>
-              </div>
-              <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-white/80" />
-            </div>
           </div>
 
-          {/* Feature Info] */}
-          <div
-            className="flex-1 p-8 lg:p-10 relative overflow-hidden"
-            style={{
-              backgroundColor: '#ffffff',
-              backgroundImage: `url('/pattern.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="absolute inset-0 bg-white/60" />
+          {/* Info */}
+          <div className="flex-1 pt-2">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="border border-[#1a1a1a] text-[#1a1a1a] text-[11px] font-semibold px-3 py-1 rounded-sm tracking-wide">
+                {data.title}
+              </span>
+            </div>
 
-            {/* Konten di atas overlay */}
-            <div className="relative z-10">
-              <span className="absolute top-0 right-2 text-[#F9C74F] text-4xl font-black select-none">✦</span>
+            <h1 className="text-[42px] font-black leading-none tracking-tight mb-3">
+              {barberName}
+            </h1>
 
-              <h2 className="text-[28px] sm:text-[34px] font-black text-[#1a1a1a] leading-tight mb-1">
-                Transformasi Khas
-              </h2>
-              <h2 className="text-[28px] sm:text-[34px] font-black text-[#F9C74F] leading-tight mb-4">
-                {barberName}
-              </h2>
-              <p className="text-gray-500 text-sm leading-relaxed mb-5 max-w-sm">
-                Saksikan kekuatan presisi. Paket "Modern Executive" kami bukan sekadar
-                potongan rambut; ini adalah kalibrasi ulang dari citra diri Anda. Dikerjakan
-                oleh sang ahli.
-              </p>
-
-              <p className="text-[#178E81] text-[11px] font-extrabold tracking-[2px] uppercase mb-3">
-                Benefit Utama:
-              </p>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {['Cukur', 'Pijat', 'Handuk Panas', 'Bebas Tunggu'].map((b, i) => (
-                  <span
-                    key={i}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold border ${
-                      i === 0
-                        ? 'bg-[#1a1a1a] text-white border-[#1a1a1a]'
-                        : i === 3
-                        ? 'bg-[#F9C74F] text-[#1a1a1a] border-[#F9C74F]'
-                        : 'bg-white text-[#1a1a1a] border-gray-300'
-                    }`}
-                  >
-                    {b}
-                  </span>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <span key={i} className="text-[#D4AF37] text-lg">★</span>
                 ))}
               </div>
+              <span className="font-bold text-[15px]">
+                {data.rating} ({data.reviewCount} Reviews)
+              </span>
+            </div>
 
-              <Link
-                href="/booking"
-                className="inline-block bg-[#F9C74F] text-[#1a1a1a] px-8 py-3 rounded-xl font-extrabold text-[14px] hover:bg-yellow-400 transition"
-              >
-                Book Now
-              </Link>
+            <p className="text-[13px] text-[#444] mb-4">
+              Penempatan: {data.location}
+            </p>
+
+            {/* Quote */}
+            <div className="bg-[#1a1a1a] rounded-r-xl border-l-4 border-[#D4AF37] px-5 py-4 mb-4 max-w-lg">
+              <p className="text-white italic text-[13px] leading-relaxed">
+                "{data.quote}"
+              </p>
+            </div>
+
+            {/* Badges */}
+            <div className="flex gap-2">
+              <span className="border border-[#1a1a1a] text-[#1a1a1a] text-[12px] font-semibold px-4 py-1.5 rounded-full">
+                {data.experience}
+              </span>
+              <span className="border border-[#1a1a1a] text-[#1a1a1a] text-[12px] font-semibold px-4 py-1.5 rounded-full">
+                {data.clientReturns}
+              </span>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* ── TABS ── */}
-      <section className="max-w-7xl mx-auto px-6 mb-6">
-        <div className="bg-[#1a1a1a] rounded-xl flex items-center px-2 py-2 overflow-x-auto">
-          {/* Tab kiri: Side part, Low taper, Perm */}
-          <div className="flex items-center gap-1 flex-1">
-            {leftTabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition ${
-                  activeTab === tab
-                    ? 'bg-[#F9C74F] text-[#1a1a1a]'
-                    : 'text-white hover:text-[#F9C74F]'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          {/* Tab kanan: Barber */}
-          <button
-            onClick={() => setActiveTab("Barber")}
-            className={`px-6 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition ${
-              activeTab === "Barber"
-                ? 'bg-[#F9C74F] text-[#1a1a1a]'
-                : 'text-white hover:text-[#F9C74F]'
-            }`}
-          >
-            Barber
-          </button>
-        </div>
-      </section>
-
-      {/* ── GALLERY GRID ── */}
-      <section className="max-w-7xl mx-auto px-6 mb-8">
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-          {galleryImages.map((img, i) => (
-            <div key={i} className="aspect-square rounded-2xl overflow-hidden">
+      {/* ── Porto Section ── */}
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <h2 className="text-center text-[32px] font-black mb-6">
+          <span className="text-[#7B5EA7]">{firstName}'s</span> Porto
+        </h2>
+        <div className="grid grid-cols-6 gap-2">
+          {data.portfolio.map((img: string, i: number) => (
+            <div
+              key={i}
+              className="rounded-xl overflow-hidden aspect-square bg-[#d0c8bc]"
+            >
               <img
                 src={img}
-                alt=""
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                alt={`Porto ${i + 1}`}
+                className="w-full h-full object-cover"
               />
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* ── LIHAT SEMUA ── */}
-      <section className="max-w-7xl mx-auto px-6 mb-16">
-        <div className="flex items-center justify-between">
-          <div className="w-20 h-20 flex-shrink-0">
-            <img
-                src="/love.png"
-                alt="love"
-                className="w-full h-full object-contain"
-                />
+      {/* ── Speciality & Tools + CTA ── */}
+      <div className="max-w-4xl mx-auto px-6 py-6">
+        <div className="flex gap-6 items-stretch">
+          {/* Speciality */}
+          <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm">
+            <p className="text-[#178E81] text-[11px] font-extrabold tracking-[2px] mb-4 uppercase">
+              Speciality
+            </p>
+            <ul className="space-y-2.5">
+              {data.speciality.map((s: string, i: number) => (
+                <li key={i} className="flex items-center gap-2.5 text-[14px] font-medium">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] flex-shrink-0" />
+                  {s}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <button className="bg-[#1a1a1a] text-white px-10 py-3 rounded-xl font-bold text-sm hover:bg-[#333] transition">
-            - Lihat Semua -
-          </button>
+          {/* Signature Tools */}
+          <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm">
+            <p className="text-[#178E81] text-[11px] font-extrabold tracking-[2px] mb-4 uppercase">
+              Signature Tools
+            </p>
+            <ul className="space-y-2.5">
+              {data.tools.map((t: string, i: number) => (
+                <li key={i} className="flex items-center gap-2.5 text-[14px] font-medium">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] flex-shrink-0" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <span className="text-[#F9C74F] text-5xl font-black select-none">✦</span>
+          {/* CTA Card */}
+          <div className="flex flex-col items-center justify-center gap-4 px-2 min-w-[180px]">
+            <p className="text-[15px] font-bold text-center leading-snug">
+              Mau Dapetin Cukuran<br />
+              Keren dari{' '}
+              <span className="text-[#178E81]">{firstName}</span> Juga?
+            </p>
+            <Link
+              href={`/booking/${barberSlug}`}
+              className="bg-[#178E81] hover:bg-[#0f6e63] transition-colors text-white text-[13px] font-bold px-5 py-3 rounded-lg text-center whitespace-nowrap"
+            >
+              Book Appointment Now
+            </Link>
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* ── Barberman Lainnya ── */}
+      <div className="bg-[#1a1a1a] mt-10 py-12 px-6">
+        <h2 className="text-center text-[32px] font-black mb-8">
+          <span className="text-[#D4AF37]">Barberman</span>{' '}
+          <span className="text-white">Lainnya</span>
+        </h2>
+
+        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-5">
+          {data.others.map((barber: any) => (
+            <Link
+              key={barber.slug}
+              href={`/barber/${barber.slug}`}
+              className="bg-white rounded-2xl p-4 flex items-center gap-4 hover:shadow-lg transition-shadow"
+            >
+              {/* Avatar with teal circle accent */}
+              <div className="relative flex-shrink-0 w-16 h-16">
+                <div className="absolute bottom-0 left-0 w-8 h-8 rounded-full bg-[#E8730A] opacity-70" />
+                <img
+                  src={barber.img}
+                  alt={barber.name}
+                  className="relative w-full h-full object-cover rounded-full"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder-barber.jpg';
+                  }}
+                />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="font-black text-[15px] leading-tight truncate">
+                  {barber.name}
+                </p>
+                <p className="text-[12px] text-[#555] mb-1.5">{barber.role}</p>
+                <span className="inline-block bg-[#7B5EA7] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-2">
+                  {barber.badge}
+                </span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[#D4AF37] text-sm">★</span>
+                  <span className="text-[12px] font-bold">
+                    {barber.rating} ({barber.reviewCount})
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
-}   
+}

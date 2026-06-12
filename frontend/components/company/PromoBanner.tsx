@@ -45,7 +45,7 @@ const PromoBanner = () => {
               className="text-[22px] font-black leading-[1.1] tracking-tight uppercase text-[#1a1a1a]"
               style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
             >
-              GAYA ELIT<br />HARGA IRIT.
+              HARGA KAWAN<br />HASIL IDAMAN.
             </h2>
           </div>
 
@@ -63,13 +63,13 @@ const PromoBanner = () => {
                 Rp. 35.000
               </p>
               <p className="text-[9px] text-gray-600 mt-1 max-w-[110px] leading-snug">
-                Dapetin potongan barber profesional yang affordable
+                Gak perlu mahal buat tampil maksimal
               </p>
             </div>
 
             <Link href="/booking">
               <button className="bg-[#1a1a1a] text-white text-[13px] font-bold px-4 py-2.5 rounded-lg whitespace-nowrap hover:scale-105 transition-transform">
-                Book Now →
+                Book Sekarang →
               </button>
             </Link>
           </div>
