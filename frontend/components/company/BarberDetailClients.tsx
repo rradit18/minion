@@ -190,15 +190,11 @@ export default function BarberDetailClients({ barberName, barberSlug }: BarberDe
       <section className="max-w-7xl mx-auto px-6 mb-16">
         <div className="flex items-center justify-between">
           <div className="w-20 h-20 flex-shrink-0">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <circle cx="40" cy="40" r="36" fill="#FF6B6B"/>
-              <path d="M40 58 C20 44 14 28 24 20 C29 16 36 18 40 26 C44 18 51 16 56 20 C66 28 60 44 40 58Z" fill="white"/>
-              <circle cx="32" cy="34" r="3" fill="#1a1a1a"/>
-              <circle cx="48" cy="34" r="3" fill="#1a1a1a"/>
-              <path d="M34 42 Q40 47 46 42" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              <circle cx="28" cy="40" r="4" fill="#FF9999" opacity="0.5"/>
-              <circle cx="52" cy="40" r="4" fill="#FF9999" opacity="0.5"/>
-            </svg>
+            <img
+                src="/love.png"
+                alt="love"
+                className="w-full h-full object-contain"
+                />
           </div>
 
           <button className="bg-[#1a1a1a] text-white px-10 py-3 rounded-xl font-bold text-sm hover:bg-[#333] transition">
