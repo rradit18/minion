@@ -2,12 +2,8 @@ import React from 'react';
 
 // --- Tipe data ---
 const galleryColors = [
-  { head: '#9a6a3a', body: '#c9a058', bg: 'from-[#c9b080] to-[#e2cfa8]' },
-  { head: '#8a6a52', body: '#f0f0f0', bg: 'from-[#b8c8c4] to-[#dde8e5]' },
-  { head: '#8a6a52', body: '#f0f0f0', bg: 'from-[#bfc8c8] to-[#dde8e6]' },
-  { head: '#9a7252', body: '#c9b880', bg: 'from-[#c9b080] to-[#e2cfa8]' },
-  { head: '#7a6252', body: '#222',    bg: 'from-[#2a2a2a] to-[#555]' },
-  { head: '#8a6a52', body: '#f0f0f0', bg: 'from-[#b8c4c8] to-[#dde4e8]' },
+  "/gallery1.jpg", "/gallery2.png", "/gallery3.jpg",
+  "/gallery4.png", "/gallery5.jpg", "/gallery6.png",
 ];
 
 // --- Sub-components ---
@@ -18,15 +14,20 @@ const PersonFigure = ({ headColor, bodyColor }: { headColor: string; bodyColor: 
   </div>
 );
 
-const GalleryCard = ({ item }: { item: typeof galleryColors[0] }) => (
-  <div className={`rounded-2xl overflow-hidden bg-gradient-to-b ${item.bg} relative`} style={{ aspectRatio: '3/4' }}>
-    <PersonFigure headColor={item.head} bodyColor={item.body} />
+// Fix 1 & 2: Tambah penutup `"` pada className, dan tutup <img> dengan />
+const GalleryCard = ({ imageUrl }: { imageUrl: string }) => (
+  <div className="rounded-2xl overflow-hidden relative" style={{ aspectRatio: '3/4' }}>
+    <img
+      src={imageUrl}
+      alt=""
+      className="w-full h-full object-cover" />
   </div>
 );
 
+// Fix 3: Ganti prop `item` menjadi `imageUrl` agar sesuai dengan GalleryCard
 const GalleryRow = () => (
   <div className="grid grid-cols-6 gap-2.5">
-    {galleryColors.map((item, i) => <GalleryCard key={i} item={item} />)}
+    {galleryColors.map((item, i) => <GalleryCard key={i} imageUrl={item} />)}
   </div>
 );
 
