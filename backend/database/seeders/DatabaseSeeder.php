@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             BranchSeeder::class,
             ServiceSeeder::class,
             AdminUserSeeder::class,
+            BarberSeeder::class,
         ]);
     }
 }
