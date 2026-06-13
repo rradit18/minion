@@ -5,15 +5,16 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\PromoResource\Pages;
 use App\Models\Promo;
 use App\Models\Service;
+use Filament\Actions;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -38,7 +39,7 @@ class PromoResource extends Resource
                     ->maxLength(50)
                     ->unique(Promo::class, 'code', ignoreRecord: true)
                     ->suffixAction(
-                        \Filament\Forms\Components\Actions\Action::make('generate')
+                        Actions\Action::make('generate')
                             ->label('Auto')
                             ->icon('heroicon-o-arrow-path')
                             ->action(fn($set) => $set('code', strtoupper(Str::random(8))))
@@ -81,6 +82,7 @@ class PromoResource extends Resource
                     ->label('Minimum Order (Rp)')
                     ->numeric()
                     ->minValue(0)
+                    ->default(0)
                     ->prefix('Rp'),
                 TextInput::make('max_uses')
                     ->label('Maks. Pemakaian Total')
@@ -141,11 +143,11 @@ class PromoResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_active')->label('Status'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

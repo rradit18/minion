@@ -23,16 +23,23 @@ class BookingController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $user = $request->user();
+
         $validated = $request->validate([
             'branch_id'      => ['required', 'uuid', 'exists:branches,id'],
             'barber_id'      => ['required', 'uuid', 'exists:barbers,id'],
             'service_ids'    => ['required', 'array', 'min:1'],
             'service_ids.*'  => ['uuid', 'exists:services,id'],
             'scheduled_at'   => ['required', 'date', 'after:now'],
-            'customer_name'  => ['required', 'string', 'max:255'],
-            'customer_phone' => ['required', 'string', 'max:20'],
+            'customer_name'  => [$user ? 'nullable' : 'required', 'string', 'max:255'],
+            'customer_phone' => [$user ? 'nullable' : 'required', 'string', 'max:20'],
             'notes'          => ['nullable', 'string', 'max:500'],
         ]);
+
+        if ($user) {
+            $validated['customer_name']  = $validated['customer_name'] ?? $user->name;
+            $validated['customer_phone'] = $validated['customer_phone'] ?? $user->phone;
+        }
 
         $scheduledAt = Carbon::parse($validated['scheduled_at']);
 
@@ -51,7 +58,7 @@ class BookingController extends Controller
         }
 
         try {
-            $booking = $this->bookingService->createBooking($validated, null);
+            $booking = $this->bookingService->createBooking($validated, $user?->id);
         } catch (\RuntimeException $e) {
             return $this->error($e->getMessage(), 409);
         }
@@ -61,7 +68,7 @@ class BookingController extends Controller
             'message' => 'Booking berhasil dibuat.',
             'data'    => [
                 'booking_number' => $booking->booking_number,
-                'scheduled_at'   => $booking->scheduled_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'scheduled_at'   => $booking->scheduled_at->toIso8601String(),
                 'barber'         => ['name' => $booking->barber->name, 'slug' => $booking->barber->slug],
                 'branch'         => ['name' => $booking->branch->name, 'slug' => $booking->branch->slug],
                 'services'       => $booking->services->map(fn($s) => [
@@ -87,7 +94,7 @@ class BookingController extends Controller
         return $this->ok('OK', [
             'booking_number' => $booking->booking_number,
             'status'         => $booking->status->value,
-            'scheduled_at'   => $booking->scheduled_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+            'scheduled_at'   => $booking->scheduled_at->toIso8601String(),
             'customer_name'  => $booking->customer_name,
             'barber'         => ['name' => $booking->barber->name],
             'branch'         => ['name' => $booking->branch->name],
@@ -117,7 +124,7 @@ class BookingController extends Controller
                 'booking_number' => $b->booking_number,
                 'customer_name'  => $b->customer_name,
                 'barber'         => $b->barber->name,
-                'scheduled_at'   => $b->scheduled_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'scheduled_at'   => $b->scheduled_at->toIso8601String(),
                 'status'         => $b->status->value,
             ]);
 

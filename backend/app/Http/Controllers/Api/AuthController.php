@@ -69,7 +69,30 @@ class AuthController extends Controller
         $user->tokens()->delete();
         $token = $user->createToken('api')->plainTextToken;
 
-        return $this->ok('Login berhasil.', ['token' => $token]);
+        return $this->ok('Login berhasil.', [
+            'token'                 => $token,
+            'force_password_change' => $user->force_password_change,
+        ]);
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password'         => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        $user = $request->user();
+
+        if (! Hash::check($validated['current_password'], $user->password)) {
+            return $this->error('Password saat ini salah.', 422);
+        }
+
+        $user->password = Hash::make($validated['password']);
+        $user->force_password_change = false;
+        $user->save();
+
+        return $this->ok('Password berhasil diubah.');
     }
 
     public function logout(Request $request): JsonResponse

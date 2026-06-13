@@ -17,8 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role'         => \App\Http\Middleware\EnsureRole::class,
-            'optional.auth'=> \App\Http\Middleware\OptionalAuth::class,
+            'role'            => \App\Http\Middleware\EnsureRole::class,
+            'optional.auth'   => \App\Http\Middleware\OptionalAuth::class,
+            'password.changed'=> \App\Http\Middleware\EnsurePasswordChangedApi::class,
         ]);
         $middleware->api(prepend: [
             \App\Http\Middleware\ForceJsonResponse::class,

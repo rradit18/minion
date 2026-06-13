@@ -21,6 +21,7 @@ class User extends Authenticatable
         'role',
         'is_active',
         'branch_id',
+        'force_password_change',
     ];
 
     protected $hidden = [
@@ -31,9 +32,10 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password'  => 'hashed',
-            'role'      => UserRole::class,
-            'is_active' => 'boolean',
+            'password'              => 'hashed',
+            'role'                  => UserRole::class,
+            'is_active'             => 'boolean',
+            'force_password_change' => 'boolean',
         ];
     }
 

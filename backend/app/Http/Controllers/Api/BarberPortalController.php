@@ -37,7 +37,7 @@ class BarberPortalController extends Controller
             ->orderBy('shift_date')
             ->get()
             ->map(function ($shift) {
-                $bookings = Booking::with(['services:id,name,duration_minutes'])
+                $bookings = Booking::with(['services:id,service_name,duration_minutes'])
                     ->where('barber_id', $shift->barber_id)
                     ->whereDate('scheduled_at', $shift->shift_date)
                     ->whereNotIn('status', ['cancelled', 'expired'])
@@ -56,11 +56,11 @@ class BarberPortalController extends Controller
                     'bookings'    => $bookings->map(fn($b) => [
                         'id'             => $b->id,
                         'booking_number' => $b->booking_number,
-                        'scheduled_at'   => $b->scheduled_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                        'scheduled_at'   => $b->scheduled_at->toIso8601String(),
                         'status'         => $b->status,
                         'customer_name'  => $b->customer_name,
                         'services'       => $b->services->map(fn($s) => [
-                            'name'             => $s->name,
+                            'name'             => $s->service_name,
                             'duration_minutes' => $s->duration_minutes,
                         ]),
                     ]),
@@ -83,7 +83,7 @@ class BarberPortalController extends Controller
 
         $bookings = Booking::with([
             'branch:id,name,slug',
-            'services:id,name,duration_minutes',
+            'services:id,service_name,duration_minutes',
         ])
             ->where('barber_id', $barber->id)
             ->whereDate('scheduled_at', today())
@@ -93,7 +93,7 @@ class BarberPortalController extends Controller
             ->map(fn($b) => [
                 'id'             => $b->id,
                 'booking_number' => $b->booking_number,
-                'scheduled_at'   => $b->scheduled_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'scheduled_at'   => $b->scheduled_at->toIso8601String(),
                 'status'         => $b->status,
                 'type'           => $b->type,
                 'customer_name'  => $b->customer_name,
@@ -147,7 +147,7 @@ class BarberPortalController extends Controller
                 'comment'      => $r->comment,
                 'is_anonymous' => $r->is_anonymous,
                 'author'       => $r->is_anonymous ? 'Anonim' : ($r->booking->customer_name ?? 'Pelanggan'),
-                'created_at'   => $r->created_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'created_at'   => $r->created_at->toIso8601String(),
             ]);
 
         return $this->ok('OK', [

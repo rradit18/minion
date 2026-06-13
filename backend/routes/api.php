@@ -20,8 +20,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/login',    [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/me',      [AuthController::class, 'me']);
+        Route::post('/logout',          [AuthController::class, 'logout']);
+        Route::get('/me',               [AuthController::class, 'me']);
+        Route::post('/change-password', [AuthController::class, 'changePassword']);
     });
 });
 
@@ -63,14 +64,16 @@ Route::middleware('optional.auth')->post('/promos/validate', [PromoController::c
 
 // ─── Kasir endpoints [auth:sanctum + role=cashier] ─────────────────────────
 Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('kasir')->group(function () {
-    Route::patch('/bookings/{id}/confirm', [KasirBookingController::class, 'confirm']);
-    Route::patch('/bookings/{id}/start',   [KasirBookingController::class, 'start']);
+    Route::get('/bookings',                [KasirBookingController::class, 'index']);
+    Route::patch('/bookings/{id}/confirm',   [KasirBookingController::class, 'confirm']);
+    Route::patch('/bookings/{id}/start',     [KasirBookingController::class, 'start']);
+    Route::post('/bookings/{id}/checkout',   [KasirBookingController::class, 'checkout']);
     Route::get('/report',                  [KasirReportController::class, 'daily']);
     Route::get('/report/export',           [KasirReportController::class, 'export']);
 });
 
 // ─── Barber portal [auth:sanctum + role=barber] ────────────────────────────
-Route::middleware(['auth:sanctum', 'role:barber'])->prefix('barber')->group(function () {
+Route::middleware(['auth:sanctum', 'role:barber', 'password.changed'])->prefix('barber')->group(function () {
     Route::get('/schedule',       [BarberPortalController::class, 'schedule']);
     Route::get('/bookings/today', [BarberPortalController::class, 'todayBookings']);
     Route::get('/ratings',        [BarberPortalController::class, 'ratings']);

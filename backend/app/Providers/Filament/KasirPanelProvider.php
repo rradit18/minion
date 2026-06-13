@@ -54,6 +54,7 @@ class KasirPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 \App\Http\Middleware\EnsureRole::class . ':cashier',
+                \App\Http\Middleware\EnsurePasswordChanged::class,
             ]);
     }
 }

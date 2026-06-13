@@ -38,7 +38,7 @@ class AvailabilityService
             ->filter(fn($slot) => $this->isSlotAvailable($slot, $totalDuration, $busyRanges, $barberId))
             ->map(fn($slot) => [
                 'time'     => $slot->format('H:i'),
-                'datetime' => $slot->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'datetime' => $slot->toIso8601String(),
             ])
             ->values()
             ->all();

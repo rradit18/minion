@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\CustomerPunchCardResource\Pages;
 use App\Models\CustomerPunchCard;
 use App\Models\PunchCardHistory;
+use Filament\Actions;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -53,7 +54,7 @@ class CustomerPunchCardResource extends Resource
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\Action::make('manual_adjust')
+                Actions\Action::make('manual_adjust')
                     ->label('Adjust Manual')
                     ->icon('heroicon-o-pencil-square')
                     ->color('warning')

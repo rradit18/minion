@@ -5,6 +5,10 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\FeedbackResource\Pages;
 use App\Models\Branch;
 use App\Models\Feedback;
+use Filament\Actions;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -22,7 +26,34 @@ class FeedbackResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->schema([]);
+        return $schema->schema([
+            Placeholder::make('branch_name')
+                ->label('Cabang')
+                ->content(fn($record) => $record?->branch?->name ?? '-'),
+            TextInput::make('customer_name')
+                ->label('Nama Pelanggan')
+                ->placeholder('Anonim')
+                ->disabled(),
+            TextInput::make('customer_phone')
+                ->label('No. Telepon')
+                ->placeholder('-')
+                ->disabled(),
+            Placeholder::make('stars')
+                ->label('Rating')
+                ->content(fn($record) => $record
+                    ? str_repeat('★', $record->stars) . str_repeat('☆', 5 - $record->stars)
+                    : '-'),
+            Placeholder::make('category')
+                ->label('Kategori')
+                ->content(fn($record) => $record ? ucfirst($record->category->value) : '-'),
+            Textarea::make('message')
+                ->label('Pesan')
+                ->disabled()
+                ->rows(4),
+            Placeholder::make('created_at')
+                ->label('Dikirim pada')
+                ->content(fn($record) => $record?->created_at?->translatedFormat('d M Y H:i')),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -71,7 +102,7 @@ class FeedbackResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_read')->label('Status Baca'),
             ])
             ->actions([
-                Tables\Actions\Action::make('toggle_read')
+                Actions\Action::make('toggle_read')
                     ->label(fn($record) => $record->is_read ? 'Tandai Belum Dibaca' : 'Tandai Dibaca')
                     ->icon(fn($record) => $record->is_read ? 'heroicon-o-envelope' : 'heroicon-o-envelope-open')
                     ->action(function ($record): void {
@@ -81,11 +112,11 @@ class FeedbackResource extends Resource
                             ->success()
                             ->send();
                     }),
-                Tables\Actions\ViewAction::make(),
+                Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('mark_read')
+                Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('mark_read')
                         ->label('Tandai Sudah Dibaca')
                         ->icon('heroicon-o-envelope-open')
                         ->action(fn($records) => $records->each->update(['is_read' => true]))

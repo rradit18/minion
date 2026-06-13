@@ -16,6 +16,8 @@ class KasirReportController extends Controller
 
     public function daily(Request $request): JsonResponse
     {
+        $request->validate(['date' => ['nullable', 'date_format:Y-m-d']]);
+
         $kasir    = $request->user();
         $date     = $request->query('date', today()->toDateString());
         $branchId = $kasir->branch_id;
@@ -37,6 +39,7 @@ class KasirReportController extends Controller
                     'revenue' => (float) $group->sum('total'),
                 ]),
             'receipts' => $receipts->map(fn($r) => [
+                'id'             => $r->id,
                 'receipt_number' => $r->receipt_number,
                 'booking_number' => $r->booking?->booking_number,
                 'barber'         => $r->booking?->barber?->name,
@@ -46,7 +49,7 @@ class KasirReportController extends Controller
                 'total'          => (float) $r->total,
                 'payment_method' => $r->payment_method->value,
                 'kasir'          => $r->kasir?->name,
-                'created_at'     => $r->created_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'created_at'     => $r->created_at->toIso8601String(),
             ]),
         ];
 
@@ -55,6 +58,8 @@ class KasirReportController extends Controller
 
     public function export(Request $request): Response
     {
+        $request->validate(['date' => ['nullable', 'date_format:Y-m-d']]);
+
         $kasir    = $request->user();
         $date     = $request->query('date', today()->toDateString());
         $branchId = $kasir->branch_id;
@@ -80,7 +85,7 @@ class KasirReportController extends Controller
                 (float) $r->total,
                 $r->payment_method->value,
                 $r->kasir?->name ?? '-',
-                $r->created_at->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+                $r->created_at->format('Y-m-d H:i:s'),
             ]) . "\r\n";
         }
 

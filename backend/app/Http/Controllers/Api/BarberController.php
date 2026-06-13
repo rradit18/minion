@@ -90,7 +90,7 @@ class BarberController extends Controller
                 'stars'      => $r->stars,
                 'comment'    => $r->comment,
                 'reviewer'   => $r->is_anonymous ? 'Anonim' : ($r->customer?->name ?? 'Pelanggan'),
-                'created_at' => $r->created_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'created_at' => $r->created_at->toIso8601String(),
             ]),
         ]);
     }

@@ -65,7 +65,7 @@ class CustomerController extends Controller
             'message' => 'Booking berhasil dibuat.',
             'data'    => [
                 'booking_number' => $booking->booking_number,
-                'scheduled_at'   => $booking->scheduled_at->setTimezone('Asia/Jakarta')->toIso8601String(),
+                'scheduled_at'   => $booking->scheduled_at->toIso8601String(),
                 'barber'         => ['name' => $booking->barber->name, 'slug' => $booking->barber->slug],
                 'branch'         => ['name' => $booking->branch->name, 'slug' => $booking->branch->slug],
                 'services'       => $booking->services->map(fn($s) => [
@@ -236,8 +236,8 @@ class CustomerController extends Controller
             'punch_count'          => $card?->punch_count ?? 0,
             'lifetime_punch_count' => $card?->lifetime_punch_count ?? 0,
             'next_reward_at'       => 10,
-            'last_punched_at'      => $card?->last_punched_at?->setTimezone('Asia/Jakarta')->toIso8601String(),
-            'last_rewarded_at'     => $card?->last_rewarded_at?->setTimezone('Asia/Jakarta')->toIso8601String(),
+            'last_punched_at'      => $card?->last_punched_at?->toIso8601String(),
+            'last_rewarded_at'     => $card?->last_rewarded_at?->toIso8601String(),
         ]);
     }
 
