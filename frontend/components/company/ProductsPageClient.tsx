@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface Product {
   id: number;
@@ -32,24 +32,34 @@ const products: Product[] = [
     color: "cream",
     featured: true,
   },
-  { id: 1, name: "Products", category: "Clay & Pomade", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "cream" },
-  { id: 2, name: "Products", category: "Skincare", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "purple" },
-  { id: 3, name: "Products", category: "Skincare", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "pink" },
-  { id: 4, name: "Products", category: "Tools & Accessories", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "cream" },
-  { id: 5, name: "Products", category: "Fragrance", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "purple" },
-  { id: 6, name: "Products", category: "Vitamins", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "pink" },
-  { id: 7, name: "Products", category: "Clay & Pomade", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "cream" },
-  { id: 8, name: "Products", category: "Grooming Kits", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "purple" },
-  { id: 9, name: "Products", category: "Skincare", price: 99000, desc: "Perfectly balanced serum for beard growth and rich color, finished with tobacco leaf and more.", color: "pink" },
+  { id: 1, name: "Products", category: "Clay & Pomade", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "cream" },
+  { id: 2, name: "Products", category: "Skincare", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "purple" },
+  { id: 3, name: "Products", category: "Skincare", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "pink" },
+  { id: 4, name: "Products", category: "Tools & Accessories", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "cream" },
+  { id: 5, name: "Products", category: "Fragrance", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "purple" },
+  { id: 6, name: "Products", category: "Vitamins", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "pink" },
+  { id: 7, name: "Products", category: "Clay & Pomade", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "cream" },
+  { id: 8, name: "Products", category: "Grooming Kits", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "purple" },
+  { id: 9, name: "Products", category: "Skincare", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "pink" },
 ];
 
 const formatRupiah = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(num);
 
 const cardBg: Record<Product["color"], string> = {
   purple: "bg-[#D8D4F0]",
-  pink: "bg-[#F5C6C6]",
-  cream: "bg-[#EDE8D8]",
+  pink:   "bg-[#F5C6C6]",
+  cream:  "bg-[#EDE8D8]",
+};
+
+const sparkleColor: Record<Product["color"], string> = {
+  purple: "text-[#7B5EA7]",
+  pink:   "text-[#C0392B]",
+  cream:  "text-[#7B5EA7]",
 };
 
 function Sparkle({ className }: { className?: string }) {
@@ -63,7 +73,7 @@ function Sparkle({ className }: { className?: string }) {
 function WaButton({ className = "" }: { className?: string }) {
   return (
     <a
-      href="https://wa.me/62800000000"
+      href="https://wa.me/6281260403854"
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors ${className}`}
@@ -79,12 +89,12 @@ function WaButton({ className = "" }: { className?: string }) {
 function ProductCard({ product }: { product: Product }) {
   return (
     <div className={`${cardBg[product.color]} rounded-2xl p-4 flex flex-col`}>
-      <div className="relative w-full aspect-square bg-white/50 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
-        <Sparkle className="absolute top-2 right-2 w-5 h-5 text-indigo-500" />
-        <span className="text-5xl select-none">🧴</span>
+      <div className="relative w-full aspect-square bg-white/60 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
+        <Sparkle className={`absolute top-2 right-2 w-6 h-6 ${sparkleColor[product.color]}`} />
+        <span className="text-gray-400 text-xs font-medium">Pict</span>
       </div>
-      <p className="text-[11px] text-gray-500 mb-0.5">Products</p>
-      <p className="text-yellow-700 font-bold text-sm mb-1">{formatRupiah(product.price)}</p>
+      <p className="text-[11px] text-gray-500 mb-0.5 font-medium">{product.name}</p>
+      <p className="text-[#C0392B] font-bold text-sm mb-1">Rp. XXXXX</p>
       <p className="text-gray-600 text-[11px] leading-relaxed mb-3 flex-1">{product.desc}</p>
       <WaButton className="w-full" />
     </div>
@@ -95,7 +105,9 @@ export default function ProductsPageClient() {
   const [activeCategory, setActiveCategory] = useState("Semua");
 
   const featured = products.find((p) => p.featured);
-  const showFeatured = activeCategory === "Semua" || activeCategory === featured?.category;
+  const showFeatured =
+    activeCategory === "Semua" || activeCategory === featured?.category;
+
   const gridProducts = products.filter((p) => {
     if (p.featured) return false;
     if (activeCategory === "Semua") return true;
@@ -103,36 +115,67 @@ export default function ProductsPageClient() {
   });
 
   return (
-    <div className="bg-[#F5F2EC] min-h-screen">
-      {/* Hero */}
-      <section className="bg-[#2B3A2D] px-6 py-14 md:py-20">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
-          <div className="flex-1">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
-              Crafted For The{" "}
-              <span className="text-yellow-400">Rebellious</span>
-            </h1>
-            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
-              Pioneered in small batches, our grooming tools bridge the gap between
-              street‑style edge and high‑ritual luxury. No fillers, no excuses.
-            </p>
+    <div className="bg-[#FAF7EF] min-h-screen">
+
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden" style={{ backgroundColor: '#2B3320' }}>
+        {/* Background pattern */}
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: "url('/pattern.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-6 py-14 md:py-20">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+
+            {/* Left: Text */}
+            <div className="flex-1">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5">
+                Gassskeun<br />
+                <span className="text-[#F9C74F]">tampil<br />lebih fresh</span>
+              </h1>
+              <p className="text-gray-300 text-sm leading-relaxed max-w-[280px]">
+                Engineered in small batches, our grooming essentials bridge the gap between street-style
+                edge and high-status luxury. No fillers, no excuses.
+              </p>
+            </div>
+
+            {/* Right: Product image */}
+            <div className="flex-shrink-0 w-[260px] md:w-[320px] lg:w-[380px]">
+              <div className="rounded-[24px] overflow-hidden shadow-2xl aspect-[4/3] bg-[#3B4A2D]">
+                <img
+                  src="/products-hero.png"
+                  alt="Grooming Products"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           </div>
-          <div className="w-52 h-40 bg-[#3B4A3D] rounded-2xl flex-shrink-0 flex items-center justify-center">
-            <span className="text-6xl select-none">🧴</span>
-          </div>
+        </div>
+
+        {/* Scissors doodle */}
+        <div className="absolute bottom-4 right-16 w-8 h-9 opacity-30 hidden md:block -rotate-[20deg]">
+          <svg viewBox="0 0 40 44" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+            <circle cx="10" cy="34" r="6"/><circle cx="30" cy="34" r="6"/>
+            <line x1="14" y1="30" x2="20" y2="10"/><line x1="26" y1="30" x2="20" y2="10"/>
+          </svg>
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 mb-10">
+      {/* ── CATEGORY FILTER ── */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-colors cursor-pointer ${
+              className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors cursor-pointer ${
                 activeCategory === cat
-                  ? "bg-[#2B3A2D] text-white border-[#2B3A2D]"
+                  ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
                   : "bg-white text-gray-700 border-gray-300 hover:border-gray-500"
               }`}
             >
@@ -140,41 +183,56 @@ export default function ProductsPageClient() {
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Produk Unggulan */}
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+
+        {/* ── PRODUK UNGGULAN ── */}
         {featured && showFeatured && (
           <div className="mb-12">
             <h2 className="text-base font-bold text-gray-800 mb-4">Produk Unggulan</h2>
-            <div className="bg-[#2B3A2D] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
-              <div className="flex-shrink-0 flex flex-col items-center gap-4">
-                <span className="bg-yellow-400 text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+            <div
+              className="rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8"
+              style={{ backgroundColor: '#2B3320' }}
+            >
+              {/* Left: badge + image */}
+              <div className="flex-shrink-0 flex flex-col items-start gap-3">
+                <span className="bg-[#F9C74F] text-black text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
                   Best Seller
                 </span>
-                <div className="w-36 h-32 bg-[#3B4A3D] rounded-xl flex items-center justify-center">
-                  <span className="text-5xl select-none">🧴</span>
+                <div className="w-44 h-36 bg-[#3B4A2D] rounded-xl overflow-hidden flex items-center justify-center">
+                  <img
+                    src="/obsidian-clay.png"
+                    alt={featured.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
+
+              {/* Right: info */}
               <div className="flex-1">
                 <h3 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-2">
                   {featured.name}
                 </h3>
-                <p className="text-yellow-400 text-3xl font-extrabold mb-4">
+                <p className="text-[#F9C74F] text-3xl font-extrabold mb-4">
                   {formatRupiah(featured.price)}
                 </p>
                 <p className="text-gray-300 text-sm leading-relaxed mb-6 max-w-sm">
                   {featured.desc}
                 </p>
-                <WaButton className="bg-white text-gray-900 border-0 px-6 py-2.5" />
+                <WaButton className="border-0 px-6 py-2.5 text-sm" />
               </div>
             </div>
           </div>
         )}
 
-        {/* Semua Produk */}
+        {/* ── SEMUA PRODUK ── */}
         <div>
           <h2 className="text-base font-bold text-gray-800 mb-6">Semua Produk</h2>
           {gridProducts.length === 0 ? (
-            <p className="text-gray-400 text-sm py-12 text-center">Tidak ada produk di kategori ini.</p>
+            <p className="text-gray-400 text-sm py-12 text-center">
+              Tidak ada produk di kategori ini.
+            </p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {gridProducts.map((product) => (

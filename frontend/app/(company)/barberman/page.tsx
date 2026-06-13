@@ -10,7 +10,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-teal-500",
-    imageUrl: "/barber.png",
+    imageUrl: "/hendra.png",
   },
   {
     slug: "juan",
@@ -20,7 +20,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-purple-500",
-    imageUrl: "/barber.png",
+    imageUrl: "/juan.png",
   },
   {
     slug: "yoga",
@@ -30,7 +30,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-orange-400",
-    imageUrl: "/barber.png",
+    imageUrl: "/yoga.png",
   },
   {
     slug: "bastian",
@@ -40,7 +40,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-orange-400",
-    imageUrl: "/barber.png",
+    imageUrl: "/bastian.png",
   },
 ];
 
@@ -53,11 +53,11 @@ export default function BarbersListPage() {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-16">
           <div>
             <p className="text-[#1a1a1a] text-lg font-semibold mb-1">
-              dibalik rambut kece, ada
+              KENALAN SAMA <span className="line-through decoration-1 italic">KANG CUKUR</span>
             </p>
-            <h1 className="text-5xl font-black leading-none">
-              <span className="text-[#7B5EA7]">BARBERMAN</span>
-              <span className="text-[#1a1a1a]"> Profesional!</span>
+            <h1 className="text-5xl font-black leading-none flex items-baseline gap-3 whitespace-nowrap">
+              <span className="text-[#7B5EA7]">MAESTRO</span>
+              <span className="text-[#1a1a1a] text-lg md:text2xl font-bold italic"> KAMI DULU GASIH??!!!</span>
             </h1>
           </div>
           <div className="md:max-w-sm lg:max-w-md">

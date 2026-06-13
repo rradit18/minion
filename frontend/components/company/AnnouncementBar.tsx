@@ -11,7 +11,7 @@ export default function AnnouncementBar() {
       className="bg-[#178E81] text-white flex items-center justify-center relative"
       style={{ height: "40px" }}
     >
-      <span className="text-[13px] font-semibold">Promo Hari Ini! Diskon 20% untuk pelanggan baru! </span>
+      <span className="text-[13px] font-semibold">Promo Hari Ini! </span>
       <button
         onClick={() => setShow(false)}
         className="absolute right-4 text-white/80 hover:text-white transition text-lg leading-none"

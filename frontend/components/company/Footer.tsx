@@ -9,18 +9,44 @@ const Footer = () => {
 
         {/* Kolom 1: Logo */}
         <div className="md:col-span-1">
-          <img src="/minion.png" 
-          alt="Minion Barbershop" 
-          className="h-20 w-auto mb-4 object-contain" />
+          <img 
+            src="/minion.png" 
+            alt="Minion Barbershop" 
+            className="h-20 w-auto mb-4 object-contain" 
+          />
         </div>
 
         {/* Kolom 2: Connect */}
         <div>
           <h3 className="text-black font-bold mb-4">CONNECT</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li><a href="#">Instagram</a></li>
-            <li><a href="#">TikTok</a></li>
-            <li><a href="#">WhatsApp Business</a></li>
+          <ul className="space-y-3 text-sm text-gray-600">
+            <li>
+              <a 
+                href="https://instagram.com/barbershopminion" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-[#D4AF37] transition">
+                Instagram: @barbershopminion
+              </a>
+            </li>
+            <li>
+              <a 
+                href="https://tiktok.com/@minionbarbershop"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#D4AF37] transition">
+                TikTok: @minionbarbershop
+              </a>
+            </li>
+            <li>
+              <a 
+                href="https://wa.me/6281260403854"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#D4AF37] transition">
+                WhatsApp: 0812 - 6040 - 3854
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -28,8 +54,8 @@ const Footer = () => {
         <div>
           <h3 className="text-black font-bold mb-4">LEGAL</h3>
           <ul className="space-y-2 text-sm text-gray-600">
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#" className="hover:text-[#D4AF37] transition">Privacy Policy</a></li>
+            <li><a href="#" className="hover:text-[#D4AF37] transition">Terms & Conditions</a></li>
           </ul>
         </div>
 
@@ -37,9 +63,9 @@ const Footer = () => {
         <div>
           <h3 className="text-black font-bold mb-4">KANTOR UTAMA</h3>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Available at Jl. Mangga, <br />
+            Jl. Mangga, <br />
             Tanjungpinang, Kepulauan Riau <br />
-            Open Daily 09 AM - 23 PM
+            Open Daily 09:00 - 23:00
           </p>
         </div>
 
@@ -51,10 +77,10 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Email"
-              className="w-full bg-transparent px-4 py-2 text-sm outline-none text-[#1a1a1a] placeholder-gray-400"
+              className="w-full bg-transparent px-4 py-2 text-sm outline-none text-black"
             />
-            <button className="bg-amber-400 p-2 rounded-full">
-              <span className="text-white">→</span>
+            <button className="bg-amber-400 p-2 rounded-full px-4">
+              <span className="text-white font-bold">→</span>
             </button>
           </div>
         </div>
