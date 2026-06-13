@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { formatRupiah } from "@/utils/formatRupiah";
 
-interface Product { id: number; name: string; category: string; price: number; stock: number; emoji: string; }
+interface Product { id: number; name: string; category: string; price: number; stock: number; }
 
 const initialProducts: Product[] = [
-  { id: 1, name: "Classic Cut",      category: "Layanan",   price: 35000,  stock: 999, emoji: "✂️" },
-  { id: 2, name: "Fade & Taper",     category: "Layanan",   price: 50000,  stock: 999, emoji: "💈" },
-  { id: 3, name: "Beard Trim",       category: "Layanan",   price: 30000,  stock: 999, emoji: "🪒" },
-  { id: 4, name: "Color Treatment",  category: "Perawatan", price: 120000, stock: 40,  emoji: "🎨" },
-  { id: 5, name: "Scalp Treatment",  category: "Perawatan", price: 85000,  stock: 30,  emoji: "💆" },
-  { id: 6, name: "Obsidian Clay",    category: "Produk",    price: 42000,  stock: 85,  emoji: "🧴" },
-  { id: 7, name: "Pomade Light",     category: "Produk",    price: 38000,  stock: 60,  emoji: "🧴" },
-  { id: 8, name: "Beard Oil",        category: "Produk",    price: 55000,  stock: 12,  emoji: "🫙" },
+  { id: 1, name: "Classic Cut",      category: "Layanan",   price: 35000,  stock: 999 },
+  { id: 2, name: "Fade & Taper",     category: "Layanan",   price: 50000,  stock: 999 },
+  { id: 3, name: "Beard Trim",       category: "Layanan",   price: 30000,  stock: 999 },
+  { id: 4, name: "Color Treatment",  category: "Perawatan", price: 120000, stock: 40  },
+  { id: 5, name: "Scalp Treatment",  category: "Perawatan", price: 85000,  stock: 30  },
+  { id: 6, name: "Obsidian Clay",    category: "Produk",    price: 42000,  stock: 85  },
+  { id: 7, name: "Pomade Light",     category: "Produk",    price: 38000,  stock: 60  },
+  { id: 8, name: "Beard Oil",        category: "Produk",    price: 55000,  stock: 12  },
 ];
 
 const catBadge: Record<string, string> = {
@@ -82,7 +82,11 @@ export default function ProductsClient() {
                 <tr key={p.id} className="hover:bg-yellow-50/30 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center text-lg">{p.emoji}</div>
+                      <div className="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center text-gray-600">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
                       <span className="font-semibold text-gray-800">{p.name}</span>
                     </div>
                   </td>

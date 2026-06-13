@@ -31,7 +31,12 @@ export default function BookingSuksesPage() {
           </svg>
         </div>
 
-        <h1 className="text-3xl font-black text-[#1a1a1a] mb-2">Booking Berhasil! 🎉</h1>
+        <h1 className="text-3xl font-black text-[#1a1a1a] mb-2 flex items-center justify-center gap-2">
+          Booking Berhasil!
+          <svg className="w-8 h-8 text-[#178E81]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </h1>
         <p className="text-gray-500 text-sm mb-8">Booking kamu sudah dikonfirmasi. Sampai jumpa di Minion Barbershop!</p>
 
         {booking && (
@@ -61,7 +66,10 @@ export default function BookingSuksesPage() {
         <div className="space-y-3">
           <button onClick={addToCalendar}
             className="w-full bg-[#178E81] text-white font-bold py-3 rounded-xl hover:bg-teal-700 transition-colors text-sm flex items-center justify-center gap-2">
-            📅 Tambah ke Google Calendar
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Tambah ke Google Calendar
           </button>
           <Link href="/akun/riwayat"
             className="block w-full bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors text-sm">

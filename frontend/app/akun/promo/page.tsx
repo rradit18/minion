@@ -24,7 +24,10 @@ export default function PromoPage() {
       {/* Loyalty reward */}
       {loyaltyCode && (
         <div className="bg-[#F9C74F] rounded-2xl p-5">
-          <p className="text-xs font-bold uppercase tracking-widest text-black/60 mb-1">🏆 Reward Loyalty</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-black/60 mb-1 flex items-center gap-1.5">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Reward Loyalty
+          </p>
           <p className="text-xl font-black text-[#1a1a1a]">1x Classic Cut Gratis!</p>
           <p className="text-sm text-black/60 mt-1 mb-4">Tukarkan 10 punch loyalty kamu</p>
           <button onClick={() => handleUse(loyaltyCode)}
@@ -61,7 +64,8 @@ export default function PromoPage() {
               <ul className="space-y-1 mb-4">
                 {promo.terms.map((t) => (
                   <li key={t} className="text-xs text-gray-400 flex items-start gap-1.5">
-                    <span className="text-[#178E81] mt-0.5">✓</span>{t}
+                    <svg className="w-3 h-3 text-[#178E81] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                    {t}
                   </li>
                 ))}
               </ul>

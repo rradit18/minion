@@ -117,7 +117,11 @@ export default function HairAnalysisClient() {
         {/* Stage: IDLE */}
         {stage === "idle" && (
           <div className="text-center space-y-6">
-            <div className="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mx-auto text-6xl">💇</div>
+            <div className="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-16 h-16 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
             <p className="text-gray-400 text-sm max-w-xs mx-auto">Aktifkan kamera, ambil foto, dan biarkan AI merekomendasikan 6 gaya terbaik untukmu</p>
             {camError && <p className="text-red-400 text-sm bg-red-900/30 rounded-xl px-4 py-3">{camError}</p>}
             <button onClick={startCamera}
@@ -153,8 +157,9 @@ export default function HairAnalysisClient() {
             </div>
             <div className="flex gap-3">
               <button onClick={() => { reset(); setTimeout(startCamera, 100); }}
-                className="flex-1 border-2 border-gray-600 text-gray-300 font-bold py-3 rounded-xl text-sm hover:bg-white/5 transition-colors">
-                🔄 Ulangi
+                className="flex-1 border-2 border-gray-600 text-gray-300 font-bold py-3 rounded-xl text-sm hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Ulangi
               </button>
               <button onClick={startScan}
                 className="flex-1 bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors">
@@ -194,7 +199,11 @@ export default function HairAnalysisClient() {
               {results.slice(0, visibleCount).map((style) => (
                 <button key={style.id} onClick={() => setSelected(style)}
                   className={`bg-white/5 border-2 rounded-2xl p-4 text-left transition-all hover:border-[#F9C74F] ${selected?.id === style.id ? "border-[#F9C74F] bg-[#F9C74F]/10" : "border-white/10"}`}>
-                  <div className="w-full aspect-square bg-white/10 rounded-xl mb-3 flex items-center justify-center text-4xl">💇</div>
+                  <div className="w-full aspect-square bg-white/10 rounded-xl mb-3 flex items-center justify-center">
+                    <svg className="w-10 h-10 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
                   <p className="font-bold text-sm">{style.name}</p>
                   <p className="text-gray-400 text-[10px] mt-1 line-clamp-2">{style.description}</p>
                   <span className={`inline-block mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${diffColor[style.difficulty]}`}>{style.difficulty}</span>

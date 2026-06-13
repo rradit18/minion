@@ -54,7 +54,11 @@ export default function RiwayatPage() {
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-2xl p-12 text-center border border-gray-100">
-          <p className="text-4xl mb-3">📋</p>
+          <div className="flex justify-center mb-3">
+            <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
           <p className="text-gray-400 font-medium">Belum ada booking {tab !== "Semua" ? tab.toLowerCase() : ""}</p>
           <Link href="/booking" className="inline-block mt-4 bg-[#F9C74F] text-black font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-yellow-400 transition-colors">Book Sekarang</Link>
         </div>
@@ -89,13 +93,15 @@ export default function RiwayatPage() {
                 )}
                 {b.status === "Selesai" && !b.rating && (
                   <button onClick={() => setRatingModal({ id: b.id, open: true })}
-                    className="px-3 py-1.5 text-xs font-bold bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors">
-                    ⭐ Beri Rating
+                    className="px-3 py-1.5 text-xs font-bold bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    Beri Rating
                   </button>
                 )}
                 {b.status === "Selesai" && b.rating && (
-                  <span className="px-3 py-1.5 text-xs font-bold bg-green-50 text-green-600 rounded-lg">
-                    {"⭐".repeat(b.rating)} Sudah dirating
+                  <span className="px-3 py-1.5 text-xs font-bold bg-green-50 text-green-600 rounded-lg flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    Sudah dirating ({b.rating}/5)
                   </span>
                 )}
                 <Link href="/booking"
@@ -116,7 +122,11 @@ export default function RiwayatPage() {
             <div className="flex gap-2 justify-center mb-4">
               {[1,2,3,4,5].map((n) => (
                 <button key={n} onClick={() => setRatingVal(n)}
-                  className={`text-3xl transition-transform ${n <= ratingVal ? "scale-110" : "opacity-30"}`}>⭐</button>
+                  className={`transition-transform hover:scale-110 ${n <= ratingVal ? "text-yellow-400" : "text-gray-200"}`}>
+                  <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </button>
               ))}
             </div>
             <textarea rows={3} placeholder="Ceritakan pengalamanmu (opsional)..." value={ratingText}
