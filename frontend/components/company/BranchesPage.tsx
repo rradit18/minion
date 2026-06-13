@@ -103,7 +103,7 @@ export default function BranchesPage() {
                 <img
                   src={branch.image}
                   alt={branch.name}
-                  className="w-full h-fukk object-cover"/>
+                  className="w-full h-full object-cover"/>
                 <span className="text-white/30 text-sm font-bold">Pict</span>
                 {branch.tag && (
                   <span className={`absolute top-4 right-4 text-[10px] px-3 py-1 rounded-full font-bold ${branch.tagColor}`}>
