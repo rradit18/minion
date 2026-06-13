@@ -1,9 +1,9 @@
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+<div class="bg-white dark:bg-gray-900/70 ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl shadow-sm">
     <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
         <h2 class="text-base font-semibold text-gray-900 dark:text-white">Walk-In Booking</h2>
         <div class="flex gap-1">
             @foreach ([1,2,3,4] as $s)
-                <span class="w-2 h-2 rounded-full {{ $step >= $s ? 'bg-yellow-500' : 'bg-gray-300 dark:bg-gray-600' }}"></span>
+                <span class="w-2 h-2 rounded-full {{ $step >= $s ? 'bg-[#C9A544]' : 'bg-gray-300 dark:bg-gray-600' }}"></span>
             @endforeach
         </div>
     </div>
@@ -25,8 +25,8 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor HP</label>
                     <div class="flex gap-2">
                         <input wire:model="phone" type="tel" placeholder="08xxxxxxxxx"
-                            class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-yellow-500 focus:border-yellow-500">
-                        <button wire:click="searchUser" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition">
+                            class="flex-1 rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-[#C9A544] focus:border-[#C9A544]">
+                        <button wire:click="searchUser" class="px-4 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-semibold rounded-lg shadow-sm transition active:scale-95">
                             Cari
                         </button>
                     </div>
@@ -47,7 +47,7 @@
                         <div class="mt-3">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Tamu</label>
                             <input wire:model="guestName" type="text" placeholder="Nama pelanggan"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-white text-sm">
+                                class="w-full rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-white text-sm">
                         </div>
                         <button wire:click="useGuest" class="mt-3 px-4 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition">
                             Lanjut Sebagai Tamu
@@ -65,7 +65,7 @@
                     @foreach ($services as $service)
                         <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                             <input type="checkbox" wire:model="selectedServices" value="{{ $service['id'] }}"
-                                class="rounded border-gray-300 text-yellow-500 focus:ring-yellow-500">
+                                class="rounded border-gray-300 text-[#C9A544] focus:ring-[#C9A544]">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $service['name'] }}</p>
                                 <p class="text-xs text-gray-500">{{ $service['duration_minutes'] }} menit</p>
@@ -80,7 +80,7 @@
                     <button wire:click="prevStep" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition">
                         ← Kembali
                     </button>
-                    <button wire:click="nextStep" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition">
+                    <button wire:click="nextStep" class="px-4 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-semibold rounded-lg shadow-sm transition active:scale-95">
                         Lanjut →
                     </button>
                 </div>
@@ -100,7 +100,7 @@
                         <div class="grid grid-cols-2 gap-2">
                             @foreach ($availableBarbers as $barber)
                                 <button wire:click="$set('selectedBarberId', '{{ $barber['id'] }}')"
-                                    class="p-3 rounded-lg border-2 text-sm font-medium transition {{ $selectedBarberId === $barber['id'] ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300' : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400' }}">
+                                    class="p-3 rounded-lg border-2 text-sm font-medium transition {{ $selectedBarberId === $barber['id'] ? 'border-[#C9A544] bg-amber-50 dark:bg-[#C9A544]/10 text-[#C9A544] dark:text-[#d8b85e]' : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400' }}">
                                     {{ $barber['name'] }}
                                 </button>
                             @endforeach
@@ -113,7 +113,7 @@
                             <div class="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
                                 @foreach ($availableSlots as $slot)
                                     <button wire:click="$set('selectedSlot', '{{ $slot['datetime'] }}')"
-                                        class="p-2 rounded-lg border text-xs font-medium transition {{ $selectedSlot === $slot['datetime'] ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400' }}">
+                                        class="p-2 rounded-lg border text-xs font-medium transition {{ $selectedSlot === $slot['datetime'] ? 'border-[#C9A544] bg-amber-50 dark:bg-[#C9A544]/10 text-[#C9A544] dark:text-[#d8b85e]' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400' }}">
                                         {{ $slot['time'] }}
                                     </button>
                                 @endforeach
@@ -128,7 +128,7 @@
                     <button wire:click="prevStep" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition">
                         ← Kembali
                     </button>
-                    <button wire:click="nextStep" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition">
+                    <button wire:click="nextStep" class="px-4 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-semibold rounded-lg shadow-sm transition active:scale-95">
                         Lanjut →
                     </button>
                 </div>
@@ -167,7 +167,7 @@
                     </div>
                     <div class="flex justify-between border-t border-gray-200 dark:border-gray-600 pt-2">
                         <span class="font-semibold text-gray-900 dark:text-white">Total</span>
-                        <span class="font-bold text-yellow-600 dark:text-yellow-400">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                        <span class="font-bold text-[#C9A544] dark:text-[#d8b85e]">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                     </div>
                 </div>
                 <div class="flex justify-between pt-2">

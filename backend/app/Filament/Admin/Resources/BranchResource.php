@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\BranchResource\Pages;
 use App\Filament\Admin\Resources\BranchResource\RelationManagers;
 use App\Models\Branch;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
@@ -71,6 +72,13 @@ class BranchResource extends Resource
                         TextInput::make('google_maps_url')
                             ->label('Google Maps URL')
                             ->url()
+                            ->columnSpanFull(),
+                        FileUpload::make('qris_image_path')
+                            ->label('Barcode QRIS')
+                            ->image()
+                            ->disk('public')
+                            ->directory('qris')
+                            ->helperText('Barcode QRIS statis cabang untuk pembayaran booking online.')
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('Aktif')

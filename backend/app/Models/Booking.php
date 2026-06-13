@@ -24,6 +24,10 @@ class Booking extends Model
         'total_duration_minutes',
         'total_price',
         'status',
+        'payment_deadline_at',
+        'payment_method',
+        'payment_proof_path',
+        'proof_uploaded_at',
         'type',
         'reschedule_count',
         'original_scheduled_at',
@@ -39,6 +43,8 @@ class Booking extends Model
     {
         return [
             'scheduled_at'          => 'datetime',
+            'payment_deadline_at'   => 'datetime',
+            'proof_uploaded_at'     => 'datetime',
             'original_scheduled_at' => 'datetime',
             'confirmed_at'          => 'datetime',
             'started_at'            => 'datetime',

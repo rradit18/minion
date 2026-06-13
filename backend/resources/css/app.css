@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Buat varian `dark:` mengikuti class `.dark` milik Filament (bukan preferensi OS).
+   Tanpa ini, utilitas dark: tidak aktif saat panel dalam mode gelap. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';

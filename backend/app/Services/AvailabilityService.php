@@ -91,7 +91,15 @@ class AvailabilityService
     {
         return Booking::where('barber_id', $barberId)
             ->whereDate('scheduled_at', $date)
-            ->whereIn('status', ['pending_confirmation', 'confirmed', 'in_progress'])
+            ->where(function ($q) {
+                // Booking yang sudah pasti menahan slot.
+                $q->whereIn('status', ['pending_confirmation', 'confirmed', 'in_progress'])
+                    // Slot yang masih dalam masa pembayaran (deadline belum lewat).
+                    // Setelah deadline lewat, slot otomatis dianggap bebas (lazy release).
+                    ->orWhere(fn ($q2) => $q2
+                        ->where('status', 'pending_payment')
+                        ->where('payment_deadline_at', '>', now()));
+            })
             ->get(['scheduled_at', 'total_duration_minutes'])
             ->map(fn($b) => [
                 'start' => $b->scheduled_at,

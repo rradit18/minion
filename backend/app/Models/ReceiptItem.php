@@ -13,6 +13,7 @@ class ReceiptItem extends Model
     protected $fillable = [
         'receipt_id',
         'service_id',
+        'product_id',
         'item_name',
         'price',
         'quantity',
@@ -35,5 +36,10 @@ class ReceiptItem extends Model
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

@@ -77,6 +77,13 @@ class BookingController extends Controller
                 ]),
                 'total_price' => (float) $booking->total_price,
                 'status'      => $booking->status->value,
+                'payment'     => [
+                    'deadline_at'       => $booking->payment_deadline_at?->toIso8601String(),
+                    'remaining_seconds' => $booking->payment_deadline_at
+                        ? max(0, now()->diffInSeconds($booking->payment_deadline_at, false))
+                        : null,
+                    'info_url' => url("/api/bookings/{$booking->booking_number}/payment"),
+                ],
             ],
         ], 201);
     }

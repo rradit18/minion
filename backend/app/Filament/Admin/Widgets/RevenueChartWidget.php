@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\DB;
 
 class RevenueChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Revenue Harian';
+    protected ?string $heading = 'Revenue Harian per Cabang';
     protected static ?int $sort = 2;
+
+    protected int|string|array $columnSpan = 'full';
+
+    protected ?string $maxHeight = '280px';
 
     public ?string $filter = '30d';
 
@@ -47,17 +51,22 @@ class RevenueChartWidget extends ChartWidget
         $dates = collect(range(0, $days - 1))
             ->map(fn($i) => now()->subDays($days - 1 - $i)->toDateString());
 
-        $colors = ['#C9A544', '#60A5FA', '#34D399', '#F87171'];
+        $colors = ['#C9A544', '#60A5FA', '#34D399', '#F472B6', '#A78BFA', '#FBBF24'];
 
-        $datasets = $branches->map(function ($branch, $index) use ($receipts, $dates) {
+        $datasets = $branches->map(function ($branch, $index) use ($receipts, $dates, $colors) {
             $branchRevenue = $receipts->where('branch_id', $branch->id);
+            $color = $colors[$index % count($colors)];
 
             return [
                 'label'           => $branch->name,
                 'data'            => $dates->map(
                     fn($date) => (float) ($branchRevenue->firstWhere('date', $date)?->revenue ?? 0)
                 )->values()->toArray(),
-                'backgroundColor' => ['#C9A544', '#60A5FA', '#34D399', '#F87171'][$index % 4],
+                'backgroundColor' => $color,
+                'borderColor'     => $color,
+                'borderRadius'    => 6,
+                'borderSkipped'   => false,
+                'maxBarThickness' => 26,
             ];
         })->values()->toArray();
 
@@ -70,5 +79,24 @@ class RevenueChartWidget extends ChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'animation' => ['duration' => 1100, 'easing' => 'easeInOutQuart'],
+            'plugins'   => [
+                'legend' => ['position' => 'top', 'labels' => ['usePointStyle' => true, 'boxWidth' => 8]],
+            ],
+            'scales' => [
+                'x' => ['grid' => ['display' => false], 'ticks' => ['maxRotation' => 0, 'autoSkip' => true]],
+                'y' => [
+                    'beginAtZero' => true,
+                    'grid'        => ['color' => 'rgba(148,163,184,0.12)'],
+                    'ticks'       => ['callback' => null],
+                ],
+            ],
+            'interaction' => ['intersect' => false, 'mode' => 'index'],
+        ];
     }
 }

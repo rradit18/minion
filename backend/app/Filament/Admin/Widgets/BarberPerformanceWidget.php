@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\DB;
 class BarberPerformanceWidget extends ChartWidget
 {
     protected ?string $heading = 'Performa Barber Bulan Ini';
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
+
+    protected int|string|array $columnSpan = 'full';
+
+    protected ?string $maxHeight = '320px';
 
     protected function getData(): array
     {
@@ -50,11 +54,15 @@ class BarberPerformanceWidget extends ChartWidget
                     'label'           => 'Jumlah Booking',
                     'data'            => $data->values()->toArray(),
                     'backgroundColor' => '#C9A544',
+                    'borderRadius'    => 6,
+                    'borderSkipped'   => false,
                 ],
                 [
                     'label'           => 'Rata-rata Rating (×10)',
                     'data'            => $avgRatingData->map(fn($v) => $v * 10)->values()->toArray(),
                     'backgroundColor' => '#60A5FA',
+                    'borderRadius'    => 6,
+                    'borderSkipped'   => false,
                 ],
             ],
             'labels' => $labels->values()->toArray(),
@@ -69,12 +77,14 @@ class BarberPerformanceWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
-            'indexAxis' => 'y',
-            'plugins'   => [
-                'legend' => ['display' => true],
-                'tooltip' => [
-                    'callbacks' => [],
-                ],
+            'indexAxis'  => 'y',
+            'animation'  => ['duration' => 1100, 'easing' => 'easeInOutQuart'],
+            'plugins'    => [
+                'legend' => ['position' => 'top', 'labels' => ['usePointStyle' => true, 'boxWidth' => 8]],
+            ],
+            'scales' => [
+                'x' => ['beginAtZero' => true, 'grid' => ['color' => 'rgba(148,163,184,0.12)']],
+                'y' => ['grid' => ['display' => false]],
             ],
         ];
     }

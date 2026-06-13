@@ -51,11 +51,11 @@ class UserResource extends Resource
                 ->live(),
             Select::make('branch_id')
                 ->label('Cabang')
+                ->helperText('Kasir bertugas di satu cabang.')
                 ->options(Branch::where('is_active', true)->pluck('name', 'id'))
                 ->searchable()
-                ->nullable()
-                ->visible(fn($get) => in_array($get('role'), ['cashier', 'barber']))
-                ->required(fn($get) => $get('role') === 'cashier'),
+                ->visible(fn($get) => $get('role') === 'cashier')
+                ->required(),
             Toggle::make('is_active')
                 ->label('Aktif')
                 ->default(true),

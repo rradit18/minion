@@ -26,11 +26,21 @@ class KasirPanelProvider extends PanelProvider
             ->id('kasir')
             ->path('kasir-panel')
             ->login()
+            ->profile()
             ->darkMode(true)
             ->colors([
                 'primary' => Color::hex('#C9A544'),
             ])
             ->renderHook('panels::head.end', fn () => app(\Illuminate\Foundation\Vite::class)('resources/css/app.css'))
+            ->renderHook(
+                'panels::content.end',
+                fn () => \Illuminate\Support\Facades\Blade::render('@livewire(\App\Livewire\Kasir\PosModal::class)'),
+                scopes: \App\Filament\Kasir\Resources\BookingResource\Pages\ListBookings::class,
+            )
+            ->renderHook(
+                'panels::body.end',
+                fn () => \Illuminate\Support\Facades\Blade::render('@livewire(\App\Livewire\Kasir\BookingNotifier::class)'),
+            )
             ->discoverResources(in: app_path('Filament/Kasir/Resources'), for: 'App\\Filament\\Kasir\\Resources')
             ->discoverPages(in: app_path('Filament/Kasir/Pages'), for: 'App\\Filament\\Kasir\\Pages')
             ->pages([

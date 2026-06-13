@@ -97,12 +97,26 @@ curl -X POST http://127.0.0.1:8000/api/auth/register \
 | [ ] | Slot tersedia | `GET /api/availability?barber_id={id}&date={Y-m-d}&service_ids[]={id}` | array slot 30-menit |
 | [ ] | Tanpa shift | barber tanpa shift di tanggal itu | array kosong `[]` |
 | [ ] | Durasi panjang kurangi slot | pilih layanan durasi 90 mnt (Hair Coloring) | slot lebih sedikit |
-| [ ] | Buat booking (guest) | `POST /api/bookings` (lihat body di bawah) | 201, `booking_number` `MB-YYYYMMDD-0001` |
+| [ ] | Buat booking (guest) | `POST /api/bookings` (lihat body di bawah) | 201, `booking_number` `MB-YYYYMMDD-0001`, status `pending_payment`, `data.payment.remaining_seconds≈600` |
 | [ ] | Buat booking (registered) | sama + header Bearer customer | 201, terhubung ke user |
 | [ ] | Booking slot terkunci | submit 2x slot sama cepat | yang kedua 409 (slot lock) |
 | [ ] | Booking slot tidak tersedia | scheduled_at di luar shift | 422 |
-| [ ] | Cek status booking | `GET /api/bookings/{bookingNumber}` | status `pending_confirmation` |
+| [ ] | Cek status booking | `GET /api/bookings/{bookingNumber}` | status `pending_payment` |
 | [ ] | Booking number increment | buat booking ke-2 hari sama | `...-0002` |
+
+### 3a. Pembayaran booking (bayar dulu, slot ditahan 10 menit)
+
+> Slot ditahan sampai `payment_deadline_at` (default 10 mnt, `BOOKING_PAYMENT_WINDOW`).
+> Lewat batas tanpa upload bukti → slot otomatis dilepas. Perlu `php artisan storage:link`.
+
+| ✓ | Test | Endpoint | Ekspektasi |
+|---|---|---|---|
+| [ ] | Info pembayaran | `GET /api/bookings/{no}/payment` | `remaining_seconds`, `total_price`, `qris_image_url`, `bank_accounts[]`, `proof_uploaded=false` |
+| [ ] | Slot tertahan | `GET /api/availability` slot sama selama window | slot itu **tidak** muncul |
+| [ ] | Upload bukti | `POST /api/bookings/{no}/payment-proof` (multipart: `payment_method=bank_transfer|qris_external`, `proof=<image>`) | 200, status → `pending_confirmation` |
+| [ ] | Upload setelah deadline | tunggu > window (atau set `BOOKING_PAYMENT_WINDOW=1`) lalu upload | 422 "Waktu pembayaran habis" |
+| [ ] | Slot dilepas otomatis | lewati deadline tanpa bayar → cek availability | slot **muncul lagi**; status booking jadi `expired` (job per menit) |
+| [ ] | Verifikasi kasir | Panel kasir → Booking → **Verifikasi** (lihat bukti) | status → `confirmed`; **Tolak** → `expired` (slot bebas) |
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/bookings \
@@ -144,22 +158,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 5. Kasir API `[auth:sanctum + role=cashier]`
-
-> Login sebagai kasir (`kasir.pusat@...`). Booking harus milik cabang kasir.
-
-| ✓ | Test | Endpoint | Ekspektasi |
-|---|---|---|---|
-| [ ] | Konfirmasi kedatangan | `PATCH /api/kasir/bookings/{id}/confirm` | status → `confirmed` |
-| [ ] | Confirm booking non-pending | booking sudah confirmed | 422 (transisi invalid) |
-| [ ] | Mulai sesi | `PATCH /api/kasir/bookings/{id}/start` | status → `in_progress` |
-| [ ] | Booking cabang lain | id booking cabang batu-8 | 403/404 (scope branch) |
-| [ ] | Laporan harian | `GET /api/kasir/report?date=YYYY-MM-DD` | ringkasan revenue cabang |
-| [ ] | Export CSV | `GET /api/kasir/report/export?date=...` | file CSV |
-
----
-
-## 6. Barber Portal `[auth:sanctum + role=barber]`
+## 5. Barber Portal `[auth:sanctum + role=barber]`
 
 > Login `rizky@minionbarbershop.com` / `barber123`.
 
@@ -171,7 +170,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 7. Promo
+## 6. Promo
 
 | ✓ | Test | Cara | Ekspektasi |
 |---|---|---|---|
@@ -188,7 +187,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 8. Feedback
+## 7. Feedback
 
 | ✓ | Test | Endpoint | Ekspektasi |
 |---|---|---|---|
@@ -199,7 +198,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 9. Receipt Page (Web)
+## 8. Receipt Page (Web)
 
 | ✓ | Test | Cara | Ekspektasi |
 |---|---|---|---|
@@ -211,7 +210,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 10. Filament Admin Panel `/admin-panel`
+## 9. Filament Admin Panel `/admin-panel`
 
 > Login `admin@minionbarbershop.com` / `password`. Tema gelap + warna gold.
 
@@ -274,7 +273,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 11. Filament Kasir Panel `/kasir-panel`
+## 10. Filament Kasir Panel `/kasir-panel`
 
 > Login `kasir.pusat@minionbarbershop.com` / `password`.
 > Semua data **hanya cabang pusat** (scope branch).
@@ -332,7 +331,7 @@ curl -X POST http://127.0.0.1:8000/api/bookings \
 
 ---
 
-## 12. Background Job — BookingExpiryJob
+## 11. Background Job — BookingExpiryJob
 
 | ✓ | Test | Cara | Ekspektasi |
 |---|---|---|---|

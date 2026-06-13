@@ -16,8 +16,11 @@ class BookingExpiryJob implements ShouldQueue
 
     public function handle(): void
     {
-        Booking::where('status', BookingStatus::PendingConfirmation)
-            ->where('scheduled_at', '<=', now()->subMinutes(15))
+        // Lepas slot yang sudah lewat batas waktu pembayaran tanpa upload bukti.
+        // (pending_confirmation = sudah bayar/menunggu verifikasi kasir → tidak di-expire otomatis.)
+        Booking::where('status', BookingStatus::PendingPayment)
+            ->whereNotNull('payment_deadline_at')
+            ->where('payment_deadline_at', '<=', now())
             ->chunkById(100, function ($bookings) {
                 foreach ($bookings as $booking) {
                     $booking->update([

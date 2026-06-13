@@ -5,11 +5,10 @@ use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\BarberController;
 use App\Http\Controllers\Api\BarberPortalController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\BookingPaymentController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\FeedbackController;
-use App\Http\Controllers\Api\KasirBookingController;
-use App\Http\Controllers\Api\KasirReportController;
 use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\ServiceController;
 use Illuminate\Support\Facades\Route;
@@ -45,10 +44,12 @@ Route::middleware('optional.auth')->group(function () {
     Route::post('/feedback', [FeedbackController::class, 'store']);
 });
 Route::get('/bookings/{bookingNumber}', [BookingController::class, 'show']);
+Route::get('/bookings/{bookingNumber}/payment',       [BookingPaymentController::class, 'paymentInfo']);
+Route::post('/bookings/{bookingNumber}/payment-proof', [BookingPaymentController::class, 'uploadProof']);
 Route::get('/queue/{branchSlug}',       [BookingController::class, 'queue']);
 
 // ─── Customer area [auth:sanctum + role=customer] ──────────────────────────
-Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(function () {
+Route::middleware(['auth:sanctum', 'role:customer', 'password.changed'])->prefix('customer')->group(function () {
     Route::post('/bookings',                        [CustomerController::class, 'store']);
     Route::patch('/profile',                        [CustomerController::class, 'updateProfile']);
     Route::get('/bookings',                        [CustomerController::class, 'bookings']);
@@ -61,16 +62,6 @@ Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(
 
 // ─── Promo validate (public + optional auth) ───────────────────────────────
 Route::middleware('optional.auth')->post('/promos/validate', [PromoController::class, 'validate']);
-
-// ─── Kasir endpoints [auth:sanctum + role=cashier] ─────────────────────────
-Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('kasir')->group(function () {
-    Route::get('/bookings',                [KasirBookingController::class, 'index']);
-    Route::patch('/bookings/{id}/confirm',   [KasirBookingController::class, 'confirm']);
-    Route::patch('/bookings/{id}/start',     [KasirBookingController::class, 'start']);
-    Route::post('/bookings/{id}/checkout',   [KasirBookingController::class, 'checkout']);
-    Route::get('/report',                  [KasirReportController::class, 'daily']);
-    Route::get('/report/export',           [KasirReportController::class, 'export']);
-});
 
 // ─── Barber portal [auth:sanctum + role=barber] ────────────────────────────
 Route::middleware(['auth:sanctum', 'role:barber', 'password.changed'])->prefix('barber')->group(function () {

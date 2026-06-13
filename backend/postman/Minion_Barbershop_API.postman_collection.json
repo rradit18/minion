@@ -326,6 +326,39 @@
           }
         },
         {
+          "name": "Info Pembayaran",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/bookings/{{BOOKING_NUMBER}}/payment",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "bookings", "{{BOOKING_NUMBER}}", "payment"]
+            },
+            "description": "Sisa waktu (remaining_seconds), total, qris_image_url, dan daftar rekening cabang. Slot ditahan sampai deadline."
+          }
+        },
+        {
+          "name": "Upload Bukti Pembayaran",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "payment_method", "value": "bank_transfer", "type": "text", "description": "bank_transfer | qris_external" },
+                { "key": "proof", "type": "file", "src": [] }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/bookings/{{BOOKING_NUMBER}}/payment-proof",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "bookings", "{{BOOKING_NUMBER}}", "payment-proof"]
+            },
+            "description": "Upload bukti transfer (image). Hanya sah dalam masa pembayaran; status -> pending_confirmation."
+          }
+        },
+        {
           "name": "Antrian Hari Ini",
           "request": {
             "method": "GET",
@@ -493,74 +526,6 @@
               { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
             ],
             "url": { "raw": "{{BASE_URL}}/api/customer/promos", "host": ["{{BASE_URL}}"], "path": ["api", "customer", "promos"] }
-          }
-        }
-      ]
-    },
-    {
-      "name": "🏧 Kasir",
-      "description": "Semua endpoint membutuhkan Authorization: Bearer {{KASIR_TOKEN}} (role=cashier)",
-      "item": [
-        {
-          "name": "Konfirmasi Kedatangan",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{KASIR_TOKEN}}" }
-            ],
-            "url": {
-              "raw": "{{BASE_URL}}/api/kasir/bookings/{{BOOKING_ID}}/confirm",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "kasir", "bookings", "{{BOOKING_ID}}", "confirm"]
-            }
-          }
-        },
-        {
-          "name": "Mulai Sesi",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{KASIR_TOKEN}}" }
-            ],
-            "url": {
-              "raw": "{{BASE_URL}}/api/kasir/bookings/{{BOOKING_ID}}/start",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "kasir", "bookings", "{{BOOKING_ID}}", "start"]
-            }
-          }
-        },
-        {
-          "name": "Laporan Harian",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{KASIR_TOKEN}}" }
-            ],
-            "url": {
-              "raw": "{{BASE_URL}}/api/kasir/report?date={{REPORT_DATE}}",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "kasir", "report"],
-              "query": [{ "key": "date", "value": "{{REPORT_DATE}}" }]
-            }
-          }
-        },
-        {
-          "name": "Export Laporan CSV",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "text/csv" },
-              { "key": "Authorization", "value": "Bearer {{KASIR_TOKEN}}" }
-            ],
-            "url": {
-              "raw": "{{BASE_URL}}/api/kasir/report/export?date={{REPORT_DATE}}",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "kasir", "report", "export"],
-              "query": [{ "key": "date", "value": "{{REPORT_DATE}}" }]
-            }
           }
         }
       ]

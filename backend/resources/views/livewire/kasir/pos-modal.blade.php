@@ -18,7 +18,7 @@
                 <div class="flex items-center gap-1.5">
                     @foreach (['review' => '1', 'promo' => '2', 'tip' => '3', 'payment' => '4', 'confirm' => '5'] as $s => $n)
                         <div class="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center
-                            {{ $step === $s ? 'bg-yellow-500 text-white' : (array_search($step, ['review','promo','tip','payment','confirm']) > array_search($s, ['review','promo','tip','payment','confirm']) ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-500') }}">
+                            {{ $step === $s ? 'bg-[#C9A544] text-gray-900' : (array_search($step, ['review','promo','tip','payment','confirm']) > array_search($s, ['review','promo','tip','payment','confirm']) ? 'bg-emerald-500 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-500') }}">
                             {{ $n }}
                         </div>
                     @endforeach
@@ -66,7 +66,7 @@
                             @foreach ($branchServices as $svc)
                                 @if (!collect($booking['services'])->contains('service_id', $svc['service_id']) && !collect($addons)->contains('service_id', $svc['service_id']))
                                     <button wire:click="addAddon('{{ $svc['service_id'] }}')"
-                                        class="text-left p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition text-xs">
+                                        class="text-left p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-[#C9A544] hover:bg-amber-50 dark:hover:bg-[#C9A544]/10 transition text-xs">
                                         <p class="font-medium text-gray-900 dark:text-white">{{ $svc['item_name'] }}</p>
                                         <p class="text-gray-500">Rp {{ number_format($svc['price'], 0, ',', '.') }}</p>
                                     </button>
@@ -98,8 +98,8 @@
                         </div>
                     @else
                         <div class="flex gap-2">
-                            <input wire:model="promoCode" type="text" placeholder="Kode promo" class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm uppercase">
-                            <button wire:click="validatePromo" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition">
+                            <input wire:model="promoCode" type="text" placeholder="Kode promo" class="flex-1 rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm uppercase">
+                            <button wire:click="validatePromo" class="px-4 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-medium rounded-lg transition">
                                 Pakai
                             </button>
                         </div>
@@ -127,14 +127,14 @@
                         @foreach ([0, 5000, 10000, 20000] as $preset)
                             <button wire:click="setTip({{ $preset }})"
                                 class="py-2 text-sm font-medium rounded-lg border transition
-                                    {{ $tipAmount === $preset ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400' }}">
+                                    {{ $tipAmount === $preset ? 'border-[#C9A544] bg-amber-50 dark:bg-[#C9A544]/10 text-[#C9A544] dark:text-[#d8b85e]' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400' }}">
                                 {{ $preset === 0 ? 'Tidak' : 'Rp ' . number_format($preset, 0, ',', '.') }}
                             </button>
                         @endforeach
                     </div>
                     <div class="flex gap-2">
                         <input wire:model="customTipInput" type="number" placeholder="Nominal custom"
-                            class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                            class="flex-1 rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
                         <button wire:click="applyCustomTip" class="px-3 py-2 bg-gray-200 dark:bg-gray-600 text-sm rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">
                             Set
                         </button>
@@ -155,7 +155,7 @@
                         @foreach (['cash' => 'Cash', 'bank_transfer' => 'Transfer Bank', 'qris_external' => 'QRIS'] as $method => $label)
                             <button wire:click="setPayment('{{ $method }}')"
                                 class="py-3 text-sm font-medium rounded-xl border-2 transition
-                                    {{ $paymentMethod === $method ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-yellow-400' }}">
+                                    {{ $paymentMethod === $method ? 'border-[#C9A544] bg-amber-50 dark:bg-[#C9A544]/10 text-[#C9A544] dark:text-[#d8b85e]' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-yellow-400' }}">
                                 {{ $label }}
                             </button>
                         @endforeach
@@ -168,7 +168,7 @@
                             </p>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nominal diterima</label>
                             <input wire:model.live="amountPaidInput" type="number" placeholder="Masukkan jumlah uang"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                class="w-full rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
                             @if ($amountPaidInput)
                                 <p class="text-sm {{ $change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500' }}">
                                     Kembalian: Rp {{ number_format($change, 0, ',', '.') }}
@@ -257,7 +257,7 @@
         <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-between flex-shrink-0">
             @if ($step === 'done')
                 <div></div>
-                <button wire:click="close" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold rounded-lg transition">
+                <button wire:click="close" class="px-5 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-semibold rounded-lg transition">
                     Selesai
                 </button>
             @else
@@ -279,7 +279,7 @@
                         {{ $btnLabel }}
                     </button>
                 @else
-                    <button wire:click="nextStep" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold rounded-lg transition">
+                    <button wire:click="nextStep" class="px-5 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-semibold rounded-lg transition">
                         Lanjut →
                     </button>
                 @endif

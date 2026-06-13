@@ -42,7 +42,8 @@ class BookingService
                 'scheduled_at'           => $scheduledAt,
                 'total_duration_minutes' => $totalDuration,
                 'total_price'            => $totalPrice,
-                'status'                 => BookingStatus::PendingConfirmation,
+                'status'                 => BookingStatus::PendingPayment,
+                'payment_deadline_at'    => now()->addMinutes((int) config('booking.payment_window', 10)),
                 'type'                   => BookingType::Online,
             ]);
 

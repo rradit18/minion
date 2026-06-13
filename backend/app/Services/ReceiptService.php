@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\Product;
 use App\Models\Promo;
 use App\Models\PromoUsage;
 use App\Models\Receipt;
@@ -96,6 +97,82 @@ class ReceiptService
             }
 
             return $receipt->load(['items', 'booking.barber', 'booking.branch', 'kasir:id,name']);
+        });
+    }
+
+    /**
+     * Create a standalone product sale (no booking).
+     *
+     * $data keys:
+     *   kasir_id, branch_id
+     *   items (array of {product_id, name, price, quantity})
+     *   payment_method (string), amount_paid (float|null)
+     *
+     * @throws \RuntimeException when stock is insufficient.
+     */
+    public function createProductSale(array $data): Receipt
+    {
+        if (empty($data['items'])) {
+            throw new \RuntimeException('Keranjang kosong.', 422);
+        }
+
+        return DB::transaction(function () use ($data) {
+            $lineItems = [];
+            $subtotal  = 0.0;
+
+            foreach ($data['items'] as $item) {
+                $product  = Product::lockForUpdate()->findOrFail($item['product_id']);
+                $quantity = (int) $item['quantity'];
+
+                if ($quantity < 1) {
+                    throw new \RuntimeException("Jumlah {$product->name} tidak valid.", 422);
+                }
+
+                if ($product->stock_qty < $quantity) {
+                    throw new \RuntimeException(
+                        "Stok {$product->name} tidak cukup (tersisa {$product->stock_qty}).",
+                        422
+                    );
+                }
+
+                $product->decrement('stock_qty', $quantity);
+
+                $price        = (float) $product->price;
+                $lineSubtotal = $price * $quantity;
+                $subtotal    += $lineSubtotal;
+
+                $lineItems[] = [
+                    'product_id' => $product->id,
+                    'item_name'  => $product->name,
+                    'price'      => $price,
+                    'quantity'   => $quantity,
+                    'subtotal'   => $lineSubtotal,
+                ];
+            }
+
+            $total        = $subtotal;
+            $amountPaid   = isset($data['amount_paid']) ? (float) $data['amount_paid'] : $total;
+            $changeAmount = max(0.0, $amountPaid - $total);
+
+            $receipt = Receipt::create([
+                'receipt_number' => $this->generateReceiptNumber(),
+                'booking_id'     => null,
+                'kasir_id'       => $data['kasir_id'],
+                'branch_id'      => $data['branch_id'],
+                'subtotal'       => $subtotal,
+                'promo_discount' => 0,
+                'tip_amount'     => 0,
+                'total'          => $total,
+                'payment_method' => $data['payment_method'],
+                'amount_paid'    => $amountPaid,
+                'change_amount'  => $changeAmount,
+            ]);
+
+            foreach ($lineItems as $item) {
+                $receipt->items()->create($item);
+            }
+
+            return $receipt->load(['items', 'kasir:id,name']);
         });
     }
 

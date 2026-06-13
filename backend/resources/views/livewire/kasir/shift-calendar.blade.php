@@ -7,8 +7,8 @@
     @endif
 
     {{-- Header --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
-        <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+    <div class="bg-white dark:bg-gray-900/70 ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl shadow-sm">
+        <div class="px-5 py-4 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-gray-50/60 dark:bg-white/[0.02]">
             <h2 class="text-base font-semibold text-gray-900 dark:text-white">Jadwal Shift Barber</h2>
             <div class="flex items-center gap-2">
                 <button wire:click="prevWeek" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
@@ -35,7 +35,7 @@
                     <tr class="border-b border-gray-100 dark:border-gray-700">
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 w-32">Barber</th>
                         @foreach ($weekDates as $day)
-                            <th class="px-2 py-3 text-center text-xs font-medium {{ today()->toDateString() === $day['date'] ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-500 dark:text-gray-400' }}">
+                            <th class="px-2 py-3 text-center text-xs font-medium {{ today()->toDateString() === $day['date'] ? 'text-[#C9A544] dark:text-[#d8b85e]' : 'text-gray-500 dark:text-gray-400' }}">
                                 {{ $day['label'] }}
                             </th>
                         @endforeach
@@ -87,7 +87,7 @@
     {{-- Shift form modal --}}
     @if ($showForm)
         <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md">
+            <div class="bg-white dark:bg-gray-900 ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl shadow-2xl w-full max-w-md">
                 <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                     <h3 class="font-semibold text-gray-900 dark:text-white text-sm">
                         {{ $formShiftId ? 'Edit Shift' : 'Tambah Shift' }}
@@ -113,22 +113,22 @@
                         <div>
                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Mulai</label>
                             <input wire:model="formStartTime" type="time"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                class="w-full rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Selesai</label>
                             <input wire:model="formEndTime" type="time"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                class="w-full rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Istirahat Mulai</label>
                             <input wire:model="formBreakStart" type="time"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                class="w-full rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Istirahat Selesai</label>
                             <input wire:model="formBreakEnd" type="time"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                class="w-full rounded-lg px-3 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
                         </div>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                     <button wire:click="closeForm" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 transition">
                         Tutup
                     </button>
-                    <button wire:click="saveShift" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition">
+                    <button wire:click="saveShift" class="px-4 py-2 bg-[#C9A544] hover:bg-[#b8963c] text-gray-900 text-sm font-semibold rounded-lg shadow-sm transition active:scale-95">
                         Simpan
                     </button>
                 </div>

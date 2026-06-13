@@ -21,6 +21,7 @@ class Branch extends Model
         'opening_time',
         'closing_time',
         'google_maps_url',
+        'qris_image_path',
         'is_active',
     ];
 

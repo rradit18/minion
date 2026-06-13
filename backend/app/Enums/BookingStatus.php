@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum BookingStatus: string
 {
+    case PendingPayment      = 'pending_payment';
     case PendingConfirmation = 'pending_confirmation';
     case Confirmed           = 'confirmed';
     case InProgress          = 'in_progress';

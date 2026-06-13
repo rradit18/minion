@@ -29,6 +29,8 @@
         .brand { font-size: 15px; font-weight: bold; letter-spacing: 1px; }
         .receipt-no { font-size: 11px; color: #555; }
         .footer-msg { font-size: 11px; margin-top: 4px; color: #555; }
+        .loyalty { font-size: 11px; }
+        .loyalty .bold { font-size: 12px; }
 
         @media print {
             body { background: none; padding: 0; }
@@ -129,6 +131,26 @@
     @endif
 
     <div class="divider"></div>
+
+    {{-- Loyalty / punch card (hanya struk layanan dari customer terdaftar) --}}
+    @if (!empty($loyalty))
+        @php
+            $filled = str_repeat('●', $loyalty['stamps']);
+            $empty  = str_repeat('○', max(0, $loyalty['threshold'] - $loyalty['stamps']));
+        @endphp
+        <div class="loyalty">
+            <p class="bold center">★ KARTU LOYALTY</p>
+            <p class="center" style="letter-spacing:2px; margin:4px 0;">{{ $filled }}{{ $empty }}</p>
+            <p class="center">{{ $loyalty['stamps'] }} / {{ $loyalty['threshold'] }} stempel</p>
+            @if ($loyalty['reward_earned'])
+                <p class="center bold" style="margin-top:4px;">🎉 Selamat! Anda dapat 1x POTONG GRATIS</p>
+            @else
+                <p class="center" style="margin-top:4px;">{{ $loyalty['remaining'] }} kunjungan lagi menuju potong gratis</p>
+            @endif
+        </div>
+
+        <div class="divider"></div>
+    @endif
 
     <div class="center footer-msg">
         <p>Terima kasih telah berkunjung!</p>
