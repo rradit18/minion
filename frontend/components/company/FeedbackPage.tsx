@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import SpotlightCard from '@/components/ui/SpotlightCard';
 
 // Scissor SVG icon
 const ScissorIcon = () => (
@@ -60,7 +61,10 @@ export default function FeedbackPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-10 border-2 border-[#7C5CBF] shadow-lg">
+        <SpotlightCard
+          spotlightColor="rgba(124, 92, 191, 0.15)"
+          className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-10 border-2 border-[#7C5CBF] shadow-lg"
+        >
           <div className="space-y-6">
             
             {/* Dropdown Kategori */}
@@ -98,7 +102,7 @@ export default function FeedbackPage() {
               </button>
             </div>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
     </div>
   );

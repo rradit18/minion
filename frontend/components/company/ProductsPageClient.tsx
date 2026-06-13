@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import SpotlightCard from "@/components/ui/SpotlightCard";
 
 interface Product {
   id: number;
@@ -90,13 +91,16 @@ function WaButton({ className = "" }: { className?: string }) {
 
 function ProductCard({ product }: { product: Product }) {
   return (
-    <div className={`${cardBg[product.color]} rounded-2xl p-4 flex flex-col`}>
+    <SpotlightCard
+      spotlightColor="rgba(255, 255, 255, 0.55)"
+      className={`${cardBg[product.color]} rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group`}
+    >
       <div className="relative w-full aspect-square bg-white/60 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
-        <Sparkle className={`absolute top-2 right-2 w-6 h-6 ${sparkleColor[product.color]}`} />
+        <Sparkle className={`absolute top-2 right-2 w-6 h-6 z-10 ${sparkleColor[product.color]} transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12`} />
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           onError={(e) => {
             (e.target as HTMLImageElement).src = '/placeholder.jpg';
           }}
@@ -106,7 +110,7 @@ function ProductCard({ product }: { product: Product }) {
       <p className="text-[#C0392B] font-bold text-sm mb-1">{formatRupiah(product.price)}</p>
       <p className="text-gray-600 text-[11px] leading-relaxed mb-3 flex-1">{product.desc}</p>
       <WaButton className="w-full" />
-    </div>
+    </SpotlightCard>
   );
 }
 

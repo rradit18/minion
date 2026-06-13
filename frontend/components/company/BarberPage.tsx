@@ -1,3 +1,5 @@
+import TiltCard from "@/components/ui/TiltCard";
+
 interface BarberProps {
   name: string;
   role: string;
@@ -12,8 +14,9 @@ export default function BarberPage({
   name, role, specialty, rating, reviewCount, imageColor, imageUrl,
 }: BarberProps) {
   return (
-    <div
-      className="relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm flex items-center hover:shadow-md transition-shadow cursor-pointer
+    <TiltCard
+      max={7}
+      className="relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm flex items-center hover:shadow-xl hover:border-gray-200 cursor-pointer
                  min-h-[160px] sm:min-h-[200px] lg:min-h-[220px] xl:min-h-[240px]"
       style={{
         backgroundImage: "url('/pattern.png')",
@@ -88,6 +91,6 @@ export default function BarberPage({
           </div>
         </div>
       </div>
-    </div>
+    </TiltCard>
   );
 }

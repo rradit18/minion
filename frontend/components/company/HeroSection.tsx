@@ -1,6 +1,9 @@
 "use client";
 
 import Link from 'next/link';
+import AnimatedTooltip from '@/components/ui/AnimatedTooltip';
+import CountUp from '@/components/ui/CountUp';
+import GlitchText from '@/components/ui/GlitchText';
 
 interface HeroSectionProps {
   onMenuClick: () => void;
@@ -122,7 +125,7 @@ const Sparkle4 = ({ color }: { color: string }) => (
 
 // Badge "FRESH CUT!" — speech bubble gambar tangan
 const FreshCutBadge = () => (
-  <div className="absolute top-[30%] -right-2 lg:right-2 z-20 -rotate-[8deg] pointer-events-none">
+  <div className="absolute top-[28%] right-2 z-20 -rotate-[8deg] pointer-events-none">
     <div className="relative bg-white border-[2.5px] border-[#F97316] rounded-[50%] px-4 py-2">
       <span className="block text-[#F97316] font-display font-bold text-[15px] leading-[1] text-center">
         FRESH<br />CUT!
@@ -137,16 +140,35 @@ const FreshCutBadge = () => (
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const customerAvatars = ['/gallery1.jpg', '/gallery2.png', '/gallery3.jpg', '/gallery4.png', '/gallery5.jpg'];
+const happyCustomers = [
+  { id: 1, name: 'Rizky', designation: 'Fade Cut', image: '/gallery1.jpg' },
+  { id: 2, name: 'Dimas', designation: 'Pompadour', image: '/gallery2.png' },
+  { id: 3, name: 'Arif', designation: 'Buzz Cut', image: '/gallery3.jpg' },
+  { id: 4, name: 'Bagas', designation: 'Mohawk', image: '/gallery4.png' },
+  { id: 5, name: 'Yoga', designation: 'Crop Fade', image: '/gallery5.jpg' },
+];
 
 const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
   return (
-    <div className="bg-[#FAF7EE]">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="relative bg-[#FAF7EE]">
+      {/* ── Background pola doodle full-width, dibuat pudar agar konten depan menonjol ── */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[url('/pattern.png')] bg-cover bg-center opacity-50"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7EE]/40 via-transparent to-[#FAF7EE]/80"
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
         <section className="relative grid grid-cols-1 md:grid-cols-2 items-end gap-4 pt-6 pb-10">
 
           {/* ── Left Content ── */}
-          <div className="z-10 w-full space-y-4 text-center md:text-left">
+          <div className="relative z-10 w-full space-y-4 text-center md:text-left">
+            {/* aksen sparkle dekat heading (rapi, di area kosong) */}
+            <div className="absolute -top-2 right-2 w-5 h-5 pointer-events-none hidden md:block"><Sparkle4 color="#F9C74F" /></div>
+
             <p className="text-[#178E81] text-[12px] font-bold tracking-[2px] uppercase font-body">
               Premium Grooming
             </p>
@@ -155,7 +177,7 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
               pulang<br />
               sebelum<br />
               <span className="relative inline-block text-[#7B5EA7]">
-                gantenggg.
+                <GlitchText text="gantenggg." />
                 {/* underline doodle kuning */}
                 <svg viewBox="0 0 240 18" className="absolute -bottom-2 left-0 w-full h-3" preserveAspectRatio="none">
                   <path d="M2 9 Q60 3 120 9 T238 8" stroke="#F9C74F" strokeWidth="3" fill="none" strokeLinecap="round" />
@@ -180,86 +202,47 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
               </Link>
             </div>
             <div className="flex items-center gap-3 pt-2 justify-center md:justify-start">
-              <div className="flex -space-x-2">
-                {customerAvatars.map((src, i) => (
-                  <img
-                    key={i}
-                    src={src}
-                    alt=""
-                    className="w-8 h-8 rounded-full border-2 border-[#FAF7EE] object-cover"
-                  />
-                ))}
-              </div>
+              <AnimatedTooltip items={happyCustomers} />
               <span className="text-[12px] text-[#555] font-semibold font-body">
-                10.000+ Pelanggan Puas
+                <CountUp end={10000} suffix="+" className="font-display font-bold text-[#1a1a1a]" /> Pelanggan Puas
               </span>
             </div>
           </div>
 
-          {/* ── Right: Photo + doodles terintegrasi ── */}
+          {/* ── Right: Photo + doodles (rapi, tidak terpotong) ── */}
           <div className="relative w-full h-[460px] md:h-[520px] lg:h-[560px] hidden md:flex items-end justify-center">
 
             {/* Blob warna di belakang foto */}
             <div className="absolute bottom-6 left-1/2 -translate-x-[40%] w-[320px] h-[290px] lg:w-[360px] lg:h-[330px] bg-[#F9C74F] rounded-[60%_40%_55%_45%/55%_55%_45%_45%] z-0" />
-            <div className="absolute bottom-4 left-4 w-24 h-24 bg-[#178E81] rounded-full z-0" />
-            <div className="absolute top-16 right-10 w-16 h-16 bg-[#7B5EA7]/15 rounded-full z-0" />
+            <div className="absolute bottom-4 left-6 w-24 h-24 bg-[#178E81] rounded-full z-0" />
+            <div className="absolute top-16 right-12 w-16 h-16 bg-[#7B5EA7]/15 rounded-full z-0" />
 
-            {/* Foto owner — mengisi penuh tinggi container, bawah rata dengan teks kiri */}
+            {/* Foto owner */}
             <div className="relative z-10 w-full max-w-[560px] lg:max-w-[920px] h-full flex items-end justify-center">
               <img src="/owner.png" alt="Barber Professional" className="w-full h-full object-contain object-bottom" />
             </div>
 
-            {/* ── Doodles mengelilingi foto — lebih ramai & warna bervariasi ── */}
-            {/* Spray bottle — oranye, kiri atas */}
-            <div className="absolute top-10 left-0 w-16 h-24 rotate-[12deg] pointer-events-none z-20">
-              <SprayBottle />
-            </div>
-            {/* Scissors — hitam, kiri tengah */}
-            <div className="absolute top-[38%] left-2 w-14 h-14 -rotate-[15deg] pointer-events-none z-20">
-              <Scissors />
-            </div>
-            {/* Razor — merah, kiri bawah */}
-            <div className="absolute bottom-32 left-0 w-14 h-6 rotate-[8deg] pointer-events-none z-20">
-              <Razor />
-            </div>
-            {/* Brush — biru, kiri bawah */}
-            <div className="absolute bottom-10 left-6 w-6 h-16 -rotate-[18deg] pointer-events-none z-20">
-              <Brush />
-            </div>
-            {/* Pomade jar — amber, kiri tengah-atas */}
-            <div className="absolute top-24 left-[22%] w-14 h-12 -rotate-[8deg] pointer-events-none z-20">
-              <PomadeJar />
-            </div>
+            {/* ── Doodle layer — semua inset aman, tidak menyentuh tepi ── */}
+            {/* Kolom kiri foto */}
+            <div className="absolute top-8 left-4 w-14 h-20 rotate-[12deg] pointer-events-none z-20"><SprayBottle /></div>
+            <div className="absolute top-[38%] left-5 w-12 h-12 -rotate-[15deg] pointer-events-none z-20"><Scissors /></div>
+            <div className="absolute top-24 left-[26%] w-12 h-10 -rotate-[8deg] pointer-events-none z-20"><PomadeJar /></div>
+            <div className="absolute bottom-28 left-5 w-12 h-5 rotate-[8deg] pointer-events-none z-20"><Razor /></div>
+            <div className="absolute bottom-12 left-10 w-5 h-14 -rotate-[12deg] pointer-events-none z-20"><Brush /></div>
 
-            {/* Face purple — ungu, kanan atas */}
-            <div className="absolute top-4 right-2 w-18 h-22 pointer-events-none z-20">
-              <FaceDoodlePurple />
-            </div>
-            {/* Clipper — teal, kanan tengah */}
-            <div className="absolute top-[34%] right-0 w-14 h-20 rotate-[10deg] pointer-events-none z-20">
-              <Clipper />
-            </div>
-            {/* Comb — ungu, kanan bawah */}
-            <div className="absolute bottom-24 right-0 w-18 h-9 -rotate-[12deg] pointer-events-none z-20">
-              <Comb />
-            </div>
-            {/* Hair dryer — pink, kanan tengah */}
-            <div className="absolute top-[52%] right-6 w-16 h-12 -rotate-[10deg] pointer-events-none z-20">
-              <HairDryer />
-            </div>
-            {/* Face green — hijau, kanan bawah pojok */}
-            <div className="absolute bottom-2 right-4 w-16 h-18 pointer-events-none z-20">
-              <FaceDoodleGreen />
-            </div>
+            {/* Kolom kanan foto */}
+            <div className="absolute top-6 right-6 w-14 h-[72px] pointer-events-none z-20"><FaceDoodlePurple /></div>
+            <div className="absolute top-[36%] right-5 w-12 h-16 rotate-[10deg] pointer-events-none z-20"><Clipper /></div>
+            <div className="absolute top-[54%] right-10 w-14 h-10 -rotate-[10deg] pointer-events-none z-20"><HairDryer /></div>
+            <div className="absolute bottom-28 right-6 w-14 h-7 -rotate-[12deg] pointer-events-none z-20"><Comb /></div>
+            <div className="absolute bottom-6 right-8 w-12 h-14 pointer-events-none z-20"><FaceDoodleGreen /></div>
 
-            {/* Sparkles & petir — warna bervariasi */}
-            <div className="absolute top-2 left-[34%] w-6 h-6 pointer-events-none z-20"><Sparkle4 color="#F9C74F" /></div>
-            <div className="absolute top-8 right-[36%] w-5 h-5 pointer-events-none z-20"><Sparkle4 color="#178E81" /></div>
-            <div className="absolute top-[30%] left-[20%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#7B5EA7" /></div>
-            <div className="absolute top-[44%] left-[40%] w-3 h-3 pointer-events-none z-20"><Sparkle4 color="#EF4444" /></div>
-            <div className="absolute bottom-16 left-[32%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#22C55E" /></div>
-            <div className="absolute top-[20%] right-[30%] w-5 h-7 pointer-events-none z-20"><Lightning color="#F97316" /></div>
-            <span className="absolute bottom-28 left-[42%] text-[#7B5EA7] text-xl pointer-events-none z-20 select-none">✦</span>
+            {/* Sparkles & petir — tersebar di area kosong */}
+            <div className="absolute top-4 left-[38%] w-5 h-5 pointer-events-none z-20"><Sparkle4 color="#F9C74F" /></div>
+            <div className="absolute top-12 right-[34%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#178E81" /></div>
+            <div className="absolute top-[30%] left-[22%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#7B5EA7" /></div>
+            <div className="absolute bottom-20 left-[34%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#22C55E" /></div>
+            <div className="absolute top-[22%] right-[30%] w-5 h-7 pointer-events-none z-20"><Lightning color="#F97316" /></div>
 
             {/* FRESH CUT! badge */}
             <FreshCutBadge />

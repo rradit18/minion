@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import TiltCard from '@/components/ui/TiltCard';
 
 const ReactCompareSlider = dynamic(
   () => import('react-compare-slider').then((mod) => mod.ReactCompareSlider),
@@ -19,9 +20,17 @@ const galleryImages = [
 ];
 
 const GalleryCard = ({ imageUrl }: { imageUrl: string }) => (
-  <div className="rounded-2xl overflow-hidden relative" style={{ aspectRatio: '3/4' }}>
-    <img src={imageUrl} alt="Gallery" className="w-full h-full object-cover" />
-  </div>
+  <TiltCard
+    max={9}
+    className="rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-xl group"
+    style={{ aspectRatio: '3/4' }}
+  >
+    <img
+      src={imageUrl}
+      alt="Gallery"
+      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+    />
+  </TiltCard>
 );
 
 const GalleryRow = () => (

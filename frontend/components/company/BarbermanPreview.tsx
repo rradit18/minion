@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import TiltCard from "@/components/ui/TiltCard";
 
 const barbers = [
   { name: "Hendra", role: "Fade King", badge: "Fade Specialist", color: "bg-cyan-400",   image: "/hendra.png",  slug: "hendra"  },
@@ -24,8 +25,8 @@ export default function BarberPreview() {
       <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
         {barbers.map((barber, index) => (
-          <Link key={index} href={`/barberman/${barber.slug}`}>
-            <div className="relative bg-white rounded-2xl p-4 flex items-start gap-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer overflow-visible min-h-[130px]">
+          <Link key={index} href={`/barberman/${barber.slug}`} className="block">
+            <TiltCard className="relative bg-white rounded-2xl p-4 flex items-start gap-3 shadow-sm border border-gray-100 hover:shadow-xl hover:border-gray-200 cursor-pointer overflow-visible min-h-[130px]">
               {/* Foto + lingkaran */}
               <div className="relative flex-shrink-0">
                 <div className={`absolute top-2 left-2 w-16 h-16 rounded-full ${barber.color}`} />
@@ -51,7 +52,7 @@ export default function BarberPreview() {
                   <span>4.9 (2300+)</span>
                 </div>
               </div>
-            </div>
+            </TiltCard>
           </Link>
         ))}
 

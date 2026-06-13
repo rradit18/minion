@@ -1,5 +1,8 @@
 "use client";
 
+import SpotlightCard from "@/components/ui/SpotlightCard";
+import CountUp from "@/components/ui/CountUp";
+
 const branches = [
   { name: "Pramuka", image: "/pramuka.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", Hours: "10 to 21" },
   { name: "Kijang", image: "/kijang.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#178E81] text-white", open: "Every day", Hours: "10 to 21" },
@@ -82,12 +85,14 @@ export default function BranchesPage() {
 
             <div className="flex justify-center gap-8 sm:gap-12 mb-8">
               {[
-                { label: "Cabang Aktif", val: "4" },
-                { label: "Happy Clients", val: "10K" },
-                { label: "Hour Opens", val: "11" },
+                { label: "Cabang Aktif", end: 4, suffix: "" },
+                { label: "Happy Clients", end: 10, suffix: "K" },
+                { label: "Hour Opens", end: 11, suffix: "" },
               ].map((stat, i) => (
                 <div key={i}>
-                  <div className="text-2xl sm:text-3xl font-black text-[#1a1a1a]">{stat.val}</div>
+                  <div className="text-2xl sm:text-3xl font-black text-[#1a1a1a]">
+                    <CountUp end={stat.end} suffix={stat.suffix} />
+                  </div>
                   <div className="text-[9px] sm:text-[10px] uppercase font-bold text-gray-400 tracking-wider">{stat.label}</div>
                 </div>
               ))}
@@ -105,10 +110,13 @@ export default function BranchesPage() {
             <PatternOverlay />
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {branches.map((branch, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                 
+                <SpotlightCard
+                  key={i}
+                  spotlightColor="rgba(23, 142, 129, 0.18)"
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-gray-200"
+                >
                   <div className="relative w-full aspect-[4/3] overflow-hidden rounded-t-2xl">
-                    <img src={branch.image} alt={branch.name} className="w-full h-full object-cover"/>
+                    <img src={branch.image} alt={branch.name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"/>
                     {branch.tag && (
                       <span className={`absolute top-4 right-4 text-[10px] px-3 py-1 rounded-full font-bold ${branch.tagColor}`}>
                         {branch.tag}
@@ -119,7 +127,7 @@ export default function BranchesPage() {
                   <div className="p-5 flex flex-col flex-1">
                     <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#1a1a1a]">{branch.name}</h3>
                     <p className="text-xs text-gray-400 mb-3 flex items-start gap-1">
-                      <span className="text-[#178E81] mt-0.5">ðŸ“</span>
+                      <span className="text-[#178E81] mt-0.5">📍</span>
                       <span>{branch.address}</span>
                     </p>
                     <div className="grid grid-cols-2 gap-x-4 text-xs mb-4">
@@ -131,7 +139,7 @@ export default function BranchesPage() {
                       <button className="px-5 py-2.5 bg-[#178E81] text-white rounded-lg text-xs font-bold hover:bg-[#0f6b61] transition">Buka</button>
                     </div>
                   </div>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </div>
