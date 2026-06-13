@@ -22,7 +22,7 @@ const Footer = () => {
           <ul className="space-y-3 text-sm text-gray-600">
             <li>
               <a
-                href="https://instagram.com/barbershopminion"
+                href="https://www.instagram.com/barbershopminion?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 hover:text-[#E1306C] transition-colors group"
@@ -37,7 +37,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="https://tiktok.com/@minionbarbershop"
+                href="https://www.tiktok.com/@minionbarbershop?is_from_webapp=1&sender_device=pc"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 hover:text-[#1a1a1a] transition-colors group"
