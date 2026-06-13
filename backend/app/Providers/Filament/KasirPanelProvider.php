@@ -30,6 +30,7 @@ class KasirPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::hex('#C9A544'),
             ])
+            ->renderHook('panels::head.end', fn () => app(\Illuminate\Foundation\Vite::class)('resources/css/app.css'))
             ->discoverResources(in: app_path('Filament/Kasir/Resources'), for: 'App\\Filament\\Kasir\\Resources')
             ->discoverPages(in: app_path('Filament/Kasir/Pages'), for: 'App\\Filament\\Kasir\\Pages')
             ->pages([

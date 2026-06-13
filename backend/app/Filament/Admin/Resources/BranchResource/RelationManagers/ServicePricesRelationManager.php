@@ -8,6 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -53,11 +54,11 @@ class ServicePricesRelationManager extends RelationManager
                     ->boolean(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ]);
     }
 }

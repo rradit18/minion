@@ -17,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -32,7 +33,7 @@ class BarberResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
-            Grid::make(3)->schema([
+            Grid::make(['default' => 1, 'lg' => 5])->schema([
                 Section::make()->schema([
                     Select::make('user_id')
                         ->label('Akun User')
@@ -66,7 +67,7 @@ class BarberResource extends Resource
                     Toggle::make('is_active')
                         ->label('Aktif')
                         ->default(true),
-                ])->columnSpan(2),
+                ])->columnSpan(['default' => 1, 'lg' => 3]),
 
                 Section::make()->schema([
                     FileUpload::make('photo_url')
@@ -87,7 +88,7 @@ class BarberResource extends Resource
                         ->label('Cabang')
                         ->relationship('branches', 'name')
                         ->bulkToggleable(),
-                ])->columnSpan(1),
+                ])->columnSpan(['default' => 1, 'lg' => 2]),
             ]),
         ]);
     }
@@ -123,11 +124,11 @@ class BarberResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_active')->label('Status'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

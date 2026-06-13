@@ -42,5 +42,10 @@ php artisan migrate --force
 # ─── Storage link ────────────────────────────────────────────────────────────
 php artisan storage:link 2>/dev/null || true
 
+# ─── Fix storage & cache permissions ─────────────────────────────────────────
+echo "[entrypoint] Fixing storage and cache permissions..."
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
 echo "[entrypoint] Setup complete. Starting PHP-FPM..."
 exec "$@"
