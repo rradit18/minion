@@ -109,7 +109,7 @@ export const fetchBarbersByBranch = (branchId: string): Barber[] =>
 
 export const fetchServicePrice = (serviceId: string, branchId: string): number => {
   const svc = servicesData.find((s) => s.id === serviceId);
-  return svc?.prices[branchId] ?? 0;
+  return (svc?.prices as Record<string, number>)?.[branchId] ?? 0;
 };
 
 export const fetchPromoByCode = (code: string): Promo | undefined =>

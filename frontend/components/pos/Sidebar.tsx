@@ -1,7 +1,26 @@
   "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { clearSession } from "@/src/lib/localStorage";
+
+function LogoutBtn() {
+  const router = useRouter();
+  return (
+    <button
+      onClick={() => { clearSession(); router.push("/login"); }}
+      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all group"
+    >
+      <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-red-100 flex items-center justify-center transition-colors flex-shrink-0">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      </div>
+      <span>Keluar</span>
+    </button>
+  );
+}
 
 const navItems = [
   {
@@ -93,7 +112,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-4 border-t border-gray-100">
+      <div className="px-3 py-4 border-t border-gray-100 space-y-1">
         <Link
           href="/"
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-all"
@@ -102,8 +121,9 @@ export default function Sidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Kembali ke Website
+          <span className="hidden sm:inline">Kembali ke Website</span>
         </Link>
+        <LogoutBtn />
       </div>
     </aside>
   );

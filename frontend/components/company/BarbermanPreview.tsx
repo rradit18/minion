@@ -50,51 +50,46 @@ export default function BarberPreview() {
           </Link>
         ))}
 
-        {/* ── Scissors ── */}
-        <div className="absolute -bottom-5 left-0 w-10 h-10 pointer-events-none -rotate-[25deg]">
-          <svg viewBox="0 0 40 44" fill="none" stroke="#178E81" strokeWidth="2.5" strokeLinecap="round">
-            <circle cx="10" cy="34" r="6" fill="#178E81" fillOpacity="0.25"/>
-            <circle cx="30" cy="34" r="6" fill="#178E81" fillOpacity="0.25"/>
-            <line x1="14" y1="30" x2="20" y2="10"/>
-            <line x1="26" y1="30" x2="20" y2="10"/>
+        {/* ── Scissors — kiri bawah card Hendra ── */}
+        <div className="absolute pointer-events-none"
+          style={{ bottom: '-18px', left: '-8px', width: '44px', height: '48px', transform: 'rotate(-20deg)' }}>
+          <svg viewBox="0 0 40 44" fill="none" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round">
+            <circle cx="10" cy="34" r="7"/>
+            <circle cx="30" cy="34" r="7"/>
+            <line x1="14" y1="30" x2="20" y2="8"/>
+            <line x1="26" y1="30" x2="20" y2="8"/>
           </svg>
         </div>
 
-        {/* ── Clipper ── */}
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: '-8px', left: 'calc(50% + 10px)', width: '28px', height: '40px', transform: 'rotate(10deg)' }}
-        >
-          <svg viewBox="0 0 40 60" fill="none" stroke="#7B5EA7" strokeWidth="2" strokeLinecap="round">
-            <rect x="10" y="2" width="20" height="36" rx="6" fill="#7B5EA7" fillOpacity="0.15"/>
-            <rect x="8" y="36" width="24" height="12" rx="2" fill="#7B5EA7" fillOpacity="0.2"/>
-            <line x1="8" y1="42" x2="32" y2="42"/>
+        {/* ── Clipper — antara Juan dan Yoga, tengah atas ── */}
+        <div className="absolute pointer-events-none"
+          style={{ top: '-18px', left: 'calc(50% - 16px)', width: '32px', height: '48px', transform: 'rotate(8deg)' }}>
+          <svg viewBox="0 0 40 60" fill="none" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round">
+            <rect x="10" y="2" width="20" height="36" rx="6"/>
+            <rect x="8" y="36" width="24" height="12" rx="2"/>
+            <line x1="8"  y1="42" x2="32" y2="42"/>
             <line x1="10" y1="46" x2="14" y2="46"/>
             <line x1="18" y1="46" x2="22" y2="46"/>
             <line x1="26" y1="46" x2="30" y2="46"/>
-            <rect x="16" y="8" width="8" height="14" rx="2" fill="#178E81" stroke="#178E81"/>
+            <rect x="15" y="8" width="10" height="16" rx="2" fill="#1a1a1a"/>
           </svg>
         </div>
 
-        {/* ── Comb ── */}
-        <div
-          className="absolute pointer-events-none"
-          style={{ bottom: '-10px', left: 'calc(75% - 30px)', width: '56px', height: '28px', transform: 'rotate(-8deg)' }}
-        >
-          <svg viewBox="0 0 60 28" fill="none" stroke="#F9C74F" strokeWidth="2" strokeLinecap="round">
-            <rect x="2" y="2" width="56" height="12" rx="4" fill="#F9C74F" fillOpacity="0.4"/>
+        {/* ── Comb — kanan bawah area Yoga ── */}
+        <div className="absolute pointer-events-none"
+          style={{ bottom: '-14px', left: 'calc(75% - 32px)', width: '64px', height: '30px', transform: 'rotate(-10deg)' }}>
+          <svg viewBox="0 0 60 28" fill="none" stroke="#7B5EA7" strokeWidth="2.5" strokeLinecap="round">
+            <rect x="2" y="2" width="56" height="12" rx="4"/>
             {[10,18,26,34,42,50].map(x => (
-              <line key={x} x1={x} y1="14" x2={x} y2="24"/>
+              <line key={x} x1={x} y1="14" x2={x} y2="26"/>
             ))}
           </svg>
         </div>
 
-        {/* ── Sparkle bintang ── */}
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: '-10px', right: '0px' }}
-        >
-          <svg viewBox="0 0 24 24" style={{ width: '28px', height: '28px' }} fill="#F9C74F">
+        {/* ── Sparkle bintang — kanan atas Bastian ── */}
+        <div className="absolute pointer-events-none"
+          style={{ top: '-14px', right: '-4px' }}>
+          <svg viewBox="0 0 24 24" style={{ width: '30px', height: '30px' }} fill="#F9C74F">
             <path d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"/>
           </svg>
         </div>
