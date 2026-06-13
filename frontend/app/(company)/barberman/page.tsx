@@ -10,7 +10,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-teal-500",
-    imageUrl: "/barber.png",
+    imageUrl: "/hendra.png",
   },
   {
     slug: "juan",
@@ -20,7 +20,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-purple-500",
-    imageUrl: "/barber.png",
+    imageUrl: "/juan.png",
   },
   {
     slug: "yoga",
@@ -30,7 +30,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-orange-400",
-    imageUrl: "/barber.png",
+    imageUrl: "/yoga.png",
   },
   {
     slug: "bastian",
@@ -40,7 +40,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-orange-400",
-    imageUrl: "/barber.png",
+    imageUrl: "/bastian.png",
   },
 ];
 

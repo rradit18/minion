@@ -1,10 +1,10 @@
 "use client";
 
 const branches = [
-  { name: "Jl. Pramuka", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", hours: "10 to 21" },
-  { name: "Kijang Kota", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#178E81] text-white",      open: "Every day", hours: "10 to 21" },
-  { name: "Bt. 9",       address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "",           tagColor: "",                             open: "Every day", hours: "10 to 21" },
-  { name: "Jl. Ganet",   address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Baru Dibuka",tagColor: "bg-[#7B5EA7] text-white",       open: "Every day", hours: "10 to 21" },
+  { name: "Pramuka", image: "/pramuka.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", Hours: "10 to 21" },
+  { name: "Kijang", image: "/kijang.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#178E81] text-white",      open: "Every day", Hours: "10 to 21" },
+  { name: "Km. 9", image:"/km9.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",           tagColor: "bg-[#178E81] text-white",                             open: "Every day", Hours: "10 to 21" },
+  { name: "Ganet", image: "/ganet.jpg",  address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Baru Dibuka",tagColor: "bg-[#7B5EA7] text-white",       open: "Every day", Hours: "10 to 21" },
 ];
 
 const Scissors = () => (
@@ -70,8 +70,8 @@ export default function BranchesPage() {
         <p className="text-xs font-bold tracking-[0.2em] text-[#178E81] uppercase mb-3">Temukan Kami</p>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-[#1a1a1a]">Cabang Terdekat</h1>
         <p className="text-gray-500 text-sm max-w-lg mx-auto mb-8 leading-relaxed px-2">
-          Cabang kami tersebar di seluruh kota. Setiap cabang menghadirkan keahlian terbaik
-          dengan pengalaman grooming kelas atas yang autentik.
+          Minion barbershop tersebar di seluruh Tanjungpinang
+          siap melayani dimanapun kalian berada.
         </p>
 
         {/* Stats */}
@@ -99,7 +99,11 @@ export default function BranchesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {branches.map((branch, i) => (
             <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-              <div className="h-40 sm:h-44 bg-gray-900 relative flex items-center justify-center">
+              <div className="h-65 relative overflow-hidden">
+                <img
+                  src={branch.image}
+                  alt={branch.name}
+                  className="w-full h-fukk object-cover"/>
                 <span className="text-white/30 text-sm font-bold">Pict</span>
                 {branch.tag && (
                   <span className={`absolute top-4 right-4 text-[10px] px-3 py-1 rounded-full font-bold ${branch.tagColor}`}>
@@ -120,7 +124,7 @@ export default function BranchesPage() {
                   </div>
                   <div>
                     <span className="font-bold text-[#178E81] block">Work Hour</span>
-                    <span className="text-gray-500">{branch.hours}</span>
+                    <span className="text-gray-500">{branch.Hours}</span>
                   </div>
                 </div>
                 <div className="flex gap-3">
