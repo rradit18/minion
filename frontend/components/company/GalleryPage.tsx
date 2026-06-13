@@ -35,7 +35,7 @@ const GalleryRow = () => (
 // --- Main Page ---
 const GalleryPage = () => {
   return (
-    <div className="bg-[#EAE6DF] font-sans text-[#1a1a1a] min-h-screen pb-10">
+    <div className="bg-[#FAF7EF] font-sans text-[#1a1a1a] min-h-screen pb-10">
 
       {/* ── Header ── */}
       <div className="max-w-4xl mx-auto px-8 pt-10 pb-8 flex gap-10 items-start">
