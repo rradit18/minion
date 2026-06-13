@@ -43,9 +43,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen overflow-hidden flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14">
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto">
         <div>
           <p className="text-[42px] font-bold text-white leading-none" style={{ fontFamily: "'Dancing Script', cursive" }}>Minion</p>
           <div className="flex items-center gap-2 mt-1">
@@ -70,7 +70,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-14 bg-[#F5EFE4]">
+      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto">
         <div className="w-full max-w-md">
           <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">Buat Akun Baru</p>
           <h1 className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Register</h1>

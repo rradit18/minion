@@ -12,7 +12,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Ambil semua akun untuk hint panel
   const demoAccounts = getUsers().filter((u) =>
     ["admin@minion.com", "kasir@minion.com", "user@minion.com", "barber@minion.com"].includes(u.email)
   );
@@ -48,9 +47,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen overflow-hidden flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14">
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto">
         <div>
           <p className="text-[42px] font-bold text-white leading-none" style={{ fontFamily: "'Dancing Script', cursive" }}>Minion</p>
           <div className="flex items-center gap-2 mt-1">
@@ -58,7 +57,6 @@ export default function LoginPage() {
             <span className="text-[10px] font-bold tracking-[3px] text-white/60 uppercase">Barbershop</span>
           </div>
         </div>
-
         <div>
           <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6">Good Hair.<br />Good Vibes.<br />Everyday.</p>
           <div className="bg-white/5 rounded-2xl p-4 space-y-3">
@@ -79,7 +77,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-14 bg-[#F5EFE4]">
+      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto">
         <div className="w-full max-w-md">
           <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">Selamat Datang Kembali</p>
           <h1 className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Sign In</h1>
@@ -111,10 +109,20 @@ export default function LoginPage() {
                 <Link href="/lupa-password" className="text-xs text-gray-400 hover:text-[#F9C74F] transition-colors">Lupa password?</Link>
               </div>
             </div>
+
+            {/* Masuk */}
             <button type="submit" disabled={loading}
               className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
               {loading ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Memproses...</> : "Masuk"}
             </button>
+
+            {/* Daftar */}
+            <Link
+              href="/register"
+              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors flex items-center justify-center"
+            >
+              Daftar
+            </Link>
           </form>
 
           {/* Mobile demo hint */}
