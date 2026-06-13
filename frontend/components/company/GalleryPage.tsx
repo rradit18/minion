@@ -15,17 +15,16 @@ const PersonFigure = ({ headColor, bodyColor }: { headColor: string; bodyColor: 
   </div>
 );
 
-// Fix 1 & 2: Tambah penutup `"` pada className, dan tutup <img> dengan />
 const GalleryCard = ({ imageUrl }: { imageUrl: string }) => (
   <div className="rounded-2xl overflow-hidden relative" style={{ aspectRatio: '3/4' }}>
     <img
       src={imageUrl}
-      alt=""
-      className="w-full h-full object-cover" />
+      alt="Gallery"
+      className="w-full h-full object-cover" 
+    />
   </div>
 );
 
-// Fix 3: Ganti prop `item` menjadi `imageUrl` agar sesuai dengan GalleryCard
 const GalleryRow = () => (
   <div className="grid grid-cols-6 gap-2.5">
     {galleryColors.map((item, i) => <GalleryCard key={i} imageUrl={item} />)}
@@ -35,7 +34,14 @@ const GalleryRow = () => (
 // --- Main Page ---
 const GalleryPage = () => {
   return (
-    <div className="bg-[#FAF7EF] font-sans text-[#1a1a1a] min-h-screen pb-10">
+    <div 
+      className="font-sans text-[#1a1a1a] min-h-screen pb-10"
+      style={{
+        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/images/barber-pattern.png')`,
+        backgroundSize: "cover",
+        backgroundColor: "#FCFBF7",
+      }}
+    >
 
       {/* ── Header ── */}
       <div className="max-w-4xl mx-auto px-8 pt-10 pb-8 flex gap-10 items-start">
@@ -56,12 +62,12 @@ const GalleryPage = () => {
       {/* ── Highlight Before/After Card ── */}
       <div className="max-w-4xl mx-auto px-8 pb-7">
         <div className="bg-white rounded-2xl flex overflow-hidden min-h-[300px] relative">
-          <div className="absolute inset-0 z-0 opacity-[10] pointer-events-none"
-          style={{
-            backgroundImage: "url('/pattern.png')",
-            backgroundRepeat: "repeat"
-          }}
-        />
+          <div className="absolute inset-0 z-0 opacity-[5] pointer-events-none"
+            style={{
+              backgroundImage: "url('/pattern.png')",
+              backgroundRepeat: "repeat"
+            }}
+          />
 
           {/* Foto split */}
           <div className="w-72 flex-shrink-0 relative bg-[#d0c8bc] overflow-hidden">
@@ -139,7 +145,7 @@ const GalleryPage = () => {
         <button className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide">
           - Lihat Semua -
         </button>
-        <span className="absolute right-24 bottom-7 text-[#D4AF37] text-[32px]">✦</span>
+        <span className="absolute right-24 bottom-7 text-[#D4AF37] text-[50px]">✦</span>
       </div>
     </div>
   );
