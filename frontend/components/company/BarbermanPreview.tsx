@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 
 const barbers = [
   { name: "Hendra", role: "Fade King", badge: "Fade Specialist", color: "bg-cyan-400", image: "/barber1.png" },
@@ -28,7 +28,10 @@ export default function BarberPreview() {
                 {barber.badge}
               </span>
               <div className="mt-2 flex items-center gap-1 text-xs font-medium text-black">
-                <span>⭐</span> <span>4.9 (2300+)</span>
+                <svg className="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span>4.9 (2300+)</span>
               </div>
             </div>
           </div>
