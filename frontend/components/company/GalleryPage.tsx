@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-// Fix Hydration Error dengan dynamic import (ssr: false)
 const ReactCompareSlider = dynamic(
   () => import('react-compare-slider').then((mod) => mod.ReactCompareSlider),
   { ssr: false }
@@ -36,7 +35,6 @@ const GalleryPage = () => {
     <div 
       className="font-sans text-[#1a1a1a] min-h-screen pb-10"
       style={{
-        // Background disamakan dengan BranchesPage
         backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/images/barber-pattern.png')`,
         backgroundSize: "cover",
         backgroundColor: "#FCFBF7",
@@ -62,7 +60,6 @@ const GalleryPage = () => {
       <div className="max-w-7xl mx-auto px-6 pb-7">
         <div className="bg-white rounded-2xl flex flex-col md:flex-row overflow-hidden min-h-[300px] relative shadow-sm border border-gray-100">
           
-          {/* Pattern Background tetap ada di dalam kotak */}
           <div className="absolute inset-0 z-0 opacity-[5] pointer-events-none"
             style={{
               backgroundImage: "url('/pattern.png')",

@@ -9,6 +9,7 @@ interface Product {
   price: number;
   desc: string;
   color: "purple" | "pink" | "cream";
+  image: string;
   featured?: boolean;
 }
 
@@ -30,17 +31,18 @@ const products: Product[] = [
     price: 42000,
     desc: "Our signature high-hold matte finish clay, infused with volcanic ash and sandalwood for a textured, artisan look that lasts 24 hours.",
     color: "cream",
+    image: "/obsidian-clay.jpg",
     featured: true,
   },
-  { id: 1, name: "Products", category: "Clay & Pomade", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "cream" },
-  { id: 2, name: "Products", category: "Skincare", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "purple" },
-  { id: 3, name: "Products", category: "Skincare", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "pink" },
-  { id: 4, name: "Products", category: "Tools & Accessories", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "cream" },
-  { id: 5, name: "Products", category: "Fragrance", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "purple" },
-  { id: 6, name: "Products", category: "Vitamins", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "pink" },
-  { id: 7, name: "Products", category: "Clay & Pomade", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "cream" },
-  { id: 8, name: "Products", category: "Grooming Kits", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "purple" },
-  { id: 9, name: "Products", category: "Skincare", price: 99000, desc: "Perfecting botanical serum for beard growth and rich relief. Enriched with tobacco leaf and citrus.", color: "pink" },
+  { id: 1, name: "Sea Salt Spray", category: "Clay & Pomade", price: 99000, desc: "Texturize alami untuk rambur bervolume.", color: "cream", image: "/sea-salt.jpg" },
+  { id: 2, name: "Face Wash", category: "Skincare", price: 99000, desc: "Pembersih wajah dengan ekstrak charcoal.", color: "purple", image: "/face-wash.jpg"  },
+  { id: 3, name: "Moisturizer", category: "Skincare", price: 99000, desc: "Melembapkan kulit seharian tanpa rasa lengket.", color: "pink", image: "/moisturizer.jpg" },
+  { id: 4, name: "Comb Set", category: "Tools & Accessories", price: 99000, desc: "Sisir premium anti-statis", color: "cream", image: "/comb-set.jpg" },
+  { id: 5, name: "Eau De Parfum", category: "Fragrance", price: 99000, desc: "Wangi maskulin yang tahan lama.", color: "purple", image: "/parfum.jpg" },
+  { id: 6, name: "Hair Vitamin", category: "Vitamins", price: 99000, desc: "Nutrisi untuk akar rambut kuat.", color: "pink", image: "/hairvit.jpg" },
+  { id: 7, name: "Matte Paste", category: "Clay & Pomade", price: 99000, desc: "Hasil akhir natural matte.", color: "cream", image: "/matte-paste.jpg" },
+  { id: 8, name: "Travel Kit", category: "Grooming Kits", price: 99000, desc: "Paket lengkap untuk traveling.", color: "purple", image: "/travel-kit.jpg" },
+  { id: 9, name: "Face Scrub", category: "Skincare", price: 99000, desc: "Eksfoliasi lembut untuk kulit fresh.", color: "pink", image: "/face-scrub.jpg" },
 ];
 
 const formatRupiah = (num: number) =>
@@ -91,10 +93,17 @@ function ProductCard({ product }: { product: Product }) {
     <div className={`${cardBg[product.color]} rounded-2xl p-4 flex flex-col`}>
       <div className="relative w-full aspect-square bg-white/60 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
         <Sparkle className={`absolute top-2 right-2 w-6 h-6 ${sparkleColor[product.color]}`} />
-        <span className="text-gray-400 text-xs font-medium">Pict</span>
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/placeholder.jpg';
+          }}
+        />
       </div>
       <p className="text-[11px] text-gray-500 mb-0.5 font-medium">{product.name}</p>
-      <p className="text-[#C0392B] font-bold text-sm mb-1">Rp. XXXXX</p>
+      <p className="text-[#C0392B] font-bold text-sm mb-1">{formatRupiah(product.price)}</p>
       <p className="text-gray-600 text-[11px] leading-relaxed mb-3 flex-1">{product.desc}</p>
       <WaButton className="w-full" />
     </div>
@@ -118,18 +127,18 @@ export default function ProductsPageClient() {
     <div className="bg-[#FAF7EF] min-h-screen">
 
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden" style={{ backgroundColor: '#2B3320' }}>
-        {/* Background pattern */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: "url('/pattern.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-6 py-14 md:py-20">
+      <div className="max-w-7xl mx-auto px-6 pt-6">
+      <section className="relative overflow-hidden rounded-2xl" style={{ backgroundColor: '#2B3320' }}>
+        <div className="relative px-6 py-14 md:py-20">
+          
+          <div
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              backgroundImage: "url('/pattern.png')",
+              backgroundRepeat: 'repeat',
+              backgroundSize: 'auto',
+            }}
+          />
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
 
             {/* Left: Text */}
@@ -148,7 +157,7 @@ export default function ProductsPageClient() {
             <div className="flex-shrink-0 w-[260px] md:w-[320px] lg:w-[380px]">
               <div className="rounded-[24px] overflow-hidden shadow-2xl aspect-[4/3] bg-[#3B4A2D]">
                 <img
-                  src="/products-hero.png"
+                  src="/product.jfif"
                   alt="Grooming Products"
                   className="w-full h-full object-cover"
                 />
@@ -165,6 +174,7 @@ export default function ProductsPageClient() {
           </svg>
         </div>
       </section>
+      </div>
 
       {/* ── CATEGORY FILTER ── */}
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -202,7 +212,7 @@ export default function ProductsPageClient() {
                 </span>
                 <div className="w-44 h-36 bg-[#3B4A2D] rounded-xl overflow-hidden flex items-center justify-center">
                   <img
-                    src="/obsidian-clay.png"
+                    src="/obsidian-clay.jpg"
                     alt={featured.name}
                     className="w-full h-full object-cover"
                   />

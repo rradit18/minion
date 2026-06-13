@@ -1,10 +1,10 @@
 "use client";
 
 const branches = [
-  { name: "Pramuka", image: "/pramuka.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", Hours: "10 to 21" },
-  { name: "Kijang", image: "/kijang.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",      tagColor: "bg-[#178E81] text-white",      open: "Every day", Hours: "10 to 21" },
-  { name: "Km. 9", image:"/km9.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat",           tagColor: "bg-[#178E81] text-white",      open: "Every day", Hours: "10 to 21" },
-  { name: "Ganet", image: "/ganet.jpg",  address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Baru Dibuka",tagColor: "bg-[#7B5EA7] text-white",       open: "Every day", Hours: "10 to 21" },
+  { name: "Pramuka", image: "/pramuka.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#F9C74F] text-[#1a1a1a]", open: "Every day", Hours: "10 to 21" },
+  { name: "Kijang", image: "/kijang.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#178E81] text-white", open: "Every day", Hours: "10 to 21" },
+  { name: "Km. 9", image:"/km9.jpg", address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Pusat", tagColor: "bg-[#178E81] text-white", open: "Every day", Hours: "10 to 21" },
+  { name: "Ganet", image: "/ganet.jpg",  address: "Jl. Bandara Perumahan Mekarsari Block A No. 11", tag: "Baru Dibuka",tagColor: "bg-[#7B5EA7] text-white", open: "Every day", Hours: "10 to 21" },
 ];
 
 const Scissors = () => (
@@ -53,7 +53,7 @@ const PatternOverlay = () => (
       backgroundImage: `url('/pattern.png')`,
       backgroundRepeat: "repeat",
       backgroundSize: "auto",
-      opacity: 6,
+      opacity: 0.6,
     }}
   />
 );
@@ -63,7 +63,7 @@ export default function BranchesPage() {
     <div className="relative min-h-screen pb-10 bg-[#FCFBF7]">
       <main className="relative z-10">
 
-        {/* ── Hero — ada pattern ── */}
+        {/* ── Hero ── */}
         <section className="relative max-w-7xl mx-auto px-6 pt-8 pb-4 text-center overflow-hidden">
           <PatternOverlay />
 
@@ -99,14 +99,15 @@ export default function BranchesPage() {
           </div>
         </section>
 
-        {/* ── Branch Grid — ada pattern ── */}
+        {/* ── Branch Grid ── */}
         <section className="w-full">
           <div className="relative max-w-7xl mx-auto px-6 pt-8 mb-16 overflow-hidden">
             <PatternOverlay />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {branches.map((branch, i) => (
-                <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                  <div className="h-65 relative overflow-hidden">
+                <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                 
+                  <div className="relative w-full aspect-[4/3] overflow-hidden rounded-t-2xl">
                     <img src={branch.image} alt={branch.name} className="w-full h-full object-cover"/>
                     {branch.tag && (
                       <span className={`absolute top-4 right-4 text-[10px] px-3 py-1 rounded-full font-bold ${branch.tagColor}`}>
@@ -114,7 +115,8 @@ export default function BranchesPage() {
                       </span>
                     )}
                   </div>
-                  <div className="p-5">
+                  {/* Konten teks — bebas overflow */}
+                  <div className="p-5 flex flex-col flex-1">
                     <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#1a1a1a]">{branch.name}</h3>
                     <p className="text-xs text-gray-400 mb-3 flex items-start gap-1">
                       <span className="text-[#178E81] mt-0.5">📍</span>
@@ -124,7 +126,7 @@ export default function BranchesPage() {
                       <div><span className="font-bold text-[#178E81] block">Open</span><span className="text-gray-500">{branch.open}</span></div>
                       <div><span className="font-bold text-[#178E81] block">Work Hour</span><span className="text-gray-500">{branch.Hours}</span></div>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 mt-auto">
                       <button className="flex-1 py-2.5 border border-gray-200 rounded-lg text-xs font-bold hover:bg-gray-50 text-[#1a1a1a] transition">Buka Google Maps</button>
                       <button className="px-5 py-2.5 bg-[#178E81] text-white rounded-lg text-xs font-bold hover:bg-[#0f6b61] transition">Buka</button>
                     </div>
@@ -135,7 +137,7 @@ export default function BranchesPage() {
           </div>
         </section>
 
-        {/* ── Peta Lokasi — POLOS, tanpa pattern ── */}
+        {/* ── Peta Lokasi ── */}
         <section className="w-full bg-white">
           <div className="max-w-7xl mx-auto px-6 py-10">
             <h2 className="text-xl sm:text-2xl font-black mb-2 text-[#1a1a1a]">Peta Lokasi</h2>

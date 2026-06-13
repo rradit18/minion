@@ -1,7 +1,15 @@
+"use client";
+
 import React from 'react';
 import { Star } from 'lucide-react';
 
 const AboutSection = () => {
+  const timelineImages = [
+    "/minion2.jfif", 
+    "/minion1.jfif", 
+    "/minion3.jfif", 
+  ];
+
   return (
     <div className="bg-[#FCFBF7] text-[#1a1a1a] min-h-screen">
       
@@ -54,9 +62,11 @@ const AboutSection = () => {
         {/* Left Column (Timeline) */}
         <div className="flex flex-col gap-8 relative">
           <div className="absolute left-[39px] top-0 bottom-0 w-0.5 bg-gray-200 -z-10"></div>
-          {[1, 2, 3].map((item) => (
-            <div key={item} className="bg-gray-200 h-64 w-full rounded-3xl overflow-hidden">
-              <img src={`/placeholder-history-${item}.jpg`} alt="History" className="w-full h-full object-cover" />
+          
+          {/* Mapping array gambar agar setiap item berbeda */}
+          {timelineImages.map((imgSrc, index) => (
+            <div key={index} className="bg-gray-200 h-64 w-full rounded-3xl overflow-hidden">
+              <img src={imgSrc} alt={`History ${index + 1}`} className="w-full h-full object-cover" />
             </div>
           ))}
         </div>
@@ -74,7 +84,7 @@ const AboutSection = () => {
       {/* 4. Testimonials Section */}
       <section className="bg-[#2D2D2D] text-white py-20 px-6 relative">
         <div className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{ backgroundImage: 'url(/pattern.png'}}
+        style={{ backgroundImage: 'url(/pattern.png)'}}
         />
         <div className="max-w-7xl mx-auto relative z-10">
           <h2 className="text-3xl font-bold mb-12">Their Thought About Minion</h2>

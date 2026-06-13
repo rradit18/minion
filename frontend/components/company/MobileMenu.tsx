@@ -24,7 +24,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   return (
     <div className="fixed inset-0 z-[9999] overflow-y-auto">
-      {/* Background: cream + barber illustration pattern overlay */}
+     
       <div
         className="absolute inset-0"
         style={{
@@ -36,7 +36,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           opacity: 1,
         }}
       />
-      {/* Cream overlay to soften the pattern */}
+      
       <div className="absolute inset-0 bg-[#F5EFE4]/80" />
 
       {/* Content */}

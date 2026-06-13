@@ -208,7 +208,7 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
                 <span className="text-[#7B5EA7]">gantenggg."</span>
               </h1>
               <p
-                className="text-[13px] text-[#666] leading-relaxed max-w-[280px]"
+                className="text-[13px] text-[#666] leading-relaxed max-w-[280px] mx-auto md:mx-0 text-center md:text-left"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
                 Potongan terbaik bukan cuma soal gaya...

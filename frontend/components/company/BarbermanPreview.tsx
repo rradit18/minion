@@ -50,7 +50,7 @@ export default function BarberPreview() {
           </Link>
         ))}
 
-        {/* ── Scissors — bawah kiri card pertama ── */}
+        {/* ── Scissors ── */}
         <div className="absolute -bottom-5 left-0 w-10 h-10 pointer-events-none -rotate-[25deg]">
           <svg viewBox="0 0 40 44" fill="none" stroke="#178E81" strokeWidth="2.5" strokeLinecap="round">
             <circle cx="10" cy="34" r="6" fill="#178E81" fillOpacity="0.25"/>
@@ -60,7 +60,7 @@ export default function BarberPreview() {
           </svg>
         </div>
 
-        {/* ── Clipper — atas kanan card kedua (antara card 2 dan 3) ── */}
+        {/* ── Clipper ── */}
         <div
           className="absolute pointer-events-none"
           style={{ top: '-8px', left: 'calc(50% + 10px)', width: '28px', height: '40px', transform: 'rotate(10deg)' }}
@@ -76,7 +76,7 @@ export default function BarberPreview() {
           </svg>
         </div>
 
-        {/* ── Comb — bawah kanan card ketiga ── */}
+        {/* ── Comb ── */}
         <div
           className="absolute pointer-events-none"
           style={{ bottom: '-10px', left: 'calc(75% - 30px)', width: '56px', height: '28px', transform: 'rotate(-8deg)' }}
@@ -89,7 +89,7 @@ export default function BarberPreview() {
           </svg>
         </div>
 
-        {/* ── Sparkle bintang — atas kanan card keempat ── */}
+        {/* ── Sparkle bintang ── */}
         <div
           className="absolute pointer-events-none"
           style={{ top: '-10px', right: '0px' }}
