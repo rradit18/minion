@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserResource\Pages;
+use App\Models\Branch;
 use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -46,7 +47,15 @@ class UserResource extends Resource
                     'barber'   => 'Barber',
                     'customer' => 'Customer',
                 ])
-                ->required(),
+                ->required()
+                ->live(),
+            Select::make('branch_id')
+                ->label('Cabang')
+                ->options(Branch::where('is_active', true)->pluck('name', 'id'))
+                ->searchable()
+                ->nullable()
+                ->visible(fn($get) => in_array($get('role'), ['cashier', 'barber']))
+                ->required(fn($get) => $get('role') === 'cashier'),
             Toggle::make('is_active')
                 ->label('Aktif')
                 ->default(true),
@@ -84,6 +93,10 @@ class UserResource extends Resource
                         'customer' => 'success',
                         default    => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('Cabang')
+                    ->placeholder('-')
+                    ->toggleable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Aktif')
                     ->boolean(),

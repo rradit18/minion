@@ -1,3 +1,4 @@
+<div>
 @if ($isOpen)
 <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" x-data>
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -288,3 +289,4 @@
     </div>
 </div>
 @endif
+</div>

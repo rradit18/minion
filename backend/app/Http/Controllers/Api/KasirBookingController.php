@@ -16,7 +16,7 @@ class KasirBookingController extends Controller
     public function confirm(Request $request, string $id): JsonResponse
     {
         $kasir   = $request->user();
-        $booking = Booking::where('id', $id)
+        $booking = Booking::where('booking_number', $id)
             ->where('branch_id', $kasir->branch_id)
             ->where('status', BookingStatus::PendingConfirmation)
             ->firstOrFail();
@@ -32,7 +32,7 @@ class KasirBookingController extends Controller
     public function start(Request $request, string $id): JsonResponse
     {
         $kasir   = $request->user();
-        $booking = Booking::where('id', $id)
+        $booking = Booking::where('booking_number', $id)
             ->where('branch_id', $kasir->branch_id)
             ->where('status', BookingStatus::Confirmed)
             ->firstOrFail();
