@@ -3,11 +3,14 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\BarberController;
+use App\Http\Controllers\Api\BarberPortalController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\KasirBookingController;
+use App\Http\Controllers\Api\KasirReportController;
+use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\ServiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,8 +58,20 @@ Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(
     Route::get('/promos',                          [CustomerController::class, 'promos']);
 });
 
+// ─── Promo validate (public + optional auth) ───────────────────────────────
+Route::middleware('optional.auth')->post('/promos/validate', [PromoController::class, 'validate']);
+
 // ─── Kasir endpoints [auth:sanctum + role=cashier] ─────────────────────────
 Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('kasir')->group(function () {
     Route::patch('/bookings/{id}/confirm', [KasirBookingController::class, 'confirm']);
     Route::patch('/bookings/{id}/start',   [KasirBookingController::class, 'start']);
+    Route::get('/report',                  [KasirReportController::class, 'daily']);
+    Route::get('/report/export',           [KasirReportController::class, 'export']);
+});
+
+// ─── Barber portal [auth:sanctum + role=barber] ────────────────────────────
+Route::middleware(['auth:sanctum', 'role:barber'])->prefix('barber')->group(function () {
+    Route::get('/schedule',       [BarberPortalController::class, 'schedule']);
+    Route::get('/bookings/today', [BarberPortalController::class, 'todayBookings']);
+    Route::get('/ratings',        [BarberPortalController::class, 'ratings']);
 });

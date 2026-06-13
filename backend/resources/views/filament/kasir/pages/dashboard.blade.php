@@ -12,4 +12,7 @@
         @livewire(\App\Livewire\Kasir\WalkinForm::class)
         @livewire(\App\Livewire\Kasir\ShiftCalendar::class)
     </div>
+
+    {{-- POS Modal (hidden until triggered) --}}
+    @livewire(\App\Livewire\Kasir\PosModal::class)
 </x-filament-panels::page>
