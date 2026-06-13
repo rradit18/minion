@@ -37,7 +37,7 @@ const GalleryPage = () => {
       style={{
         backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/images/barber-pattern.png')`,
         backgroundSize: "cover",
-        backgroundColor: "#FCFBF7",
+        backgroundColor: "#FAF7EE",
       }}
     >
       {/* ── Header ── */}

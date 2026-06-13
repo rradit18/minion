@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -17,7 +17,7 @@ export default function ContactPage() {
   };
 
   return (
-    <section className="bg-[#FCFBF7] min-h-screen px-6 py-20">
+    <section className="bg-[#FAF7EE] min-h-screen px-6 py-20">
       <div className="max-w-xl mx-auto">
         <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">
           Hubungi Kami

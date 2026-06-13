@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const PromoBanner = () => {
   return (
-    <section className="max-w-7xl mx-auto px-6 pt-10 mb-8">
+    <section className="max-w-7xl mx-auto px-6 py-6">
       <div className="relative">
         <div
           className="rounded-2xl flex items-center relative overflow-hidden"
@@ -78,46 +78,45 @@ const PromoBanner = () => {
 
           {/* ── Konten utama ── */}
 
-          {/* Mascot kiri — sembunyiin di mobile xs, munculin sm+ */}
-          <div className="relative w-20 sm:w-28 md:w-32 flex-shrink-0 flex items-end justify-center self-end">
-            <img
-              src="/doodle.png"
-              alt="Mascot Doodle"
-              className="h-[100px] sm:h-[120px] md:h-[140px] object-contain"
-            />
-          </div>
+          {/* Mascot kiri — absolut di sudut kiri (bingkai) */}
+          <img
+            src="/doodle.png"
+            alt="Mascot Doodle"
+            className="absolute bottom-0 left-2 sm:left-4 h-[100px] sm:h-[120px] md:h-[140px] object-contain pointer-events-none hidden sm:block"
+          />
 
-          {/* Teks */}
-          <div className="flex-1 py-3 pl-2 pr-2 sm:pr-3">
-            <h2 className="text-[16px] sm:text-[18px] md:text-[22px] font-black leading-[1.1] tracking-tight uppercase text-[#1a1a1a] italic">
+          {/* Grup tengah: teks + divider + harga + tombol */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 mx-auto px-4 sm:px-36 md:px-44 py-3">
+            {/* Teks */}
+            <h2 className="font-display text-[18px] sm:text-[22px] md:text-[26px] font-bold leading-[1.05] tracking-tight uppercase text-[#1a1a1a] italic">
               HARGA KAWAN<br />HASIL IDAMAN.
             </h2>
-          </div>
 
-          {/* Divider — hidden di mobile */}
-          <div className="w-px h-12 bg-black/15 flex-shrink-0 mx-2 sm:mx-4 hidden sm:block" />
+            {/* Divider — hidden di mobile */}
+            <div className="w-px h-12 bg-black/20 flex-shrink-0 hidden sm:block" />
 
-          {/* Harga + Tombol */}
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 flex-shrink-0 pr-4 sm:pr-6 py-3 sm:py-0">
-            <div className="text-center sm:text-left">
-              <p className="text-[9px] sm:text-[10px] text-gray-600 mb-0.5">Mulai dari</p>
-              <p className="text-base sm:text-xl font-black text-[#1a1a1a] leading-none">Rp. 35.000</p>
-              <p className="text-[8px] sm:text-[9px] text-gray-600 mt-1 max-w-[100px] leading-snug hidden sm:block">
-                Gak perlu mahal buat tampil maksimal
-              </p>
+            {/* Harga + Tombol */}
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 flex-shrink-0">
+              <div className="text-center sm:text-left">
+                <p className="text-[9px] sm:text-[10px] text-gray-600 mb-0.5">Mulai dari</p>
+                <p className="font-display text-base sm:text-xl font-bold text-[#1a1a1a] leading-none">Rp. 35.000</p>
+                <p className="text-[8px] sm:text-[9px] text-gray-600 mt-1 max-w-[100px] leading-snug hidden sm:block">
+                  Gak perlu mahal buat tampil maksimal
+                </p>
+              </div>
+              <Link href="/booking">
+                <button className="bg-[#1a1a1a] text-white text-[11px] sm:text-[13px] font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap hover:scale-105 transition-transform">
+                  Book Sekarang →
+                </button>
+              </Link>
             </div>
-            <Link href="/booking">
-              <button className="bg-[#1a1a1a] text-white text-[11px] sm:text-[13px] font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap hover:scale-105 transition-transform">
-                Book Sekarang →
-              </button>
-            </Link>
           </div>
 
           {/* Love mascot kanan — hidden di mobile */}
           <img
             src="/love.png"
             alt="Love Icon"
-            className="absolute bottom-0 right-0 w-14 sm:w-16 md:w-20 h-14 sm:h-16 md:h-20 object-contain pointer-events-none hidden sm:block"
+            className="absolute bottom-0 right-0 sm:right-2 w-14 sm:w-16 md:w-20 h-14 sm:h-16 md:h-20 object-contain pointer-events-none hidden sm:block"
           />
         </div>
       </div>

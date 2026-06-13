@@ -65,7 +65,7 @@ export default function BarberDetailClients({ barberName, barberSlug }: Props) {
   const firstName = barberName.split(' ')[0];
 
   return (
-    <div className="bg-[#FAFAF6] min-h-screen font-sans">
+    <div className="bg-[#FAF7EE] min-h-screen font-sans">
       <section className="max-w-7xl mx-auto px-6 pt-12 pb-10">
         <div className="flex flex-col md:flex-row gap-10 items-start">
           <div className="relative flex-shrink-0 w-52 h-52">
@@ -82,7 +82,7 @@ export default function BarberDetailClients({ barberName, barberSlug }: Props) {
             </div>
             <p className="text-sm text-gray-500 mb-5 flex items-center gap-1.5"><svg className="w-4 h-4 text-[#178E81]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>{data.location}</p>
             <div className="bg-[#1a1a1a] rounded-2xl border-l-4 border-[#F9C74F] px-5 py-4 mb-5 max-w-xl"><p className="text-white italic text-[13px] leading-relaxed">"{data.quote}"</p></div>
-            <div className="flex gap-2 flex-wrap"><span className="bg-[#F9C74F] text-[#1a1a1a] text-xs font-bold px-4 py-1.5 rounded-full">{data.experience}</span><span className="bg-[#FAFAF6] border-2 border-[#1a1a1a] text-[#1a1a1a] text-xs font-bold px-4 py-1.5 rounded-full">{data.clientReturns}</span></div>
+            <div className="flex gap-2 flex-wrap"><span className="bg-[#F9C74F] text-[#1a1a1a] text-xs font-bold px-4 py-1.5 rounded-full">{data.experience}</span><span className="bg-[#FAF7EE] border-2 border-[#1a1a1a] text-[#1a1a1a] text-xs font-bold px-4 py-1.5 rounded-full">{data.clientReturns}</span></div>
           </div>
         </div>
       </section>

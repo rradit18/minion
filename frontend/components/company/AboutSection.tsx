@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from 'react';
 import { Star } from 'lucide-react';
@@ -11,7 +11,7 @@ const AboutSection = () => {
   ];
 
   return (
-    <div className="bg-[#FCFBF7] text-[#1a1a1a] min-h-screen">
+    <div className="bg-[#FAF7EE] text-[#1a1a1a] min-h-screen">
       
       {/* 1. Header Section */}
       <section className="max-w-7xl mx-auto px-6 py-20">

@@ -11,10 +11,15 @@ const barbers = [
 
 export default function BarberPreview() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 relative">
-      <h2 className="font-bold text-sm tracking-wide mb-6 text-black uppercase">
-        Kenalan Sama Barberman Kece Kami
-      </h2>
+    <div className="max-w-7xl mx-auto px-6 py-6 relative">
+      <div className="flex items-center gap-2 mb-4">
+        <h2 className="font-display font-bold text-base tracking-wide text-black uppercase">
+          Kenalan Sama Barberman Kece Kami
+        </h2>
+        <svg viewBox="0 0 60 14" className="w-12 h-3.5" fill="none">
+          <path d="M2 7 Q9 1 16 7 T30 7 T44 7 T58 7" stroke="#7B5EA7" strokeWidth="2.5" strokeLinecap="round"/>
+        </svg>
+      </div>
 
       <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
@@ -34,8 +39,8 @@ export default function BarberPreview() {
 
               {/* Info */}
               <div className="flex-1 pt-1">
-                <h3 className="font-bold text-base text-black leading-tight">{barber.name}</h3>
-                <p className="text-xs text-gray-400 mb-2">{barber.role}</p>
+                <h3 className="font-display font-bold text-base text-black leading-tight">{barber.name}</h3>
+                <p className="text-xs text-gray-400 mb-2 font-body">{barber.role}</p>
                 <span className="inline-block bg-[#F9C74F] text-[#1a1a1a] text-[10px] font-bold px-3 py-1 rounded-full mb-2">
                   {barber.badge}
                 </span>

@@ -60,7 +60,7 @@ const PatternOverlay = () => (
 
 export default function BranchesPage() {
   return (
-    <div className="relative min-h-screen pb-10 bg-[#FCFBF7]">
+    <div className="relative min-h-screen pb-10 bg-[#FAF7EE]">
       <main className="relative z-10">
 
         {/* ── Hero ── */}
@@ -119,7 +119,7 @@ export default function BranchesPage() {
                   <div className="p-5 flex flex-col flex-1">
                     <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#1a1a1a]">{branch.name}</h3>
                     <p className="text-xs text-gray-400 mb-3 flex items-start gap-1">
-                      <span className="text-[#178E81] mt-0.5">📍</span>
+                      <span className="text-[#178E81] mt-0.5">ðŸ“</span>
                       <span>{branch.address}</span>
                     </p>
                     <div className="grid grid-cols-2 gap-x-4 text-xs mb-4">

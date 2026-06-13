@@ -4,8 +4,8 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#FCFBF7] pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-5 gap-12">
+    <footer className="bg-[#FAF7EE] pt-10 pb-8 border-t border-gray-100">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-5 gap-8">
 
         {/* Kolom 1: Logo */}
         <div className="md:col-span-1">
@@ -18,7 +18,7 @@ const Footer = () => {
 
         {/* Kolom 2: Connect */}
         <div>
-          <h3 className="text-black font-bold mb-4">CONNECT</h3>
+          <h3 className="text-black font-display font-bold mb-4 text-sm tracking-wide">CONNECT</h3>
           <ul className="space-y-3 text-sm text-gray-600">
             <li>
               <a
@@ -70,7 +70,7 @@ const Footer = () => {
 
         {/* Kolom 3: Legal */}
         <div>
-          <h3 className="text-black font-bold mb-4">LEGAL</h3>
+          <h3 className="text-black font-display font-bold mb-4 text-sm tracking-wide">LEGAL</h3>
           <ul className="space-y-2 text-sm text-gray-600">
             <li><a href="#" className="hover:text-[#D4AF37] transition">Privacy Policy</a></li>
             <li><a href="#" className="hover:text-[#D4AF37] transition">Terms & Conditions</a></li>
@@ -79,7 +79,7 @@ const Footer = () => {
 
         {/* Kolom 4: Kantor Utama */}
         <div>
-          <h3 className="text-black font-bold mb-4">KANTOR UTAMA</h3>
+          <h3 className="text-black font-display font-bold mb-4 text-sm tracking-wide">KANTOR UTAMA</h3>
           <p className="text-sm text-gray-600 leading-relaxed">
             Jl. Mangga, <br />
             Tanjungpinang, Kepulauan Riau <br />
@@ -89,7 +89,7 @@ const Footer = () => {
 
         {/* Kolom 5: Stay Updated */}
         <div>
-          <h3 className="text-black font-bold mb-4">STAY UPDATED</h3>
+          <h3 className="text-black font-display font-bold mb-4 text-sm tracking-wide">STAY UPDATED</h3>
           <p className="text-sm text-gray-600 mb-4">Dapatkan promo & info terbaru langsung di email anda.</p>
           <div className="flex bg-white rounded-full p-1 border border-gray-200">
             <input
@@ -105,7 +105,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright */}
-      <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-gray-200 text-center text-xs text-gray-500">
+      <div className="max-w-7xl mx-auto px-6 mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
         © 2026 Minion Barbershop. Elite Craftsmanship. Digital Rebellion
       </div>
     </footer>

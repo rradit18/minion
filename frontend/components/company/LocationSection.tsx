@@ -1,8 +1,8 @@
 const locations = [
-  { name: "Jl. Pramuka",  address: "Jl. Pramuka No.6, Tj. Ayun Sakti, Kec. Bukit Bestari, Kota Tanjung Pinang, Kepulauan Riau 29124", hours: "09:00 - 23:00", maps: "#" },
-  { name: "Kijang Kota",  address: "Jl. Kijang Raya No.45, Bintan", hours: "09:00 - 23:00", maps: "#" },
-  { name: "Bt. 9",        address: "Jl. Batu 9 No.7,Tanjungpinang", hours: "09:00 - 23:00", maps: "#" },
-  { name: "Jl. Ganet",    address: "Jl. Ganet No.22,Tanjungpinang", hours: "09:00 - 23:00", maps: "#" },
+  { name: "Jl. Pramuka",  address: "Jl. Pramuka No.6, Tj. Ayun Sakti, Kec. Bukit Bestari, Kota Tanjung Pinang, Kepulauan Riau 29124", hours: "09:00 - 23:00", maps: "#", color: "#F59E0B" },
+  { name: "Kijang Kota",  address: "Jl. Kijang Raya No.45, Bintan", hours: "09:00 - 23:00", maps: "#", color: "#14B8A6" },
+  { name: "Bt. 9",        address: "Jl. Batu 9 No.7,Tanjungpinang", hours: "09:00 - 23:00", maps: "#", color: "#EF4444" },
+  { name: "Jl. Ganet",    address: "Jl. Ganet No.22,Tanjungpinang", hours: "09:00 - 23:00", maps: "#", color: "#8B5CF6" },
 ];
 
 // Barber pole SVG illustration
@@ -44,41 +44,45 @@ const Squiggle = () => (
 
 const LocationSection = () => {
   return (
-    <section className="bg-[#FCFBF7] py-16">
+    <section className="bg-[#FAF7EE] py-8">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row gap-10 items-start">
+        <div className="flex flex-col md:flex-row gap-8 items-start">
 
           {/* Left — title + illustration */}
           <div className="flex-shrink-0 md:w-56">
             <div className="flex items-center gap-1 mb-1">
-              <h2 className="text-sm font-black text-[#1a1a1a] uppercase leading-tight tracking-wide">
+              <h2 className="font-display text-base font-bold text-[#1a1a1a] uppercase leading-tight tracking-wide">
                 TEMUKAN STUDIO KAMI<br />DI WILAYAH TERDEKATMU
               </h2>
               <Squiggle />
             </div>
-            <div className="mt-6 -rotate-[15deg] origin-center">
+            <div className="mt-4 -rotate-[15deg] origin-center">
               <BarberPole />
             </div>
           </div>
 
-          {/* Right — location list */}
+          {/* Right — location list dalam card ber-border */}
           <div className="flex-1">
-            <div className="space-y-0 divide-y divide-gray-100">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-100 overflow-hidden">
               {locations.map((loc, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors px-2 rounded-lg group"
+                  className="flex items-center gap-4 py-4 px-4 sm:px-6 hover:bg-gray-50/70 transition-colors group"
                 >
-                  {/* Pin icon */}
-                  <div className="w-8 h-8 rounded-full bg-[#F9C74F] flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-[#1a1a1a]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  {/* Pin icon — warna berbeda tiap lokasi */}
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: `${loc.color}1A` }}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke={loc.color} strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s7-7.16 7-12a7 7 0 10-14 0c0 4.84 7 12 7 12z"/>
+                      <circle cx="12" cy="9" r="2.5" fill={loc.color} stroke="none"/>
                     </svg>
                   </div>
 
                   {/* Name */}
                   <div className="w-32 flex-shrink-0">
-                    <p className="font-bold text-[#1a1a1a] text-sm">{loc.name}</p>
+                    <p className="font-display font-bold text-[#1a1a1a] text-sm">{loc.name}</p>
                   </div>
 
                   {/* Address */}

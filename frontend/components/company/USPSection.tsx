@@ -30,16 +30,16 @@ const uspItems = [
 
 const USPSection = () => {
   return (
-    <div className="max-w-7xl mx-auto px-6 pb-12">
-      <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 grid md:grid-cols-4 gap-6">
+    <div className="max-w-7xl mx-auto px-6 -mt-2 pb-8">
+      <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 grid grid-cols-2 md:grid-cols-4 gap-5 md:divide-x divide-gray-100">
         {uspItems.map((item, i) => (
-          <div key={i} className="flex gap-4">
-            <div className={`mt-1 ${item.color}`}>
-              <item.icon className="w-10 h-10" strokeWidth={1.5} />
+          <div key={i} className="flex gap-3 md:px-4 first:pl-0">
+            <div className={`mt-0.5 ${item.color}`}>
+              <item.icon className="w-8 h-8" strokeWidth={1.75} />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-1">{item.title}</h3>
-              <p className="text-gray-500 text-sm leading-tight">{item.desc}</p>
+              <h3 className="font-display font-bold text-gray-900 mb-1 text-[15px] leading-tight">{item.title}</h3>
+              <p className="text-gray-500 text-[12px] leading-snug font-body">{item.desc}</p>
             </div>
           </div>
         ))}

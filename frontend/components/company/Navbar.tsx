@@ -16,7 +16,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   ];
 
   return (
-    <nav className="flex items-center justify-between py-5 bg-[#FAFAF6] sticky top-0 z-50 px-6 lg:px-12">
+    <nav className="flex items-center justify-between py-5 bg-[#FAF7EE] sticky top-0 z-50 px-6 lg:px-12">
       {/* Logo */}
       <div className="flex items-center">
         <img
@@ -29,9 +29,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
       {/* Desktop Menu - Hanya muncul di layar besar */}
       <div className="hidden lg:flex items-center gap-8 font-bold text-[#1a1a1a] text-sm">
         {menuItems.map((item) => (
-          <a 
-            key={item.name} 
-            href={item.link} 
+          <a
+            key={item.name}
+            href={item.link}
             className={`hover:text-[#F9C74F] transition-colors ${item.name === 'Home' ? 'bg-[#F9C74F] px-4 py-2 rounded-full' : ''}`}
           >
             {item.name}

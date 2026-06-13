@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from 'react';
 import CompanyNavbar from "@/components/company/CompanyNavbar";
 import Footer from "@/components/company/Footer";
@@ -9,7 +9,7 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="bg-[#FAFAF6] min-h-screen flex flex-col">
+    <div className="bg-[#FAF7EE] min-h-screen flex flex-col">
       <div className="sticky top-0 z-50">
         <AnnouncementBar />
         {/* Navbar memicu buka menu */}
