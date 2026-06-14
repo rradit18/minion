@@ -28,6 +28,7 @@ class KasirPanelProvider extends PanelProvider
             ->login()
             ->profile()
             ->darkMode(true)
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::hex('#C9A544'),
             ])
