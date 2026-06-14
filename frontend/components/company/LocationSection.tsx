@@ -56,18 +56,18 @@ const LocationSection = () => {
               </h2>
               <Squiggle />
             </div>
-            <div className="mt-4 -rotate-[15deg] origin-center">
+            <div className="mt-4 -rotate-[15deg] origin-center hidden md:block">
               <BarberPole />
             </div>
           </div>
 
           {/* Right — location list dalam card ber-border */}
-          <div className="flex-1">
+          <div className="w-full md:flex-1">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-100 overflow-hidden">
               {locations.map((loc, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-4 py-4 px-4 sm:px-6 hover:bg-gray-50/70 transition-colors group"
+                  className="flex items-center gap-3 sm:gap-4 py-3.5 px-4 sm:px-6 hover:bg-gray-50/70 transition-colors group"
                 >
                   {/* Pin icon — warna berbeda tiap lokasi */}
                   <div
@@ -80,14 +80,15 @@ const LocationSection = () => {
                     </svg>
                   </div>
 
-                  {/* Name */}
-                  <div className="w-32 flex-shrink-0">
-                    <p className="font-display font-bold text-[#1a1a1a] text-sm">{loc.name}</p>
+                  {/* Name (+ jam buka di mobile) */}
+                  <div className="min-w-0 flex-1 sm:flex-none sm:w-32">
+                    <p className="font-display font-bold text-[#1a1a1a] text-sm truncate">{loc.name}</p>
+                    <p className="sm:hidden text-gray-400 text-[11px] mt-0.5">{loc.hours}</p>
                   </div>
 
                   {/* Address */}
-                  <div className="flex-1 hidden sm:block">
-                    <p className="text-gray-400 text-xs">{loc.address}</p>
+                  <div className="flex-1 hidden sm:block min-w-0">
+                    <p className="text-gray-400 text-xs truncate">{loc.address}</p>
                   </div>
 
                   {/* Hours */}

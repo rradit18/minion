@@ -45,19 +45,17 @@ export default function RegisterPage() {
   return (
     <div className="h-screen overflow-hidden flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto">
-        <div>
-          <p className="text-[42px] font-bold text-white leading-none" style={{ fontFamily: "'Dancing Script', cursive" }}>Minion</p>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex-1 h-px bg-white/30" />
-            <span className="text-[10px] font-bold tracking-[3px] text-white/60 uppercase">Barbershop</span>
-          </div>
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto relative">
+        <div aria-hidden className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "url('/pattern.png')", backgroundRepeat: "repeat" }} />
+
+        <div className="relative animate-auth-in-left">
+          <img src="/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
         </div>
-        <div>
-          <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6">Join The<br />Rebellion.</p>
+        <div className="relative">
+          <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6 animate-auth-up" style={{ animationDelay: "0.1s" }}>Join The<br />Rebellion.</p>
           <ul className="space-y-3 text-white/60 text-sm">
-            {["Booking mudah & cepat", "Notifikasi jadwal kunjungan", "Akses promo eksklusif member", "Riwayat kunjungan tersimpan"].map((item) => (
-              <li key={item} className="flex items-center gap-2">
+            {["Booking mudah & cepat", "Notifikasi jadwal kunjungan", "Akses promo eksklusif member", "Riwayat kunjungan tersimpan"].map((item, i) => (
+              <li key={item} className="flex items-center gap-2 animate-auth-up" style={{ animationDelay: `${0.2 + i * 0.08}s` }}>
                 <span className="w-4 h-4 bg-[#F9C74F] rounded-full flex items-center justify-center flex-shrink-0">
                   <svg className="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                 </span>
@@ -66,7 +64,7 @@ export default function RegisterPage() {
             ))}
           </ul>
         </div>
-        <div className="opacity-10 absolute bottom-14 right-12">
+        <div className="opacity-10 absolute bottom-14 right-12 animate-auth-float">
           <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
           </svg>
@@ -74,15 +72,27 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto">
-        <div className="w-full max-w-md">
-          <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">Buat Akun Baru</p>
-          <h1 className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Register</h1>
-          <p className="text-gray-500 text-sm mb-8">Sudah punya akun? <Link href="/login" className="text-[#F9C74F] font-bold hover:underline">Masuk di sini</Link></p>
+      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto relative">
+        <div aria-hidden className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-[#F9C74F]/20 blur-3xl animate-auth-blob pointer-events-none" />
+        <div aria-hidden className="absolute bottom-0 -left-10 w-64 h-64 rounded-full bg-[#7B5EA7]/15 blur-3xl animate-auth-blob pointer-events-none" style={{ animationDelay: "3s" }} />
+
+        <div className="w-full max-w-md relative">
+          <Link
+            href="/"
+            className="animate-auth-up inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors mb-6"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali ke Beranda
+          </Link>
+          <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2 animate-auth-up" style={{ animationDelay: "0.05s" }}>Buat Akun Baru</p>
+          <h1 className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight animate-auth-up" style={{ fontFamily: "'Space Grotesk', sans-serif", animationDelay: "0.12s" }}>Register</h1>
+          <p className="text-gray-500 text-sm mb-8 animate-auth-up" style={{ animationDelay: "0.18s" }}>Sudah punya akun? <Link href="/login" className="text-[#F9C74F] font-bold hover:underline">Masuk di sini</Link></p>
 
           {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-4">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 animate-auth-up" style={{ animationDelay: "0.24s" }}>
             {/* Nama */}
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="name">Nama Lengkap</label>
@@ -129,7 +139,7 @@ export default function RegisterPage() {
               <span className="text-xs text-gray-500 leading-relaxed">Saya setuju dengan <a href="#" className="text-[#1a1a1a] font-bold hover:text-[#F9C74F]">Syarat & Ketentuan</a> serta <a href="#" className="text-[#1a1a1a] font-bold hover:text-[#F9C74F]">Kebijakan Privasi</a></span>
             </label>
             <button type="submit" disabled={loading}
-              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
               {loading ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Mendaftarkan...</> : "Buat Akun"}
             </button>
           </form>

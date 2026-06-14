@@ -50,7 +50,7 @@ const GalleryPage = () => {
       }}
     >
       {/* ── Header ── */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-8 flex flex-col md:flex-row gap-10 items-start">
+      <div className="max-w-7xl mx-auto px-6 pt-10 pb-8 flex flex-col items-center text-center md:flex-row md:items-start md:text-left gap-10">
         <div>
           <h1 className="text-[44px] font-black leading-[1.05] tracking-tight">
             PRESISI<br />
@@ -60,7 +60,7 @@ const GalleryPage = () => {
             GALLERY MASTERPIECE
           </p>
         </div>
-        <p className="ml-auto text-[14px] text-[#555] leading-relaxed max-w-sm pt-1.5 text-right">
+        <p className="md:ml-auto text-[14px] text-[#555] leading-relaxed max-w-sm pt-1.5 md:text-right">
           Selamat datang di galeri kami. Mulai dari taper klasik hingga cornrow yang fenomenal. Galeri ini berisi masterpiece dari tangan maestro kami.
         </p>
       </div>

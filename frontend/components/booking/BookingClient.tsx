@@ -1,28 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchBranches, fetchBarbersByBranch, fetchServices, fetchSlots, fetchPromoByCode} from "@/src/lib/mockData";
 import { saveBooking, getBookingPrefill, clearBookingPrefill, getActivePromo, clearActivePromo} from "@/src/lib/localStorage";
 import type { Branch, Barber, Service } from "@/src/lib/mockData";
+import BarberOrbit from "@/components/booking/BarberOrbit";
+import DatePicker from "@/components/booking/DatePicker";
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 const STEPS = ["Cabang", "Barber", "Layanan", "Jadwal", "Data Diri", "Konfirmasi"];
 
 function StepBar({ current }: { current: number }) {
   return (
-    <div className="flex items-center justify-center gap-1 mb-8 flex-wrap">
-      {STEPS.map((label, i) => (
-        <div key={label} className="flex items-center gap-1">
-          <div className="flex flex-col items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i < current ? "bg-[#178E81] text-white" : i === current ? "bg-[#F9C74F] text-black" : "bg-gray-200 text-gray-400"}`}>
-              {i < current ? "✓" : i + 1}
+    <div className="mb-8 flex justify-center">
+      <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar max-w-full px-1">
+        {STEPS.map((label, i) => (
+          <div key={label} className="flex items-center gap-1 sm:gap-1.5">
+            <div className="flex flex-col items-center">
+              <div className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold transition-all ${i < current ? "bg-[#178E81] text-white" : i === current ? "bg-[#F9C74F] text-black" : "bg-gray-200 text-gray-400"}`}>
+                {i < current ? "✓" : i + 1}
+              </div>
+              <span className={`text-[9px] mt-1 hidden sm:block whitespace-nowrap ${i === current ? "text-[#1a1a1a] font-semibold" : "text-gray-400"}`}>{label}</span>
             </div>
-            <span className="text-[9px] mt-1 text-gray-400 hidden sm:block">{label}</span>
+            {i < STEPS.length - 1 && <div className={`h-0.5 w-4 sm:w-6 shrink-0 sm:mb-4 ${i < current ? "bg-[#178E81]" : "bg-gray-200"}`} />}
           </div>
-          {i < STEPS.length - 1 && <div className={`w-6 h-0.5 mb-4 ${i < current ? "bg-[#178E81]" : "bg-gray-200"}`} />}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -67,7 +72,8 @@ export default function BookingClient() {
   const [promoMsg, setPromoMsg]     = useState("");
   const [discount, setDiscount]     = useState(0);
   const [showModal, setShowModal]   = useState(false);
-  const [form, setForm]             = useState({ name: "", phone: "", email: "", notes: "" });
+  const [form, setForm]             = useState({ name: "", phone: "", notes: "" });
+  const [serviceQuery, setServiceQuery] = useState("");
 
   // Pre-fill dari sessionStorage
   useEffect(() => {
@@ -87,11 +93,9 @@ export default function BookingClient() {
   const price    = service && branch ? service.prices[branch.id] ?? 0 : 0;
   const final    = Math.max(0, price - discount);
 
-  // Generate dates (14 hari ke depan)
-  const dates = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() + i + 1);
-    return d.toISOString().split("T")[0];
-  });
+  // Rentang tanggal yang bisa dipilih: besok s/d 14 hari ke depan
+  const minDate = new Date(); minDate.setDate(minDate.getDate() + 1);
+  const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 14);
 
   const bookedSlots = barber ? (allSlots.booked_mock[barber.id as keyof typeof allSlots.booked_mock] ?? []) : [];
   const availableSlots = allSlots.template.filter((s) => !bookedSlots.includes(s.time));
@@ -114,7 +118,7 @@ export default function BookingClient() {
       barber_id: barber!.id, barber_name: barber!.name,
       service_id: service!.id, service_name: service!.name,
       date, time,
-      customer_name: form.name, customer_phone: `+62${form.phone}`, customer_email: form.email,
+      customer_name: form.name, customer_phone: `+62${form.phone}`, customer_email: "",
       price, promo_code: discount > 0 ? promoCode : undefined,
       discount, final_price: final,
       status: "Upcoming" as const,
@@ -128,15 +132,35 @@ export default function BookingClient() {
   const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
   return (
-    <div className="min-h-screen bg-[#F5EFE4] py-10 px-4">
+    <div className="relative min-h-screen py-10 px-4 sm:px-6">
+      {/* ── Background pattern ── */}
+      <div aria-hidden className="fixed inset-0 -z-10 bg-[#F5EFE4]" />
+      <div
+        aria-hidden
+        className="fixed inset-0 -z-10 bg-[url('/pattern.png')] bg-repeat opacity-[0.45]"
+        style={{
+          WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
+          maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
+        }}
+      />
+
       {showModal && <CountdownModal onConfirm={confirmBooking} onCancel={() => setShowModal(false)} />}
 
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-black text-[#1a1a1a] text-center mb-2">Booking Sekarang</h1>
-        <p className="text-gray-500 text-sm text-center mb-8">Selesaikan {STEPS.length} langkah untuk konfirmasi booking kamu</p>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors mb-4"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Kembali ke Beranda
+        </Link>
+        <h1 className="text-2xl sm:text-3xl font-black text-[#1a1a1a] text-center mb-2">Booking Sekarang</h1>
+        <p className="text-gray-500 text-sm text-center mb-8 px-4">Selesaikan {STEPS.length} langkah untuk konfirmasi booking kamu</p>
         <StepBar current={step} />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 md:p-8">
 
           {/* Step 0: Pilih Cabang */}
           {step === 0 && (
@@ -160,27 +184,13 @@ export default function BookingClient() {
             </div>
           )}
 
-          {/* Step 1: Pilih Barber */}
+          {/* Step 1: Pilih Barber — character select orbit */}
           {step === 1 && (
             <div>
-              <h2 className="text-xl font-black text-[#1a1a1a] mb-5">Pilih Barber</h2>
-              <div className="space-y-3">
-                {barbers.map((b) => (
-                  <button key={b.id} onClick={() => setBarber(b)}
-                    className={`w-full p-4 rounded-xl border-2 text-left flex items-center gap-4 transition-all ${barber?.id === b.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
-                    <div className={`w-14 h-14 rounded-full ${b.color} flex-shrink-0 flex items-center justify-center text-2xl font-black text-white`}>
-                      {b.name[0]}
-                    </div>
-                    <div>
-                      <p className="font-bold text-[#1a1a1a]">{b.name}</p>
-                      <p className="text-xs text-[#178E81] font-semibold">{b.nickname}</p>
-                      <p className="text-xs text-gray-500 mt-1">{b.specialty} · {b.experience_years} tahun</p>
-                      <p className="text-xs text-gray-400 mt-1">⭐ {b.rating} ({b.total_reviews.toLocaleString()} review)</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-3 mt-6">
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pilih Barber</h2>
+              <p className="text-xs text-gray-400 mb-5">Geser atau ketuk avatar untuk memilih maestro-mu.</p>
+              <BarberOrbit barbers={barbers} value={barber} onChange={setBarber} />
+              <div className="flex gap-3 mt-7">
                 <button onClick={() => setStep(0)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
                 <button disabled={!barber} onClick={() => setStep(2)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
               </div>
@@ -188,33 +198,57 @@ export default function BookingClient() {
           )}
 
           {/* Step 2: Pilih Layanan */}
-          {step === 2 && (
-            <div>
-              <h2 className="text-xl font-black text-[#1a1a1a] mb-5">Pilih Layanan</h2>
-              <div className="space-y-3">
-                {services.map((s) => (
-                  <button key={s.id} onClick={() => setService(s)}
-                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${service?.id === s.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{s.icon}</span>
-                        <div>
-                          <p className="font-bold text-[#1a1a1a]">{s.name}</p>
-                          <p className="text-xs text-gray-500">{s.description}</p>
-                          <p className="text-xs text-gray-400 mt-1">⏱ {s.duration_minutes} menit</p>
+          {step === 2 && (() => {
+            const q = serviceQuery.trim().toLowerCase();
+            const filteredServices = services.filter(
+              (s) => !q || s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)
+            );
+            return (
+              <div>
+                <h2 className="text-xl font-black text-[#1a1a1a] mb-4">Pilih Layanan</h2>
+
+                {/* Search */}
+                <div className="relative mb-3">
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.3-4.3" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={serviceQuery}
+                    onChange={(e) => setServiceQuery(e.target.value)}
+                    placeholder="Cari layanan..."
+                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl pl-9 pr-3 py-2.5 text-sm text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors"
+                  />
+                </div>
+
+                {/* List (scrollable) */}
+                <div className="max-h-[300px] overflow-y-auto pr-1 space-y-2 [scrollbar-width:thin]">
+                  {filteredServices.length === 0 ? (
+                    <p className="text-gray-400 text-sm py-8 text-center">Layanan tidak ditemukan.</p>
+                  ) : (
+                    filteredServices.map((s) => (
+                      <button key={s.id} onClick={() => setService(s)}
+                        className={`w-full p-3 rounded-xl border-2 text-left transition-all ${service?.id === s.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-bold text-[#1a1a1a] text-sm leading-tight">{s.name}</p>
+                            <p className="text-xs text-gray-500 leading-snug line-clamp-2 mt-0.5">{s.description}</p>
+                            <p className="text-[11px] text-gray-400 mt-1">{s.duration_minutes} menit</p>
+                          </div>
+                          <p className="text-[#1a1a1a] font-extrabold text-sm flex-shrink-0">{fmt(s.prices[branch!.id] ?? 0)}</p>
                         </div>
-                      </div>
-                      <p className="text-[#F9C74F] font-extrabold text-sm flex-shrink-0 ml-3">{fmt(s.prices[branch!.id] ?? 0)}</p>
-                    </div>
-                  </button>
-                ))}
+                      </button>
+                    ))
+                  )}
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
+                  <button disabled={!service} onClick={() => setStep(3)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
+                </div>
               </div>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
-                <button disabled={!service} onClick={() => setStep(3)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Step 3: Pilih Jadwal */}
           {step === 3 && (
@@ -222,24 +256,14 @@ export default function BookingClient() {
               <h2 className="text-xl font-black text-[#1a1a1a] mb-5">Pilih Jadwal</h2>
               {/* Tanggal */}
               <p className="text-sm font-bold text-gray-700 mb-2">Tanggal</p>
-              <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
-                {dates.map((d) => {
-                  const day = new Date(d);
-                  return (
-                    <button key={d} onClick={() => setDate(d)}
-                      className={`flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-xl border-2 transition-all ${date === d ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
-                      <span className="text-[10px] text-gray-400 uppercase">{day.toLocaleDateString("id-ID", { weekday: "short" })}</span>
-                      <span className="text-lg font-black text-[#1a1a1a]">{day.getDate()}</span>
-                      <span className="text-[10px] text-gray-400">{day.toLocaleDateString("id-ID", { month: "short" })}</span>
-                    </button>
-                  );
-                })}
+              <div className="mb-4">
+                <DatePicker value={date} onChange={setDate} minDate={minDate} maxDate={maxDate} />
               </div>
               {/* Waktu */}
               {date && (
                 <>
                   <p className="text-sm font-bold text-gray-700 mb-2">Waktu</p>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {availableSlots.map((s) => (
                       <button key={s.time} onClick={() => setTime(s.time)}
                         className={`py-2 rounded-xl text-xs font-bold border-2 transition-all ${time === s.time ? "border-[#F9C74F] bg-yellow-50 text-[#1a1a1a]" : "border-gray-200 text-gray-600 hover:border-yellow-300"}`}>
@@ -263,7 +287,6 @@ export default function BookingClient() {
               <div className="space-y-4">
                 {[
                   { label: "Nama Lengkap", name: "name", type: "text", placeholder: "John Doe" },
-                  { label: "Email", name: "email", type: "email", placeholder: "email@kamu.com" },
                 ].map((f) => (
                   <div key={f.name}>
                     <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">{f.label}</label>
@@ -299,7 +322,7 @@ export default function BookingClient() {
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(3)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
-                <button disabled={!form.name || !form.phone || !form.email} onClick={() => setStep(5)}
+                <button disabled={!form.name || !form.phone} onClick={() => setStep(5)}
                   className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
               </div>
             </div>
@@ -318,11 +341,10 @@ export default function BookingClient() {
                   ["Waktu", time],
                   ["Nama", form.name],
                   ["WhatsApp", `+62${form.phone}`],
-                  ["Email", form.email],
                 ].map(([label, val]) => (
-                  <div key={label} className="flex justify-between">
-                    <span className="text-gray-500">{label}</span>
-                    <span className="font-semibold text-[#1a1a1a] text-right max-w-[200px]">{val}</span>
+                  <div key={label} className="flex justify-between gap-3">
+                    <span className="text-gray-500 flex-shrink-0">{label}</span>
+                    <span className="font-semibold text-[#1a1a1a] text-right break-words">{val}</span>
                   </div>
                 ))}
                 <div className="border-t border-gray-300 pt-3 space-y-1">

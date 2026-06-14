@@ -1,19 +1,55 @@
 "use client";
 
 import Link from "next/link";
-import TiltCard from "@/components/ui/TiltCard";
+import BarberPage from "@/components/company/BarberPage";
 
 const barbers = [
-  { name: "Hendra", role: "Fade King", badge: "Fade Specialist", color: "bg-cyan-400",   image: "/hendra.png",  slug: "hendra"  },
-  { name: "Juan",   role: "Fade King", badge: "Fade Specialist", color: "bg-purple-400", image: "/juan.png",    slug: "juan"    },
-  { name: "Yoga",   role: "Fade King", badge: "Fade Specialist", color: "bg-yellow-400", image: "/yoga.png",    slug: "yoga"    },
-  { name: "Bastian",role: "Fade King", badge: "Fade Specialist", color: "bg-orange-400", image: "/bastian.png", slug: "bastian" },
+  {
+    slug: "hendra",
+    name: "Hendra Schevenko",
+    role: "Fade King",
+    specialty: "Fade Specialist",
+    rating: "4.9",
+    reviewCount: "2300+",
+    imageColor: "bg-teal-500",
+    imageUrl: "/hendra.png",
+  },
+  {
+    slug: "juan",
+    name: "Juan Samudra",
+    role: "The Sculptor",
+    specialty: "Classic & Modern Cut",
+    rating: "4.9",
+    reviewCount: "1850+",
+    imageColor: "bg-purple-400",
+    imageUrl: "/juan.png",
+  },
+  {
+    slug: "yoga",
+    name: "Yoga Harahap",
+    role: "Sharpie",
+    specialty: "Line Up & Design",
+    rating: "4.8",
+    reviewCount: "1420+",
+    imageColor: "bg-yellow-400",
+    imageUrl: "/yoga.png",
+  },
+  {
+    slug: "bastian",
+    name: "Bastian Narendra",
+    role: "The Artist",
+    specialty: "Color & Beard Art",
+    rating: "4.9",
+    reviewCount: "1980+",
+    imageColor: "bg-orange-400",
+    imageUrl: "/bastian.png",
+  },
 ];
 
 export default function BarberPreview() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-6 relative">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-6">
         <h2 className="font-display font-bold text-base tracking-wide text-black uppercase">
           Kenalan Sama Barberman Kece Kami
         </h2>
@@ -22,37 +58,18 @@ export default function BarberPreview() {
         </svg>
       </div>
 
-      <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-        {barbers.map((barber, index) => (
-          <Link key={index} href={`/barberman/${barber.slug}`} className="block">
-            <TiltCard className="relative bg-white rounded-2xl p-4 flex items-start gap-3 shadow-sm border border-gray-100 hover:shadow-xl hover:border-gray-200 cursor-pointer overflow-visible min-h-[130px]">
-              {/* Foto + lingkaran */}
-              <div className="relative flex-shrink-0">
-                <div className={`absolute top-2 left-2 w-16 h-16 rounded-full ${barber.color}`} />
-                <img
-                  src={barber.image}
-                  alt={barber.name}
-                  className="relative w-20 h-24 object-cover object-top"
-                  style={{ zIndex: 1, marginTop: '-12px' }}
-                />
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 pt-1">
-                <h3 className="font-display font-bold text-base text-black leading-tight">{barber.name}</h3>
-                <p className="text-xs text-gray-400 mb-2 font-body">{barber.role}</p>
-                <span className="inline-block bg-[#F9C74F] text-[#1a1a1a] text-[10px] font-bold px-3 py-1 rounded-full mb-2">
-                  {barber.badge}
-                </span>
-                <div className="flex items-center gap-1 text-xs font-medium text-black">
-                  <svg className="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                  <span>4.9 (2300+)</span>
-                </div>
-              </div>
-            </TiltCard>
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-10 pt-4">
+        {barbers.map((barber) => (
+          <Link key={barber.slug} href={`/barberman/${barber.slug}`}>
+            <BarberPage
+              name={barber.name}
+              role={barber.role}
+              specialty={barber.specialty}
+              rating={barber.rating}
+              reviewCount={barber.reviewCount}
+              imageColor={barber.imageColor}
+              imageUrl={barber.imageUrl}
+            />
           </Link>
         ))}
 
@@ -95,16 +112,21 @@ export default function BarberPreview() {
           </svg>
         </div>
 
-        {/* ── Sparkle bintang ── */}
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: '-10px', right: '0px' }}
-        >
+        {/* ── Sparkle ── */}
+        <div className="absolute pointer-events-none" style={{ top: '-10px', right: '0px' }}>
           <svg viewBox="0 0 24 24" style={{ width: '28px', height: '28px' }} fill="#F9C74F">
             <path d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"/>
           </svg>
         </div>
+      </div>
 
+      <div className="mt-8 text-center">
+        <Link
+          href="/barberman"
+          className="inline-flex items-center gap-2 border-2 border-[#1a1a1a] text-[#1a1a1a] px-6 py-2.5 rounded-xl font-display font-bold text-sm hover:bg-[#1a1a1a] hover:text-white transition"
+        >
+          Lihat Semua Barberman <span aria-hidden>→</span>
+        </Link>
       </div>
     </div>
   );

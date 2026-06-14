@@ -23,6 +23,7 @@ const menuItems = [
   { name: 'Home', link: '/' },
   { name: 'Barberman', link: '/barberman' },
   { name: 'Gallery', link: '/gallery' },
+  { name: 'Products', link: '/products' },
   { name: 'Branches', link: '/branches' },
   { name: 'About Us', link: '/about' },
 ];

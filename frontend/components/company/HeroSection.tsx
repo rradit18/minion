@@ -169,6 +169,9 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             {/* aksen sparkle dekat heading (rapi, di area kosong) */}
             <div className="absolute -top-2 right-2 w-5 h-5 pointer-events-none hidden md:block"><Sparkle4 color="#F9C74F" /></div>
 
+            <div className="flex justify-center md:hidden mb-1">
+              <img src="/minion.png" alt="Minion Logo" className="h-25 w-auto object-contain" />
+            </div>
             <p className="text-[#178E81] text-[12px] font-bold tracking-[2px] uppercase font-body">
               Premium Grooming
             </p>
@@ -194,12 +197,12 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
               >
                 Book Now <span aria-hidden>→</span>
               </Link>
-              <Link
-                href="/products"
+              <a
+                href="#layanan"
                 className="inline-flex items-center justify-center gap-2 border-2 border-[#1a1a1a] text-[#1a1a1a] px-6 py-3 rounded-xl font-display font-bold text-[15px] hover:bg-[#1a1a1a] hover:text-white transition"
               >
-                Lihat Layanan <span aria-hidden>→</span>
-              </Link>
+                Lihat Layanan <span aria-hidden>↓</span>
+              </a>
             </div>
             <div className="flex items-center gap-3 pt-2 justify-center md:justify-start">
               <AnimatedTooltip items={happyCustomers} />

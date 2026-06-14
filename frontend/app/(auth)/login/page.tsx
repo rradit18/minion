@@ -49,21 +49,21 @@ export default function LoginPage() {
   return (
     <div className="h-screen overflow-hidden flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto">
-        <div>
-          <p className="text-[42px] font-bold text-white leading-none" style={{ fontFamily: "'Dancing Script', cursive" }}>Minion</p>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex-1 h-px bg-white/30" />
-            <span className="text-[10px] font-bold tracking-[3px] text-white/60 uppercase">Barbershop</span>
-          </div>
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto relative">
+        {/* Pattern halus */}
+        <div aria-hidden className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "url('/pattern.png')", backgroundRepeat: "repeat" }} />
+
+        <div className="relative animate-auth-in-left">
+          <img src="/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
         </div>
-        <div>
-          <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6">Good Hair.<br />Good Vibes.<br />Everyday.</p>
-          <div className="bg-white/5 rounded-2xl p-4 space-y-3">
+        <div className="relative">
+          <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6 animate-auth-up" style={{ animationDelay: "0.1s" }}>Good Hair.<br />Good Vibes.<br />Everyday.</p>
+          <div className="bg-white/5 rounded-2xl p-4 space-y-3 animate-auth-up" style={{ animationDelay: "0.2s" }}>
             <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">Akun Demo — Klik untuk auto-fill</p>
-            {demoAccounts.map((a) => (
+            {demoAccounts.map((a, i) => (
               <button key={a.email} type="button" onClick={() => { setForm({ email: a.email, password: a.password }); setError(""); }}
-                className="w-full text-left bg-white/5 hover:bg-white/10 rounded-xl px-3 py-2.5 transition-colors">
+                style={{ animationDelay: `${0.3 + i * 0.08}s` }}
+                className="animate-auth-up w-full text-left bg-white/5 hover:bg-white/10 rounded-xl px-3 py-2.5 transition-all hover:translate-x-1">
                 <p className="text-white text-xs font-bold">{a.name}</p>
                 <p className="text-white/40 text-[10px] mt-0.5">{a.email} · {a.password}</p>
                 <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 ${roleBadge[a.role] ?? "bg-gray-400 text-black"}`}>
@@ -73,7 +73,7 @@ export default function LoginPage() {
             ))}
           </div>
         </div>
-        <div className="opacity-10 absolute bottom-14 right-12">
+        <div className="opacity-10 absolute bottom-14 right-12 animate-auth-float">
           <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
           </svg>
@@ -81,23 +81,36 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto">
-        <div className="w-full max-w-md">
-          <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">Selamat Datang Kembali</p>
-          <h1 className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Sign In</h1>
-          <p className="text-gray-500 text-sm mb-8">
+      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto relative">
+        {/* Blob dekoratif */}
+        <div aria-hidden className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-[#F9C74F]/20 blur-3xl animate-auth-blob pointer-events-none" />
+        <div aria-hidden className="absolute bottom-0 -left-10 w-64 h-64 rounded-full bg-[#178E81]/15 blur-3xl animate-auth-blob pointer-events-none" style={{ animationDelay: "3s" }} />
+
+        <div className="w-full max-w-md relative">
+          <Link
+            href="/"
+            className="animate-auth-up inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors mb-6"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali ke Beranda
+          </Link>
+          <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2 animate-auth-up" style={{ animationDelay: "0.05s" }}>Selamat Datang Kembali</p>
+          <h1 className="text-4xl font-black text-[#1a1a1a] mb-1 leading-tight animate-auth-up" style={{ fontFamily: "'Space Grotesk', sans-serif", animationDelay: "0.12s" }}>Sign In</h1>
+          <p className="text-gray-500 text-sm mb-8 animate-auth-up" style={{ animationDelay: "0.18s" }}>
             Belum punya akun? <Link href="/register" className="text-[#F9C74F] font-bold hover:underline">Daftar di sini</Link>
           </p>
 
           {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-4">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <div className="animate-auth-up" style={{ animationDelay: "0.24s" }}>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="email">Email</label>
               <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="email@kamu.com"
                 className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
             </div>
-            <div>
+            <div className="animate-auth-up" style={{ animationDelay: "0.3s" }}>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="password">Password</label>
               <div className="relative">
                 <input id="password" name="password" type={show ? "text" : "password"} required value={form.password} onChange={handleChange} placeholder="••••••••"
@@ -116,14 +129,16 @@ export default function LoginPage() {
 
             {/* Masuk */}
             <button type="submit" disabled={loading}
-              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
+              className="animate-auth-up w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+              style={{ animationDelay: "0.36s" }}>
               {loading ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Memproses...</> : "Masuk"}
             </button>
 
             {/* Daftar */}
             <Link
               href="/register"
-              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors flex items-center justify-center"
+              style={{ animationDelay: "0.42s" }}
+              className="animate-auth-up w-full bg-white border-2 border-[#1a1a1a] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-[#1a1a1a] hover:text-white transition-colors flex items-center justify-center"
             >
               Daftar
             </Link>
