@@ -62,7 +62,7 @@ const LocationSection = () => {
           </div>
 
           {/* Right — location list dalam card ber-border */}
-          <div className="w-full md:flex-1">
+          <div className="w-full md:flex-1 min-w-0">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-100 overflow-hidden">
               {locations.map((loc, i) => (
                 <div
