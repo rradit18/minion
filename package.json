@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "lucide-react": "^0.400.0"
+    "lucide-react": "^0.400.0",
+    "react-compare-slider": "^4.0.0"
   }
 }
