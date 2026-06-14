@@ -29,7 +29,7 @@ export default function RatingPage() {
         </div>
         <div className="flex-1 space-y-1.5">
           {[5,4,3,2,1].map((n) => {
-            const count = data.distribution[n as keyof typeof data.distribution] ?? 0;
+            const count = data.distribution[String(n) as keyof typeof data.distribution] ?? 0;
             const pct   = Math.round(count / data.total_reviews * 100);
             return (
               <div key={n} className="flex items-center gap-2 text-xs">
