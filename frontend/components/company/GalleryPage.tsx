@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-// Fix Hydration Error dengan dynamic import (ssr: false)
 const ReactCompareSlider = dynamic(
   () => import('react-compare-slider').then((mod) => mod.ReactCompareSlider),
   { ssr: false }
@@ -121,7 +120,6 @@ const GalleryPage = () => {
         <button className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide">
           Lihat Semua
         </button>
-        <span className="absolute right-24 bottom-7 text-[#D4AF37] text-[50px] select-none">✦</span>
       </div>
     </div>
   );
