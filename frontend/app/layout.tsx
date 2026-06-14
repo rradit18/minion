@@ -26,7 +26,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" className={`${spaceGrotesk.variable} ${openSans.variable} h-full antialiased`}>
-      <body className={`${spaceGrotesk.variable} ${openSans.variable} min-h-full flex flex-col`}>
+      <body
+        className={`${spaceGrotesk.variable} ${openSans.variable} min-h-full flex flex-col`}
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

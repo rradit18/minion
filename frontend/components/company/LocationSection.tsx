@@ -45,11 +45,11 @@ const Squiggle = () => (
 const LocationSection = () => {
   return (
     <section className="bg-[#FAF7EE] py-8">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
 
           {/* Left — title + illustration */}
-          <div className="flex-shrink-0 md:w-56">
+          <div className="flex-shrink-0 w-full md:w-56">
             <div className="flex items-center gap-1 mb-1">
               <h2 className="font-display text-base font-bold text-[#1a1a1a] uppercase leading-tight tracking-wide">
                 TEMUKAN STUDIO KAMI<br />DI WILAYAH TERDEKATMU
@@ -80,30 +80,28 @@ const LocationSection = () => {
                     </svg>
                   </div>
 
-                  {/* Name (+ jam buka di mobile) */}
-                  <div className="min-w-0 flex-1 sm:flex-none sm:w-32">
-                    <p className="font-display font-bold text-[#1a1a1a] text-sm truncate">{loc.name}</p>
-                    <p className="sm:hidden text-gray-400 text-[11px] mt-0.5">{loc.hours}</p>
+                  {/* Name + address + hours — stack di mobile, sejajar di layar lebar */}
+                  <div className="min-w-0 flex-1 flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-4">
+                    <p className="font-display font-bold text-[#1a1a1a] text-sm truncate sm:w-28 sm:flex-shrink-0">
+                      {loc.name}
+                    </p>
+                    <p className="text-gray-400 text-xs truncate min-w-0 sm:flex-1">
+                      {loc.address}
+                    </p>
+                    <p className="text-gray-500 text-[11px] sm:text-xs font-medium whitespace-nowrap sm:w-24 sm:flex-shrink-0 sm:text-right md:text-left">
+                      {loc.hours}
+                    </p>
                   </div>
 
-                  {/* Address */}
-                  <div className="flex-1 hidden sm:block min-w-0">
-                    <p className="text-gray-400 text-xs truncate">{loc.address}</p>
-                  </div>
-
-                  {/* Hours */}
-                  <div className="w-28 flex-shrink-0 hidden md:block">
-                    <p className="text-gray-500 text-xs font-medium">{loc.hours}</p>
-                  </div>
-
-                  {/* Google Maps */}
+                  {/* Google Maps — ikon saja di mobile, teks penuh di layar lebar */}
                   <a
                     href={loc.maps}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`Buka ${loc.name} di Google Maps`}
                     className="flex items-center gap-1 text-xs font-bold text-[#1a1a1a] hover:text-[#178E81] transition-colors whitespace-nowrap flex-shrink-0"
                   >
-                    Google Maps
+                    <span className="hidden sm:inline">Google Maps</span>
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
