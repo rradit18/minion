@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const demoAccounts = getUsers().filter((u) =>
-    ["admin@minion.com", "kasir@minion.com", "user@minion.com", "barber@minion.com"].includes(u.email)
+    ["user@minion.com", "barber@minion.com"].includes(u.email)
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,16 +32,13 @@ export default function LoginPage() {
         return;
       }
       setSession(user);
-      if (user.role === "admin" || user.role === "kasir") router.push("/pos");
-      else if (user.role === "barber") router.push("/barberman-portal");
+      if (user.role === "barber") router.push("/barberman-portal");
       else router.push("/akun");
     }, 600);
   };
 
-  const roleLabel: Record<string, string> = { admin: "ADMIN", kasir: "KASIR", user: "USER", barber: "BARBER" };
+  const roleLabel: Record<string, string> = { user: "USER", barber: "BARBER" };
   const roleBadge: Record<string, string> = {
-    admin: "bg-yellow-400 text-black",
-    kasir: "bg-blue-400 text-black",
     user: "bg-green-400 text-black",
     barber: "bg-purple-400 text-black",
   };

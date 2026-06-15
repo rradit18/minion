@@ -10,7 +10,7 @@ export interface AuthUser {
   name: string;
   email: string;
   phone: string;
-  role: "user" | "barber" | "admin" | "kasir";
+  role: "user" | "barber";
   password: string;
   loyalty_punches: number;
   created_at: string;
@@ -79,8 +79,6 @@ export const getUsers = (): AuthUser[] => {
 
   // Seed default accounts jika belum ada
   const defaults: AuthUser[] = [
-    { id: "user-001", name: "Admin Minion",   email: "admin@minion.com", phone: "081234567890", role: "admin",  password: "admin123",  loyalty_punches: 0,  created_at: "2026-01-01" },
-    { id: "user-002", name: "Kasir Minion",   email: "kasir@minion.com", phone: "081234567891", role: "kasir",  password: "kasir123",  loyalty_punches: 0,  created_at: "2026-01-01" },
     { id: "user-003", name: "Pelanggan Demo", email: "user@minion.com",  phone: "081234567892", role: "user",   password: "user123",   loyalty_punches: 7,  created_at: "2026-01-01" },
     { id: "user-004", name: "Hendra Barber",  email: "barber@minion.com",phone: "081234567893", role: "barber", password: "barber123", loyalty_punches: 0,  created_at: "2026-01-01" },
   ];
