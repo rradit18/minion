@@ -55,6 +55,7 @@ export default function BookingClient() {
   const [promoMsg, setPromoMsg]     = useState("");
   const [discount, setDiscount]     = useState(0);
   const [form, setForm]             = useState({ name: "", phone: "", notes: "" });
+  const isPhoneValid                = form.phone.length >= 11 && form.phone.length <= 20;
   const [serviceQuery, setServiceQuery] = useState("");
   // Pembayaran
   const [payMethod, setPayMethod]   = useState<"transfer" | "qris" | null>(null);
@@ -307,9 +308,13 @@ export default function BookingClient() {
                   <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">No. WhatsApp</label>
                   <div className="flex">
                     <span className="bg-gray-50 border-2 border-r-0 border-gray-200 rounded-l-xl px-4 flex items-center text-sm text-gray-500 font-medium">+62</span>
-                    <input type="tel" placeholder="8123456789" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required
-                      className="flex-1 bg-gray-50 border-2 border-l-0 border-gray-200 rounded-r-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
+                    <input type="tel" inputMode="numeric" placeholder="8123456789" maxLength={20} value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 20) })} required
+                      className={`flex-1 bg-gray-50 border-2 border-l-0 rounded-r-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none transition-colors text-sm ${form.phone && !isPhoneValid ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#F9C74F]"}`} />
                   </div>
+                  {form.phone && !isPhoneValid && (
+                    <p className="text-xs mt-1 font-medium text-red-500">Nomor HP harus terdiri dari 11 - 20 angka.</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Catatan (opsional)</label>
@@ -330,7 +335,7 @@ export default function BookingClient() {
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(3)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
-                <button disabled={!form.name || !form.phone} onClick={() => setStep(5)}
+                <button disabled={!form.name || !isPhoneValid} onClick={() => setStep(5)}
                   className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
               </div>
             </div>

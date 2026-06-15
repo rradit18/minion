@@ -73,8 +73,31 @@ function HeartIcon({ className = "" }: { className?: string }) {
   );
 }
 
+function CartIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+    </svg>
+  );
+}
+function PlusIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" className={className}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+function MinusIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" className={className}>
+      <path d="M5 12h14" />
+    </svg>
+  );
+}
+
 // ─── Product Card ──────────────────────────────────────────────────────────────
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product, onAdd, inCart }: { product: Product; onAdd: (p: Product) => void; inCart: number }) {
   return (
     <SpotlightCard
       spotlightColor="rgba(23, 142, 129, 0.1)"
@@ -111,15 +134,14 @@ function ProductCard({ product }: { product: Product }) {
         <p className="text-[11px] text-gray-400 truncate mb-2">{product.desc}</p>
         <div className="mt-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span className="text-[#1a1a1a] font-extrabold text-sm">{formatRupiah(product.price)}</span>
-          <a
-            href={WA_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => onAdd(product)}
             className="inline-flex items-center justify-center gap-1.5 bg-[#1a1a1a] text-white text-[11px] font-bold px-3.5 py-2 rounded-full hover:bg-black transition-colors whitespace-nowrap"
           >
-            <WaIcon className="w-3.5 h-3.5 text-[#25D366]" />
-            Buy Now
-          </a>
+            <CartIcon className="w-3.5 h-3.5 text-[#F9C74F]" />
+            {inCart > 0 ? `Keranjang (${inCart})` : "Tambah"}
+          </button>
         </div>
       </div>
     </SpotlightCard>
@@ -131,6 +153,48 @@ export default function ProductsPageClient() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"default" | "low" | "high">("default");
   const [page, setPage] = useState(1);
+  // Keranjang: { [productId]: qty }
+  const [cart, setCart] = useState<Record<number, number>>({});
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const addToCart = (p: Product) => {
+    setCart((c) => ({ ...c, [p.id]: (c[p.id] ?? 0) + 1 }));
+    setCartOpen(true);
+  };
+  const changeQty = (id: number, delta: number) =>
+    setCart((c) => {
+      const next = (c[id] ?? 0) + delta;
+      if (next <= 0) {
+        const { [id]: _, ...rest } = c;
+        return rest;
+      }
+      return { ...c, [id]: next };
+    });
+  const removeFromCart = (id: number) =>
+    setCart((c) => {
+      const { [id]: _, ...rest } = c;
+      return rest;
+    });
+
+  const cartItems = Object.entries(cart).map(([id, qty]) => ({
+    product: products.find((p) => p.id === Number(id))!,
+    qty,
+  }));
+  const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
+  const cartTotal = cartItems.reduce((sum, i) => sum + i.product.price * i.qty, 0);
+
+  const checkoutWhatsApp = () => {
+    if (cartItems.length === 0) return;
+    const lines = cartItems.map(
+      (i, idx) => `${idx + 1}. ${i.product.name} (x${i.qty}) - ${formatRupiah(i.product.price * i.qty)}`
+    );
+    const message =
+      `Halo Minion Barbershop, saya ingin memesan produk berikut:\n\n` +
+      `${lines.join("\n")}\n\n` +
+      `Total: ${formatRupiah(cartTotal)}\n\n` +
+      `Mohon info ketersediaan & cara pemesanannya. Terima kasih!`;
+    window.open(`${WA_LINK}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  };
 
   const query = search.trim().toLowerCase();
   const isSearching = query !== "";
@@ -263,7 +327,7 @@ export default function ProductsPageClient() {
             <>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {gridProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} onAdd={addToCart} inCart={cart[product.id] ?? 0} />
                 ))}
               </div>
 
@@ -304,6 +368,87 @@ export default function ProductsPageClient() {
           )}
         </div>
       </div>
+
+      {/* ── Floating cart button ── */}
+      {cartCount > 0 && !cartOpen && (
+        <button
+          onClick={() => setCartOpen(true)}
+          aria-label="Buka keranjang"
+          className="fixed bottom-6 right-6 z-40 grid place-items-center h-14 w-14 rounded-full bg-[#1a1a1a] text-white shadow-xl hover:bg-black transition-colors"
+        >
+          <CartIcon className="w-6 h-6" />
+          <span className="absolute -top-1 -right-1 grid place-items-center min-w-6 h-6 px-1.5 rounded-full bg-[#F9C74F] text-black text-xs font-black">
+            {cartCount}
+          </span>
+        </button>
+      )}
+
+      {/* ── Cart drawer ── */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCartOpen(false)} />
+          <aside className="relative w-full max-w-sm bg-white h-full flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <h3 className="text-base font-black text-[#1a1a1a] flex items-center gap-2">
+                <CartIcon className="w-5 h-5" /> Keranjang
+                {cartCount > 0 && <span className="text-xs font-bold text-gray-400">({cartCount} item)</span>}
+              </h3>
+              <button onClick={() => setCartOpen(false)} aria-label="Tutup keranjang" className="text-gray-400 hover:text-gray-700">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-5 h-5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            {cartItems.length === 0 ? (
+              <div className="flex-1 grid place-items-center text-gray-400 text-sm px-6 text-center">
+                Keranjang masih kosong.<br />Tambahkan produk untuk memesan via WhatsApp.
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+                  {cartItems.map(({ product, qty }) => (
+                    <div key={product.id} className="flex gap-3">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0">
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-[#1a1a1a] truncate">{product.name}</h4>
+                        <p className="text-xs text-gray-400">{formatRupiah(product.price)}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <button onClick={() => changeQty(product.id, -1)} aria-label="Kurangi" className="grid place-items-center w-6 h-6 rounded-md border border-gray-200 text-gray-600 hover:border-gray-400">
+                            <MinusIcon className="w-3 h-3" />
+                          </button>
+                          <span className="text-sm font-bold text-[#1a1a1a] w-5 text-center">{qty}</span>
+                          <button onClick={() => changeQty(product.id, 1)} aria-label="Tambah" className="grid place-items-center w-6 h-6 rounded-md border border-gray-200 text-gray-600 hover:border-gray-400">
+                            <PlusIcon className="w-3 h-3" />
+                          </button>
+                          <button onClick={() => removeFromCart(product.id)} className="ml-auto text-xs text-red-400 hover:text-red-600 font-medium">Hapus</button>
+                        </div>
+                      </div>
+                      <span className="text-sm font-extrabold text-[#1a1a1a] whitespace-nowrap">{formatRupiah(product.price * qty)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-gray-100 px-5 py-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-gray-500">Total</span>
+                    <span className="text-lg font-black text-[#1a1a1a]">{formatRupiah(cartTotal)}</span>
+                  </div>
+                  <button
+                    onClick={checkoutWhatsApp}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold py-3 rounded-xl hover:bg-[#1eba59] transition-colors"
+                  >
+                    <WaIcon className="w-5 h-5" />
+                    Pesan via WhatsApp
+                  </button>
+                  <button onClick={() => setCart({})} className="w-full text-xs text-gray-400 hover:text-gray-600 font-medium">Kosongkan keranjang</button>
+                </div>
+              </>
+            )}
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
