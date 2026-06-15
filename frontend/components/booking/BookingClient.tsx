@@ -9,8 +9,15 @@ import type { Branch, Barber, Service } from "@/src/lib/mockData";
 import BarberOrbit from "@/components/booking/BarberOrbit";
 import DatePicker from "@/components/booking/DatePicker";
 
+// ─── Data pembayaran (mock — UI dulu, API menyusul) ───────────────────────────
+const BANK_ACCOUNTS = [
+  { bank: "BCA",     number: "1234567890", holder: "PT Minion Barbershop" },
+  { bank: "Mandiri", number: "9876543210", holder: "PT Minion Barbershop" },
+];
+const PAYMENT_WINDOW = 10 * 60; // detik — slot ditahan 10 menit
+
 // ─── Step indicator ───────────────────────────────────────────────────────────
-const STEPS = ["Cabang", "Barber", "Layanan", "Jadwal", "Data Diri", "Konfirmasi"];
+const STEPS = ["Cabang", "Barber", "Layanan", "Jadwal", "Data Diri", "Konfirmasi", "Pembayaran"];
 
 function StepBar({ current }: { current: number }) {
   return (
@@ -32,30 +39,6 @@ function StepBar({ current }: { current: number }) {
   );
 }
 
-// ─── Countdown Modal ──────────────────────────────────────────────────────────
-function CountdownModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
-  const [count, setCount] = useState(5);
-  useEffect(() => {
-    if (count <= 0) { onConfirm(); return; }
-    const t = setTimeout(() => setCount(count - 1), 1000);
-    return () => clearTimeout(t);
-  }, [count, onConfirm]);
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-6">
-      <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
-        <div className="w-16 h-16 bg-[#F9C74F] rounded-full flex items-center justify-center text-3xl font-black text-black mx-auto mb-4">{count}</div>
-        <h2 className="text-xl font-black text-[#1a1a1a] mb-2">Konfirmasi Booking</h2>
-        <p className="text-gray-500 text-sm mb-6">Booking akan dikonfirmasi otomatis dalam {count} detik. Pastikan semua data sudah benar.</p>
-        <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">Batal</button>
-          <button onClick={onConfirm} className="flex-1 bg-[#F9C74F] text-black font-bold py-2.5 rounded-xl hover:bg-yellow-400 transition-colors text-sm">Konfirmasi Sekarang</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function BookingClient() {
   const router = useRouter();
@@ -71,9 +54,13 @@ export default function BookingClient() {
   const [promoCode, setPromoCode]   = useState("");
   const [promoMsg, setPromoMsg]     = useState("");
   const [discount, setDiscount]     = useState(0);
-  const [showModal, setShowModal]   = useState(false);
   const [form, setForm]             = useState({ name: "", phone: "", notes: "" });
   const [serviceQuery, setServiceQuery] = useState("");
+  // Pembayaran
+  const [payMethod, setPayMethod]   = useState<"transfer" | "qris" | null>(null);
+  const [proofName, setProofName]   = useState("");
+  const [secondsLeft, setSecondsLeft] = useState(PAYMENT_WINDOW);
+  const [copied, setCopied]         = useState("");
 
   // Pre-fill dari sessionStorage
   useEffect(() => {
@@ -87,6 +74,19 @@ export default function BookingClient() {
     clearBookingPrefill();
     clearActivePromo();
   }, []);
+
+  // Countdown pembayaran: reset & mulai saat masuk langkah pembayaran
+  useEffect(() => {
+    if (step !== 6) return;
+    setSecondsLeft(PAYMENT_WINDOW);
+    const t = setInterval(() => {
+      setSecondsLeft((s) => {
+        if (s <= 1) { clearInterval(t); return 0; }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [step]);
 
   const barbers  = branch ? fetchBarbersByBranch(branch.id) : [];
   const services = fetchServices();
@@ -109,8 +109,6 @@ export default function BookingClient() {
     setPromoMsg(`✓ Hemat Rp ${disc.toLocaleString()}`);
   };
 
-  const handleSubmit = () => setShowModal(true);
-
   const confirmBooking = () => {
     const booking = {
       id: `BK-${Date.now()}`,
@@ -125,9 +123,21 @@ export default function BookingClient() {
       created_at: new Date().toISOString(),
     };
     saveBooking(booking);
-    setShowModal(false);
     router.push("/booking/sukses");
   };
+
+  const resetBooking = () => {
+    setStep(0); setPayMethod(null); setProofName(""); setSecondsLeft(PAYMENT_WINDOW);
+  };
+
+  const copy = (text: string, key: string) => {
+    navigator.clipboard?.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(""), 1500);
+  };
+
+  const payExpired = secondsLeft <= 0;
+  const mmss = `${String(Math.floor(secondsLeft / 60)).padStart(2, "0")}:${String(secondsLeft % 60).padStart(2, "0")}`;
 
   const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
@@ -143,8 +153,6 @@ export default function BookingClient() {
           maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
         }}
       />
-
-      {showModal && <CountdownModal onConfirm={confirmBooking} onCancel={() => setShowModal(false)} />}
 
       <div className="max-w-2xl mx-auto">
         <Link
@@ -355,7 +363,118 @@ export default function BookingClient() {
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(4)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
-                <button onClick={handleSubmit} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors">Konfirmasi Booking</button>
+                <button onClick={() => setStep(6)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors">Lanjut ke Pembayaran →</button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Pembayaran */}
+          {step === 6 && (
+            <div>
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pembayaran</h2>
+              <p className="text-gray-500 text-sm mb-5">Bayar dulu untuk mengamankan slot kamu. Booking baru dikonfirmasi setelah pembayaran diverifikasi kasir.</p>
+
+              {/* Countdown */}
+              {!payExpired ? (
+                <div className="bg-[#1a1a1a] rounded-xl p-4 mb-5 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Selesaikan dalam</p>
+                    <p className="text-[#F9C74F] text-2xl font-black font-mono tabular-nums">{mmss}</p>
+                  </div>
+                  <p className="text-gray-400 text-[11px] max-w-[170px] text-right leading-snug">Slot kamu diamankan sementara selama menunggu pembayaran.</p>
+                </div>
+              ) : (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-5 text-center">
+                  <p className="text-red-600 font-bold text-sm">Waktu pembayaran habis</p>
+                  <p className="text-red-500 text-xs mt-0.5">Slot telah dilepas. Silakan ulangi booking.</p>
+                </div>
+              )}
+
+              {/* Total */}
+              <div className="bg-[#F5EFE4] rounded-xl p-5 mb-5 flex items-center justify-between">
+                <span className="text-gray-500 text-sm font-semibold">Total Pembayaran</span>
+                <span className="text-2xl font-black text-[#178E81]">{fmt(final)}</span>
+              </div>
+
+              {/* Pilih metode */}
+              <p className="text-sm font-bold text-[#1a1a1a] mb-2">Metode Pembayaran</p>
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {([["transfer", "Transfer Bank"], ["qris", "QRIS"]] as const).map(([key, label]) => (
+                  <button key={key} type="button" disabled={payExpired} onClick={() => setPayMethod(key)}
+                    className={`rounded-xl border-2 py-3 px-4 text-sm font-bold transition-all disabled:opacity-40 ${payMethod === key ? "border-[#F9C74F] bg-[#FFF9E8] text-[#1a1a1a]" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Detail Transfer Bank */}
+              {payMethod === "transfer" && (
+                <div className="space-y-3 mb-5">
+                  {BANK_ACCOUNTS.map((acc) => (
+                    <div key={acc.bank} className="border-2 border-gray-100 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-black text-[#1a1a1a]">{acc.bank}</span>
+                        <button type="button" onClick={() => copy(acc.number, acc.bank)}
+                          className="text-xs font-bold text-[#178E81] hover:underline">{copied === acc.bank ? "Tersalin ✓" : "Salin"}</button>
+                      </div>
+                      <p className="font-mono text-lg font-bold text-[#1a1a1a] tracking-wider">{acc.number}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">a.n. {acc.holder}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Detail QRIS */}
+              {payMethod === "qris" && (
+                <div className="border-2 border-gray-100 rounded-xl p-5 mb-5 flex flex-col items-center">
+                  <div className="bg-white border border-gray-200 rounded-lg p-3">
+                    {/* QR placeholder (UI mock — diganti qris_image_url dari API nanti) */}
+                    <svg width="168" height="168" viewBox="0 0 25 25" shapeRendering="crispEdges" role="img" aria-label="Kode QRIS (contoh)">
+                      <rect width="25" height="25" fill="#fff" />
+                      {/* finder patterns */}
+                      {[[0, 0], [18, 0], [0, 18]].map(([fx, fy]) => (
+                        <g key={`${fx}-${fy}`}>
+                          <rect x={fx} y={fy} width="7" height="7" fill="#1a1a1a" />
+                          <rect x={fx + 1} y={fy + 1} width="5" height="5" fill="#fff" />
+                          <rect x={fx + 2} y={fy + 2} width="3" height="3" fill="#1a1a1a" />
+                        </g>
+                      ))}
+                      {/* modul acak (dekoratif) */}
+                      {[[9,1],[11,2],[13,1],[10,4],[12,5],[8,6],[14,3],[9,8],[11,9],[13,8],[2,9],[4,11],[6,10],[1,13],[3,15],[5,13],[8,11],[10,12],[12,13],[14,11],[16,13],[18,11],[20,12],[22,13],[9,14],[11,15],[13,16],[15,14],[17,16],[19,14],[21,15],[10,18],[12,19],[14,18],[16,20],[18,18],[20,19],[22,18],[11,21],[13,22],[15,21],[17,23],[19,21],[21,22]].map(([mx, my], i) => (
+                        <rect key={i} x={mx} y={my} width="1" height="1" fill="#1a1a1a" />
+                      ))}
+                    </svg>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-3 text-center max-w-[220px]">Scan dengan aplikasi e-wallet / m-banking apa pun yang mendukung QRIS.</p>
+                </div>
+              )}
+
+              {/* Upload bukti */}
+              {payMethod && !payExpired && (
+                <div className="mb-1">
+                  <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Upload Bukti Pembayaran</label>
+                  <label className="flex items-center gap-3 border-2 border-dashed border-gray-300 rounded-xl px-4 py-4 cursor-pointer hover:border-[#F9C74F] transition-colors">
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) setProofName(f.name); }} />
+                    <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6H17a5 5 0 010 10M9 12l3-3m0 0l3 3m-3-3v9" />
+                    </svg>
+                    <span className={`text-sm truncate ${proofName ? "text-[#1a1a1a] font-semibold" : "text-gray-400"}`}>{proofName || "Pilih gambar bukti transfer / pembayaran"}</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Aksi */}
+              <div className="flex gap-3 mt-6">
+                {payExpired ? (
+                  <button onClick={resetBooking} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors">Ulangi Booking</button>
+                ) : (
+                  <>
+                    <button onClick={() => setStep(5)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
+                    <button disabled={!payMethod || !proofName} onClick={confirmBooking}
+                      className="flex-1 bg-[#178E81] text-white font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-teal-700 transition-colors">Kirim Bukti Pembayaran</button>
+                  </>
+                )}
               </div>
             </div>
           )}

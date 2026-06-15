@@ -31,13 +31,12 @@ export default function BookingSuksesPage() {
           </svg>
         </div>
 
-        <h1 className="text-3xl font-black text-[#1a1a1a] mb-2 flex items-center justify-center gap-2">
-          Booking Berhasil!
-          <svg className="w-8 h-8 text-[#178E81]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </h1>
-        <p className="text-gray-500 text-sm mb-8">Booking kamu sudah dikonfirmasi. Sampai jumpa di Minion Barbershop!</p>
+        <h1 className="text-3xl font-black text-[#1a1a1a] mb-2">Pembayaran Terkirim!</h1>
+        <span className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold px-3 py-1 rounded-full mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          Menunggu Verifikasi Kasir
+        </span>
+        <p className="text-gray-500 text-sm mb-8">Bukti pembayaran kamu sedang diverifikasi kasir. Slot akan dikonfirmasi segera — pantau statusnya di Riwayat Booking.</p>
 
         {booking && (
           <div className="bg-white rounded-2xl p-6 text-left shadow-sm border border-gray-100 mb-6">
