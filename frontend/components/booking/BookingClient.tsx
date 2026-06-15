@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { fetchBranches, fetchBarbersByBranch, fetchServices, fetchSlots, fetchPromoByCode} from "@/src/lib/mockData";
+import { fetchBranches, fetchBarbers, fetchBarbersByBranch, fetchServices, fetchSlots, fetchPromoByCode} from "@/src/lib/mockData";
 import { saveBooking, getBookingPrefill, clearBookingPrefill, getActivePromo, clearActivePromo} from "@/src/lib/localStorage";
 import type { Branch, Barber, Service } from "@/src/lib/mockData";
 import BarberOrbit from "@/components/booking/BarberOrbit";
@@ -18,12 +18,14 @@ const PAYMENT_WINDOW = 10 * 60; // detik — slot ditahan 10 menit
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 const STEPS = ["Cabang", "Barber", "Layanan", "Jadwal", "Data Diri", "Konfirmasi", "Pembayaran"];
+// Saat mengikuti barber, langkah "Barber" dilewati (barber sudah dipilih dari halaman detail)
+const BARBER_STEPS = STEPS.filter((s) => s !== "Barber");
 
-function StepBar({ current }: { current: number }) {
+function StepBar({ steps, current }: { steps: string[]; current: number }) {
   return (
     <div className="mb-8 flex justify-center">
       <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar max-w-full px-1">
-        {STEPS.map((label, i) => (
+        {steps.map((label, i) => (
           <div key={label} className="flex items-center gap-1 sm:gap-1.5">
             <div className="flex flex-col items-center">
               <div className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold transition-all ${i < current ? "bg-[#178E81] text-white" : i === current ? "bg-[#F9C74F] text-black" : "bg-gray-200 text-gray-400"}`}>
@@ -31,7 +33,7 @@ function StepBar({ current }: { current: number }) {
               </div>
               <span className={`text-[9px] mt-1 hidden sm:block whitespace-nowrap ${i === current ? "text-[#1a1a1a] font-semibold" : "text-gray-400"}`}>{label}</span>
             </div>
-            {i < STEPS.length - 1 && <div className={`h-0.5 w-4 sm:w-6 shrink-0 sm:mb-4 ${i < current ? "bg-[#178E81]" : "bg-gray-200"}`} />}
+            {i < steps.length - 1 && <div className={`h-0.5 w-4 sm:w-6 shrink-0 sm:mb-4 ${i < current ? "bg-[#178E81]" : "bg-gray-200"}`} />}
           </div>
         ))}
       </div>
@@ -48,6 +50,8 @@ export default function BookingClient() {
   const [step, setStep]             = useState(0);
   const [branch, setBranch]         = useState<Branch | null>(null);
   const [barber, setBarber]         = useState<Barber | null>(null);
+  // Mode "ikuti barber": barber dipilih lebih dulu lewat CTA di halaman detail barberman
+  const [byBarber, setByBarber]     = useState(false);
   const [service, setService]       = useState<Service | null>(null);
   const [date, setDate]             = useState("");
   const [time, setTime]             = useState("");
@@ -63,7 +67,7 @@ export default function BookingClient() {
   const [secondsLeft, setSecondsLeft] = useState(PAYMENT_WINDOW);
   const [copied, setCopied]         = useState("");
 
-  // Pre-fill dari sessionStorage
+  // Pre-fill dari sessionStorage + query param ?barber= (mode ikuti barber)
   useEffect(() => {
     const prefill = getBookingPrefill();
     if (prefill?.service_id) {
@@ -74,6 +78,16 @@ export default function BookingClient() {
     if (promoFromSession) setPromoCode(promoFromSession);
     clearBookingPrefill();
     clearActivePromo();
+
+    // Mode ikuti barber: ?barber=<slug|id>. Slug = nama depan huruf kecil (mis. "hendra")
+    const key = new URLSearchParams(window.location.search).get("barber");
+    if (key) {
+      const k = key.toLowerCase();
+      const b = fetchBarbers().find(
+        (x) => x.id === k || x.name.split(" ")[0].toLowerCase() === k
+      );
+      if (b) { setBarber(b); setByBarber(true); }
+    }
   }, []);
 
   // Countdown pembayaran: reset & mulai saat masuk langkah pembayaran
@@ -93,6 +107,14 @@ export default function BookingClient() {
   const services = fetchServices();
   const price    = service && branch ? service.prices[branch.id] ?? 0 : 0;
   const final    = Math.max(0, price - discount);
+
+  // Mode ikuti barber: cabang dibatasi hanya yang punya barber tsb; langkah "Barber" dilewati
+  const visibleBranches = byBarber && barber
+    ? branches.filter((b) => barber.branch_ids.includes(b.id))
+    : branches;
+  const stepLabels = byBarber ? BARBER_STEPS : STEPS;
+  // Petakan index numerik internal (step) ke posisi pada label yang tampil
+  const displayStep = byBarber ? (step === 0 ? 0 : step - 1) : step;
 
   // Rentang tanggal yang bisa dipilih: besok s/d 14 hari ke depan
   const minDate = new Date(); minDate.setDate(minDate.getDate() + 1);
@@ -166,17 +188,39 @@ export default function BookingClient() {
           Kembali ke Beranda
         </Link>
         <h1 className="text-2xl sm:text-3xl font-black text-[#1a1a1a] text-center mb-2">Booking Sekarang</h1>
-        <p className="text-gray-500 text-sm text-center mb-8 px-4">Selesaikan {STEPS.length} langkah untuk konfirmasi booking kamu</p>
-        <StepBar current={step} />
+        <p className="text-gray-500 text-sm text-center mb-8 px-4">
+          {byBarber && barber
+            ? <>Booking bareng <span className="font-bold text-[#1a1a1a]">{barber.name}</span> — selesaikan {stepLabels.length} langkah</>
+            : <>Selesaikan {stepLabels.length} langkah untuk konfirmasi booking kamu</>}
+        </p>
+        <StepBar steps={stepLabels} current={displayStep} />
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 md:p-8">
 
           {/* Step 0: Pilih Cabang */}
           {step === 0 && (
             <div>
-              <h2 className="text-xl font-black text-[#1a1a1a] mb-5">Pilih Cabang</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {branches.map((b) => (
+              {/* Banner barber yang diikuti (mode ikuti barber) */}
+              {byBarber && barber && (
+                <div className="flex items-center gap-3 bg-[#F5EFE4] rounded-xl p-3 mb-5">
+                  <span className={`relative grid place-items-center w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ${barber.color}`}>
+                    <span className="text-white font-black text-lg">{barber.name[0]}</span>
+                    <img src={`/${barber.name.split(" ")[0].toLowerCase()}.png`} alt={barber.name}
+                      className="absolute w-11 h-11 rounded-full object-cover object-top"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#178E81]">Kamu mengikuti barber</p>
+                    <p className="font-black text-[#1a1a1a] leading-tight truncate">{barber.name} <span className="text-gray-400 font-semibold">· {barber.nickname}</span></p>
+                  </div>
+                </div>
+              )}
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pilih Cabang</h2>
+              {byBarber && barber && (
+                <p className="text-xs text-gray-400 mb-4">Hanya menampilkan cabang tempat {barber.name.split(" ")[0]} bertugas.</p>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                {visibleBranches.map((b) => (
                   <button key={b.id} onClick={() => setBranch(b)}
                     className={`p-4 rounded-xl border-2 text-left transition-all ${branch?.id === b.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
                     <p className="font-bold text-[#1a1a1a]">{b.name}</p>
@@ -186,7 +230,7 @@ export default function BookingClient() {
                   </button>
                 ))}
               </div>
-              <button disabled={!branch} onClick={() => setStep(1)}
+              <button disabled={!branch} onClick={() => setStep(byBarber ? 2 : 1)}
                 className="mt-6 w-full bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">
                 Lanjut →
               </button>
@@ -252,7 +296,7 @@ export default function BookingClient() {
                 </div>
 
                 <div className="flex gap-3 mt-6">
-                  <button onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
+                  <button onClick={() => setStep(byBarber ? 0 : 1)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
                   <button disabled={!service} onClick={() => setStep(3)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
                 </div>
               </div>

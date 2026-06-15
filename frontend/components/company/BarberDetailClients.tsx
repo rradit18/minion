@@ -110,7 +110,7 @@ export default function BarberDetailClients({ barberName, barberSlug }: Props) {
               Maestro {self?.badge?.toLowerCase()} di {data.location}. {data.experience}, dipercaya {data.clientReturns}.
             </p>
             <Link
-              href="/booking"
+              href={`/booking?barber=${barberSlug}`}
               className="mt-7 inline-flex items-center gap-2 bg-[#F9C74F] text-[#1a1a1a] font-display font-bold text-sm pl-6 pr-2 py-2 rounded-full hover:bg-yellow-400 transition group"
             >
               Booking Sekarang
@@ -271,7 +271,7 @@ export default function BarberDetailClients({ barberName, barberSlug }: Props) {
                 Slot terbatas tiap harinya. Amankan jadwalmu sebelum keduluan orang.
               </p>
               <Link
-                href="/booking"
+                href={`/booking?barber=${barberSlug}`}
                 className="inline-flex items-center gap-2 bg-[#F9C74F] hover:bg-yellow-400 text-[#1a1a1a] text-sm font-extrabold px-6 py-3 rounded-xl transition-colors group"
               >
                 Book Now <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
