@@ -1,0 +1,609 @@
+{
+  "info": {
+    "_postman_id": "minion-barbershop-api-v1",
+    "name": "Minion Barbershop API",
+    "description": "REST API untuk platform Minion Barbershop. Semua endpoint prefix /api kecuali web route struk digital.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "{{BASE_URL}}" },
+    { "key": "customerToken", "value": "{{CUSTOMER_TOKEN}}" },
+    { "key": "kasirToken", "value": "{{KASIR_TOKEN}}" },
+    { "key": "barberToken", "value": "{{BARBER_TOKEN}}" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('CUSTOMER_TOKEN', json.data.token);",
+                  "  pm.environment.set('CUSTOMER_ID', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/register", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"phone\": \"081234567890\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Login (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('CUSTOMER_TOKEN', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/login", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"081234567890\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Login (Kasir)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('KASIR_TOKEN', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/login", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{KASIR_PHONE}}\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Login (Barber)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('BARBER_TOKEN', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/login", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{BARBER_PHONE}}\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/auth/me", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/auth/logout", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏪 Cabang (Public)",
+      "item": [
+        {
+          "name": "List Cabang",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/branches", "host": ["{{BASE_URL}}"], "path": ["api", "branches"] }
+          }
+        },
+        {
+          "name": "Detail Cabang",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/branches/{{BRANCH_SLUG}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "branches", "{{BRANCH_SLUG}}"]
+            }
+          }
+        },
+        {
+          "name": "Layanan per Cabang",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/branches/{{BRANCH_ID}}/services",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "branches", "{{BRANCH_ID}}", "services"]
+            }
+          }
+        },
+        {
+          "name": "Barber per Cabang",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/branches/{{BRANCH_ID}}/barbers",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "branches", "{{BRANCH_ID}}", "barbers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✂️ Barber (Public)",
+      "item": [
+        {
+          "name": "List Barber",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/barbers",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "barbers"],
+              "query": [{ "key": "branch_id", "value": "{{BRANCH_ID}}", "disabled": true }]
+            }
+          }
+        },
+        {
+          "name": "Detail Barber",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/barbers/{{BARBER_SLUG}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "barbers", "{{BARBER_SLUG}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💈 Layanan (Public)",
+      "item": [
+        {
+          "name": "List Layanan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/services", "host": ["{{BASE_URL}}"], "path": ["api", "services"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 Booking (Public)",
+      "item": [
+        {
+          "name": "Cek Availability Slot",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/availability?barber_id={{BARBER_ID}}&date={{DATE}}&service_ids[]={{SERVICE_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "availability"],
+              "query": [
+                { "key": "barber_id", "value": "{{BARBER_ID}}" },
+                { "key": "date", "value": "{{DATE}}" },
+                { "key": "service_ids[]", "value": "{{SERVICE_ID}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buat Booking (Guest)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('BOOKING_NUMBER', json.data.booking_number);",
+                  "  pm.environment.set('BOOKING_ID', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/bookings", "host": ["{{BASE_URL}}"], "path": ["api", "bookings"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch_id\": \"{{BRANCH_ID}}\",\n  \"barber_id\": \"{{BARBER_ID}}\",\n  \"service_ids\": [\"{{SERVICE_ID}}\"],\n  \"scheduled_at\": \"{{SCHEDULED_AT}}\",\n  \"customer_name\": \"Tamu Testing\",\n  \"customer_phone\": \"08199999999\",\n  \"notes\": \"Minta tipis di atas\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Buat Booking (Customer Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('BOOKING_NUMBER', json.data.booking_number);",
+                  "  pm.environment.set('BOOKING_ID', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/bookings", "host": ["{{BASE_URL}}"], "path": ["api", "bookings"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch_id\": \"{{BRANCH_ID}}\",\n  \"barber_id\": \"{{BARBER_ID}}\",\n  \"service_ids\": [\"{{SERVICE_ID}}\"],\n  \"scheduled_at\": \"{{SCHEDULED_AT}}\",\n  \"customer_name\": \"Budi Santoso\",\n  \"customer_phone\": \"081234567890\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Cek Status Booking",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/bookings/{{BOOKING_NUMBER}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "bookings", "{{BOOKING_NUMBER}}"]
+            }
+          }
+        },
+        {
+          "name": "Info Pembayaran",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/bookings/{{BOOKING_NUMBER}}/payment",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "bookings", "{{BOOKING_NUMBER}}", "payment"]
+            },
+            "description": "Sisa waktu (remaining_seconds), total, qris_image_url, dan daftar rekening cabang. Slot ditahan sampai deadline."
+          }
+        },
+        {
+          "name": "Upload Bukti Pembayaran",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "payment_method", "value": "bank_transfer", "type": "text", "description": "bank_transfer | qris_external" },
+                { "key": "proof", "type": "file", "src": [] }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/bookings/{{BOOKING_NUMBER}}/payment-proof",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "bookings", "{{BOOKING_NUMBER}}", "payment-proof"]
+            },
+            "description": "Upload bukti transfer (image). Hanya sah dalam masa pembayaran; status -> pending_confirmation."
+          }
+        },
+        {
+          "name": "Antrian Hari Ini",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/queue/{{BRANCH_SLUG}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "queue", "{{BRANCH_SLUG}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Feedback (Public)",
+      "item": [
+        {
+          "name": "Kirim Feedback",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/feedback", "host": ["{{BASE_URL}}"], "path": ["api", "feedback"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch_id\": \"{{BRANCH_ID}}\",\n  \"stars\": 5,\n  \"category\": \"barber\",\n  \"message\": \"Barber-nya ramah dan hasilnya rapi!\",\n  \"customer_name\": \"Pelanggan Anonim\",\n  \"customer_phone\": \"08111111111\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎫 Promo (Public)",
+      "item": [
+        {
+          "name": "Validasi Kode Promo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}", "disabled": true }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/promos/validate", "host": ["{{BASE_URL}}"], "path": ["api", "promos", "validate"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROMO10\",\n  \"subtotal\": 50000,\n  \"branch_id\": \"{{BRANCH_ID}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer Area",
+      "description": "Semua endpoint membutuhkan Authorization: Bearer {{CUSTOMER_TOKEN}} (role=customer)",
+      "item": [
+        {
+          "name": "Update Profil",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/customer/profile", "host": ["{{BASE_URL}}"], "path": ["api", "customer", "profile"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi Santoso Updated\",\n  \"email\": \"budi.baru@example.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "List Booking Saya",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/customer/bookings",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "customer", "bookings"],
+              "query": [
+                { "key": "status", "value": "upcoming", "disabled": true },
+                { "key": "status", "value": "completed", "disabled": true },
+                { "key": "status", "value": "cancelled", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reschedule Booking",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/customer/bookings/{{BOOKING_ID}}/reschedule",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "customer", "bookings", "{{BOOKING_ID}}", "reschedule"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduled_at\": \"{{SCHEDULED_AT_NEW}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/customer/bookings/{{BOOKING_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "customer", "bookings", "{{BOOKING_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Beri Rating Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/customer/bookings/{{BOOKING_ID}}/rate",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "customer", "bookings", "{{BOOKING_ID}}", "rate"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stars\": 5,\n  \"comment\": \"Hasilnya keren, barber-nya profesional!\",\n  \"is_anonymous\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Info Loyalty (Punch Card)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/customer/loyalty", "host": ["{{BASE_URL}}"], "path": ["api", "customer", "loyalty"] }
+          }
+        },
+        {
+          "name": "Promo yang Tersedia",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{CUSTOMER_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/customer/promos", "host": ["{{BASE_URL}}"], "path": ["api", "customer", "promos"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💇 Barber Portal",
+      "description": "Semua endpoint membutuhkan Authorization: Bearer {{BARBER_TOKEN}} (role=barber)",
+      "item": [
+        {
+          "name": "Jadwal Shift (2 Minggu)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{BARBER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/barber/schedule",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "barber", "schedule"],
+              "query": [
+                { "key": "week_start", "value": "{{DATE}}", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Booking Hari Ini",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{BARBER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/barber/bookings/today",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "barber", "bookings", "today"]
+            }
+          }
+        },
+        {
+          "name": "Rating Bulan Ini",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{BARBER_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/barber/ratings",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "barber", "ratings"],
+              "query": [
+                { "key": "month", "value": "{{MONTH}}", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧾 Struk Digital (Web)",
+      "item": [
+        {
+          "name": "Lihat Struk",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/receipt/{{RECEIPT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["receipt", "{{RECEIPT_ID}}"]
+            },
+            "description": "Web route public — tidak butuh auth. Buka di browser untuk tampilan thermal-print."
+          }
+        }
+      ]
+    }
+  ]
+}
