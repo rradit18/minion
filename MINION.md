@@ -71,14 +71,14 @@ Sistem mengenal **4 peran** (`UserRole`):
 Halaman publik di `frontend/app/(company)/`:
 - **Landing page** — hero, USP, layanan, banner promo, preview galeri, preview barberman, lokasi.
 - **About**, **Contact**, **Branches** (daftar cabang + peta), **Gallery** (dengan compare-slider before/after), **Products** (etalase produk), **Feedback** (form umpan balik publik).
-- **Barberman** — daftar barber + halaman detail per barber (`/barberman/[slug]`).
+- **Barberman** — daftar barber + halaman detail per barber (`/barberman/[slug]`). Tombol CTA "Booking Sekarang" dan "Book Now" di halaman detail mengarahkan ke `/booking?barber=<slug>` sehingga barber langsung terpilih (lihat §6.1 — mode ikuti barber).
 - **Hair Analysis** (`/hair-analysis`) — fitur kamera: ambil foto, "scan", dan rekomendasi gaya rambut (lihat §6.7).
 
 > **Rencana CMS:** seluruh konten di atas akan dibuat dinamis & dikelola dari Filament — teks hero, daftar layanan, foto galeri, banner promo, info cabang, profil barber, dll.
 
 ### 4.2 Area Customer
 Frontend `frontend/app/akun/` + `frontend/app/booking/`:
-- **Booking online** 6 langkah (lihat §6.1).
+- **Booking online** 7 langkah — atau 6 langkah saat mode *ikuti barber* (lihat §6.1).
 - **Akun / Dashboard member** — ringkasan, booking mendatang, jumlah loyalty punch.
 - **Profil** — edit data diri & password.
 - **Riwayat** — daftar booking (upcoming/selesai/dibatalkan), reschedule, cancel, beri rating.
@@ -151,16 +151,24 @@ pending_payment ──(upload bukti)──▶ pending_confirmation ──(kasir 
 ## 6. Alur Bisnis (Business Flows)
 
 ### 6.1 Booking Online (Customer)
-Wizard **6 langkah** di frontend: **Cabang → Barber → Layanan → Jadwal → Data Diri → Konfirmasi**.
+Wizard **7 langkah** di frontend: **Cabang → Barber → Layanan → Jadwal → Data Diri → Konfirmasi → Pembayaran**.
 
 1. Customer memilih cabang, barber, satu/lebih layanan, lalu tanggal & slot waktu.
 2. Sistem menghitung **slot 30 menit** berdasarkan **shift barber** & durasi layanan (layanan panjang memakan lebih banyak slot).
-3. Saat submit → booking dibuat dengan status **`pending_payment`**; **slot ditahan ±10 menit** (`BOOKING_PAYMENT_WINDOW`).
-4. Customer melihat info pembayaran (total, QRIS, rekening bank cabang) lalu **upload bukti bayar** → status jadi **`pending_confirmation`**.
-5. **Kasir memverifikasi** bukti → **`confirmed`** (atau **Tolak** → `expired`, slot dilepas).
-6. Bila tidak bayar sampai batas waktu → slot **otomatis dilepas** dan booking jadi **`expired`** (oleh `BookingExpiryJob`).
+3. Customer mengisi data diri lalu mengonfirmasi ringkasan pesanan.
+4. Saat submit → booking dibuat dengan status **`pending_payment`**; **slot ditahan ±10 menit** (`BOOKING_PAYMENT_WINDOW`).
+5. Halaman Pembayaran menampilkan total, rekening bank cabang, atau QRIS; customer **upload bukti bayar** → status jadi **`pending_confirmation`**.
+6. **Kasir memverifikasi** bukti → **`confirmed`** (atau **Tolak** → `expired`, slot dilepas).
+7. Bila tidak bayar sampai batas waktu → slot **otomatis dilepas** dan booking jadi **`expired`** (oleh `BookingExpiryJob`).
 
 > Booking bisa dibuat **guest** (tanpa akun) atau **registered** (token customer → terhubung ke akun).
+
+#### Mode Ikuti Barber (`?barber=<slug>`)
+Diaktifkan saat customer mengklik "Booking Sekarang" dari halaman detail barberman (`/barberman/[slug]`). URL booking memuat query param `?barber=<slug>` yang menyebabkan:
+- **Barber sudah terpilih** — langkah "Barber" dihilangkan dari wizard sehingga total menjadi **6 langkah**: Cabang → Layanan → Jadwal → Data Diri → Konfirmasi → Pembayaran.
+- **Cabang difilter** — hanya cabang tempat barber tersebut bertugas (`barber.branch_ids`) yang ditampilkan.
+- **Banner konfirmasi** — di langkah Pilih Cabang, tampil banner "Kamu mengikuti barber [Nama]" beserta avatar barber.
+- Navigasi antar langkah menyesuaikan (step 0 → step 2 secara internal, melewati step 1 barber).
 
 ### 6.2 Booking Walk-in (Kasir)
 Form **4 langkah** di panel kasir: **Cari HP → Pilih Layanan → Barber + Slot → Buat**.
