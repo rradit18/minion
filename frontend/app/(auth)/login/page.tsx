@@ -32,8 +32,7 @@ export default function LoginPage() {
         return;
       }
       setSession(user);
-      if (user.role === "barber") router.push("/barberman-portal");
-      else router.push("/akun");
+      router.push("/akun");
     }, 600);
   };
 
