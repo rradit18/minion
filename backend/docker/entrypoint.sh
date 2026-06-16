@@ -39,6 +39,10 @@ fi
 echo "[entrypoint] Running migrations..."
 php artisan migrate --force
 
+# ─── Seed database ───────────────────────────────────────────────────────────
+echo "[entrypoint] Seeding database..."
+php artisan db:seed --force
+
 # ─── Storage link ────────────────────────────────────────────────────────────
 php artisan storage:link 2>/dev/null || true
 

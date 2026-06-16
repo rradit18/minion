@@ -1,3 +1,16 @@
+# ─── Stage 1: Build frontend assets ─────────────────────────────────────────
+FROM node:20-alpine AS node-builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY vite.config.js ./
+COPY resources/ ./resources/
+RUN npm run build
+
+# ─── Stage 2: PHP application ────────────────────────────────────────────────
 FROM php:8.3-fpm-alpine
 
 WORKDIR /var/www/html
@@ -44,6 +57,9 @@ COPY docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy pre-built frontend assets from node-builder stage
+COPY --from=node-builder /app/public/build /var/www/html/public/build
 
 # Copy entrypoints
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
