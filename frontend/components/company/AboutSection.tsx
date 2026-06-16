@@ -115,12 +115,11 @@ const AboutSection = () => {
               <path d="M12 2l2.9 6.5L22 9.3l-5 4.6 1.3 7.1L12 17.8 5.7 21l1.3-7.1-5-4.6 7.1-.8L12 2z" />
             </svg>
           </div>
-          <p className="text-xs md:text-sm font-bold tracking-[0.25em] uppercase mb-5 text-gray-400">Tentang Kami</p>
+          <p className="text-xs md:text-sm font-bold tracking-[0.25em] uppercase mb-5 text-gray-400">Filosofi Nama Minion</p>
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05]">
-              Good hair,<br />good mood,<br />
-              <span className="text-[#7B5EA7]">good day.</span>
-            </h1>
+            <div className="flex items-center">
+              <img src="/minion.png" alt="Minion Barbershop" className="w-64 md:w-80 object-contain" />
+            </div>
             <p className="text-base md:text-lg font-medium leading-relaxed border-l-4 border-[#1a1a1a] pl-5 md:pl-8 text-gray-700">
               &ldquo;Minion ga cuma barbershop biasa, king. Kami{" "}
               <span className="font-bold text-[#1a1a1a]">pencari kesempurnaan.</span>{" "}
