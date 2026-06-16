@@ -202,3 +202,81 @@ body {
   .glitch::before,
   .glitch::after { animation: none; }
 }
+
+/* ── Hair Analysis — face scan animations ── */
+/* Garis pemindai turun-naik saat wajah terdeteksi */
+@keyframes ha-sweep {
+  0%   { top: 6%;  opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { top: 94%; opacity: 0; }
+}
+.animate-ha-sweep {
+  animation: ha-sweep 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Cincin lock berdenyut saat wajah terkunci */
+@keyframes ha-ring {
+  0%   { transform: scale(0.94); opacity: 0.35; }
+  50%  { transform: scale(1);    opacity: 0.85; }
+  100% { transform: scale(0.94); opacity: 0.35; }
+}
+.animate-ha-ring {
+  animation: ha-ring 1.6s ease-in-out infinite;
+}
+
+/* Sudut bracket muncul pop saat deteksi */
+@keyframes ha-corner {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-ha-corner {
+  animation: ha-corner 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Badge "wajah terdeteksi" slide-up */
+@keyframes ha-badge {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.animate-ha-badge {
+  animation: ha-badge 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Titik radar mencari (saat belum ada wajah) */
+@keyframes ha-search {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1; }
+}
+.animate-ha-search {
+  animation: ha-search 1.2s ease-in-out infinite;
+}
+
+/* Pop sukses saat hasil muncul */
+@keyframes ha-pop {
+  0%   { opacity: 0; transform: scale(0.85) translateY(10px); }
+  60%  { transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-ha-pop {
+  animation: ha-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Shimmer kartu hasil saat generating */
+@keyframes ha-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.animate-ha-shimmer {
+  animation: ha-shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ha-sweep,
+  .animate-ha-ring,
+  .animate-ha-corner,
+  .animate-ha-badge,
+  .animate-ha-search,
+  .animate-ha-pop,
+  .animate-ha-shimmer { animation: none; }
+}

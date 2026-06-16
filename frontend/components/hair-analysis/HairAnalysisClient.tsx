@@ -2,241 +2,417 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { fetchHairStyles } from "@/src/lib/mockData";
+import dynamic from "next/dynamic";
 import { setBookingPrefill } from "@/src/lib/localStorage";
-import type { HairStyle } from "@/src/lib/mockData";
+import { useFaceDetection } from "./useFaceDetection";
+import { HAIR_STYLES, type HairStyleOption } from "./styles";
 
-type Stage = "idle" | "camera" | "captured" | "scanning" | "results";
+const ReactCompareSlider = dynamic(
+  () => import("react-compare-slider").then((m) => m.ReactCompareSlider),
+  { ssr: false },
+);
+const ReactCompareSliderImage = dynamic(
+  () => import("react-compare-slider").then((m) => m.ReactCompareSliderImage),
+  { ssr: false },
+);
+
+type Stage = "idle" | "camera" | "catalog" | "generating" | "result";
+
+interface AnalysisResult {
+  id: string;
+  styleName: string;
+  description: string;
+  imageUrl: string;
+  difficulty: string;
+  maintenance: string;
+  tags: string[];
+  recommendedServiceId: string;
+}
+
+const MAX_ATTEMPTS = 3; // batasi pemanggilan AI per sesi (kontrol biaya)
+
+const diffColor: Record<string, string> = {
+  Easy: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+  Medium: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+  Hard: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+};
 
 export default function HairAnalysisClient() {
-  const router        = useRouter();
-  const videoRef      = useRef<HTMLVideoElement>(null);
-  const canvasRef     = useRef<HTMLCanvasElement>(null);
-  const streamRef     = useRef<MediaStream | null>(null);
+  const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
-  const [stage, setStage]           = useState<Stage>("idle");
-  const [results, setResults]       = useState<HairStyle[]>([]);
-  const [visibleCount, setVisible]  = useState(0);
-  const [selected, setSelected]     = useState<HairStyle | null>(null);
-  const [scanProgress, setScanProgress] = useState(0);
-  const [camError, setCamError]     = useState("");
+  const [stage, setStage] = useState<Stage>("idle");
+  const [captured, setCaptured] = useState<string>("");
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [activeStyle, setActiveStyle] = useState<HairStyleOption | null>(null);
+  const [attempts, setAttempts] = useState(0);
+  const [camError, setCamError] = useState("");
+  const [genError, setGenError] = useState("");
 
-  const hairStyles = fetchHairStyles();
+  const { detected, mode } = useFaceDetection(videoRef, stage === "camera");
+  const canCapture = detected || mode === "unavailable";
+  const remaining = MAX_ATTEMPTS - attempts;
+  const limitReached = remaining <= 0;
 
-  // Start camera
+  const stopStream = useCallback(() => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+  }, []);
+
   const startCamera = async () => {
     setCamError("");
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
+        audio: false,
+      });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
       setStage("camera");
     } catch {
-      setCamError("Kamera tidak tersedia. Pastikan izin kamera diberikan.");
+      setCamError("Kamera nggak bisa diakses. Pastikan izin kamera udah kamu kasih ya.");
     }
   };
 
-  // Capture photo
+  useEffect(() => {
+    if (stage === "camera" && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [stage]);
+
+  useEffect(() => () => stopStream(), [stopStream]);
+
   const capture = () => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
+    if (!detected && mode !== "unavailable") return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    canvasRef.current.width  = videoRef.current.videoWidth;
-    canvasRef.current.height = videoRef.current.videoHeight;
-    ctx.drawImage(videoRef.current, 0, 0);
-    // Stop stream
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    setStage("captured");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    setCaptured(canvas.toDataURL("image/jpeg", 0.9));
+    stopStream();
+    setStage("catalog");
   };
 
-  // Simulate scan + progressive results
-  const startScan = useCallback(() => {
-    setStage("scanning");
-    setScanProgress(0);
-    setVisible(0);
+  const retake = () => {
+    setCaptured("");
+    setResult(null);
+    setGenError("");
+    startCamera();
+  };
 
-    // Progress bar
-    const progressInterval = setInterval(() => {
-      setScanProgress((p) => {
-        if (p >= 100) { clearInterval(progressInterval); return 100; }
-        return p + 2;
+  // Generate SATU gaya on-demand (1 call LightX = 1 gaya = 1 gambar).
+  const tryStyle = async (style: HairStyleOption) => {
+    if (limitReached || !captured) return;
+    setGenError("");
+    setActiveStyle(style);
+    setStage("generating");
+    try {
+      const res = await fetch("/api/hair-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: captured, styleId: style.id }),
       });
-    }, 50);
+      if (!res.ok) throw new Error("gagal");
+      const data = (await res.json()) as { result: AnalysisResult };
+      setResult(data.result);
+      setAttempts((a) => a + 1);
+      setStage("result");
+    } catch {
+      setGenError("Gagal membuat gaya. Coba lagi sebentar ya.");
+      setStage("catalog");
+    }
+  };
 
-    // After 2.5s, show results progressively
-    setTimeout(() => {
-      setStage("results");
-      const shuffled = [...hairStyles].sort(() => Math.random() - 0.5).slice(0, 6);
-      setResults(shuffled);
-
-      shuffled.forEach((_, i) => {
-        setTimeout(() => setVisible(i + 1), i * 200);
-      });
-    }, 2500);
-  }, [hairStyles]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => { streamRef.current?.getTracks().forEach((t) => t.stop()); };
-  }, []);
-
-  const handleBookThis = (style: HairStyle) => {
-    setBookingPrefill({ hair_style: style.name, service_id: style.recommended_services[0] });
+  const bookThis = (r: AnalysisResult) => {
+    setBookingPrefill({ hair_style: r.styleName, service_id: r.recommendedServiceId });
     router.push("/booking");
   };
 
   const reset = () => {
+    stopStream();
     setStage("idle");
-    setResults([]);
-    setVisible(0);
-    setSelected(null);
-    setScanProgress(0);
+    setCaptured("");
+    setResult(null);
+    setActiveStyle(null);
+    setAttempts(0);
     setCamError("");
-  };
-
-  const diffColor: Record<string, string> = {
-    Easy:   "bg-green-100 text-green-700",
-    Medium: "bg-yellow-100 text-yellow-700",
-    Hard:   "bg-red-100 text-red-600",
+    setGenError("");
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
-      <div className="max-w-2xl mx-auto px-6 py-10">
+    <div className="relative min-h-screen bg-[#FAF7EE] text-[#1a1a1a] selection:bg-[#F9C74F] selection:text-[#1a1a1a]">
+      {/* Latar doodle compro */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[url('/pattern.png')] bg-cover bg-center opacity-50" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7EE]/50 via-transparent to-[#FAF7EE]/90" />
+      <div aria-hidden className="pointer-events-none absolute -top-16 -left-10 h-56 w-56 rounded-full bg-[#F9C74F]/30 blur-2xl" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 -right-12 h-64 w-64 rounded-full bg-[#178E81]/15 blur-2xl" />
 
+      <div className="relative z-10 mx-auto max-w-2xl px-5 py-10 sm:py-14">
         {/* Header */}
-        <div className="text-center mb-8">
-          <p className="text-[#F9C74F] text-xs font-bold uppercase tracking-widest mb-2">AI Powered</p>
-          <h1 className="text-3xl font-black">Hair Style Analyzer</h1>
-          <p className="text-gray-400 text-sm mt-2">Temukan gaya rambut terbaik untuk kamu</p>
+        <div className="mb-8 text-center">
+          <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[2px] text-[#178E81] font-body">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#178E81] opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#178E81]" />
+            </span>
+            Teknologi AI · LightX
+          </span>
+          <h1 className="font-display mt-3 text-3xl font-bold leading-[1.1] tracking-tight sm:text-4xl">
+            Scan dulu,{" "}
+            <span className="relative inline-block text-[#7B5EA7]">
+              gantenggg.
+              <svg viewBox="0 0 240 18" className="absolute -bottom-1.5 left-0 h-3 w-full" preserveAspectRatio="none">
+                <path d="M2 9 Q60 3 120 9 T238 8" stroke="#F9C74F" strokeWidth="3" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-[#666] font-body">
+            Pindai wajahmu, pilih gaya, biar AI yang nunjukin hasilnya — tinggal cocok, langsung book.
+          </p>
         </div>
 
-        {/* Stage: IDLE */}
+        {/* ── IDLE ── */}
         {stage === "idle" && (
-          <div className="text-center space-y-6">
-            <div className="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-16 h-16 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <div className="animate-ha-pop space-y-6 text-center">
+            <div className="relative mx-auto flex h-36 w-36 items-center justify-center">
+              <span className="absolute inset-0 rounded-full bg-[#F9C74F]/25" />
+              <span className="absolute inset-3 rounded-full ring-1 ring-[#178E81]/30" />
+              <svg className="h-16 w-16 text-[#178E81]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.4} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <p className="text-gray-400 text-sm max-w-xs mx-auto">Aktifkan kamera, ambil foto, dan biarkan AI merekomendasikan 6 gaya terbaik untukmu</p>
-            {camError && <p className="text-red-400 text-sm bg-red-900/30 rounded-xl px-4 py-3">{camError}</p>}
-            <button onClick={startCamera}
-              className="bg-[#F9C74F] text-black font-extrabold px-8 py-3.5 rounded-2xl text-sm hover:bg-yellow-400 transition-colors">
-              📸 Aktifkan Kamera
+            <p className="mx-auto max-w-xs text-[14px] text-[#666] font-body">
+              Aktifkan kamera, posisikan wajah di dalam oval, lalu ambil foto pas wajahmu kedeteksi.
+            </p>
+            {camError && (
+              <p className="mx-auto max-w-sm rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">{camError}</p>
+            )}
+            <button
+              onClick={startCamera}
+              className="font-display inline-flex items-center justify-center gap-2 rounded-xl bg-[#F9C74F] px-7 py-3.5 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95"
+            >
+              Aktifkan Kamera <span aria-hidden>→</span>
             </button>
           </div>
         )}
 
-        {/* Stage: CAMERA */}
+        {/* ── CAMERA ── */}
         {stage === "camera" && (
-          <div className="space-y-4">
-            <div className="relative rounded-2xl overflow-hidden bg-black aspect-[4/3]">
-              <video ref={videoRef} className="w-full h-full object-cover" playsInline muted />
-              {/* Guide overlay */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-48 h-60 border-2 border-[#F9C74F] rounded-[50%] opacity-60" />
-              </div>
-              <p className="absolute bottom-4 left-0 right-0 text-center text-xs text-white/60">Posisikan wajah di dalam oval</p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={reset} className="flex-1 border-2 border-gray-600 text-gray-300 font-bold py-3 rounded-xl text-sm hover:bg-white/5 transition-colors">Batal</button>
-              <button onClick={capture} className="flex-1 bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors">📸 Ambil Foto</button>
-            </div>
-          </div>
-        )}
+          <div className="animate-ha-pop space-y-4">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-black shadow-lg ring-1 ring-black/5 sm:aspect-[4/3]">
+              <video ref={videoRef} className="h-full w-full -scale-x-100 object-cover" playsInline muted />
 
-        {/* Stage: CAPTURED */}
-        {stage === "captured" && (
-          <div className="space-y-4">
-            <div className="rounded-2xl overflow-hidden bg-black aspect-[4/3]">
-              <canvas ref={canvasRef} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => { reset(); setTimeout(startCamera, 100); }}
-                className="flex-1 border-2 border-gray-600 text-gray-300 font-bold py-3 rounded-xl text-sm hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                Ulangi
-              </button>
-              <button onClick={startScan}
-                className="flex-1 bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors">
-                🔍 Analisis Sekarang
-              </button>
-            </div>
-          </div>
-        )}
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute left-1/2 top-1/2 h-[62%] w-[52%] -translate-x-1/2 -translate-y-1/2">
+                  <div
+                    className={`h-full w-full rounded-[50%] transition-colors duration-300 ${
+                      detected ? "border-2 border-[#F9C74F] shadow-[0_0_40px_rgba(249,199,79,0.45)]" : "border-2 border-dashed border-white/50"
+                    }`}
+                  />
+                  {detected && (
+                    <>
+                      <div className="animate-ha-ring absolute inset-0 rounded-[50%] border border-[#F9C74F]/60" />
+                      <div className="absolute inset-0 overflow-hidden rounded-[50%]">
+                        <div className="animate-ha-sweep absolute left-0 h-0.5 w-full bg-gradient-to-r from-transparent via-[#178E81] to-transparent shadow-[0_0_12px_#178E81]" />
+                      </div>
+                      {["left-2 top-2 border-l-2 border-t-2", "right-2 top-2 border-r-2 border-t-2", "left-2 bottom-2 border-l-2 border-b-2", "right-2 bottom-2 border-r-2 border-b-2"].map((pos) => (
+                        <span key={pos} className={`animate-ha-corner absolute h-5 w-5 rounded-[3px] border-[#F9C74F] ${pos}`} />
+                      ))}
+                    </>
+                  )}
+                </div>
 
-        {/* Stage: SCANNING */}
-        {stage === "scanning" && (
-          <div className="text-center space-y-6 py-10">
-            <div className="w-20 h-20 mx-auto relative">
-              <div className="w-20 h-20 border-4 border-[#F9C74F]/30 rounded-full" />
-              <div className="absolute inset-0 border-4 border-[#F9C74F] border-t-transparent rounded-full animate-spin" />
-            </div>
-            <div>
-              <p className="font-black text-xl mb-2">Menganalisis rambut kamu...</p>
-              <p className="text-gray-400 text-sm">AI sedang bekerja</p>
-            </div>
-            <div className="bg-white/10 rounded-full h-2 overflow-hidden max-w-xs mx-auto">
-              <div className="h-full bg-[#F9C74F] rounded-full transition-all duration-100" style={{ width: `${scanProgress}%` }} />
-            </div>
-            <p className="text-[#F9C74F] font-bold text-sm">{scanProgress}%</p>
-          </div>
-        )}
-
-        {/* Stage: RESULTS */}
-        {stage === "results" && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <p className="text-[#F9C74F] font-bold text-sm mb-1">✨ Analisis Selesai!</p>
-              <h2 className="text-xl font-black">6 Gaya Terbaik untukmu</h2>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {results.slice(0, visibleCount).map((style) => (
-                <button key={style.id} onClick={() => setSelected(style)}
-                  className={`bg-white/5 border-2 rounded-2xl p-4 text-left transition-all hover:border-[#F9C74F] ${selected?.id === style.id ? "border-[#F9C74F] bg-[#F9C74F]/10" : "border-white/10"}`}>
-                  <div className="w-full aspect-square bg-white/10 rounded-xl mb-3 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                {mode === "loading" ? (
+                  <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur">
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-transparent" />
+                    Memuat model deteksi…
                   </div>
-                  <p className="font-bold text-sm">{style.name}</p>
-                  <p className="text-gray-400 text-[10px] mt-1 line-clamp-2">{style.description}</p>
-                  <span className={`inline-block mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${diffColor[style.difficulty]}`}>{style.difficulty}</span>
+                ) : detected ? (
+                  <div className="animate-ha-badge absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#F9C74F] px-4 py-1.5 text-xs font-bold text-[#1a1a1a]">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                    Wajah terdeteksi
+                  </div>
+                ) : mode === "unavailable" ? (
+                  <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur">Deteksi wajah tidak tersedia</div>
+                ) : (
+                  <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur">
+                    <span className="flex gap-1">
+                      <span className="animate-ha-search h-1.5 w-1.5 rounded-full bg-white/80" style={{ animationDelay: "0ms" }} />
+                      <span className="animate-ha-search h-1.5 w-1.5 rounded-full bg-white/80" style={{ animationDelay: "200ms" }} />
+                      <span className="animate-ha-search h-1.5 w-1.5 rounded-full bg-white/80" style={{ animationDelay: "400ms" }} />
+                    </span>
+                    Mencari wajah…
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {mode === "unavailable" && (
+              <p className="text-center text-[11px] text-[#999] font-body">Deteksi wajah tidak tersedia di perangkat ini — kamu tetap bisa mengambil foto.</p>
+            )}
+
+            <div className="flex gap-3">
+              <button onClick={reset} className="font-display flex-1 rounded-xl border-2 border-[#1a1a1a] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white">
+                Batal
+              </button>
+              <button
+                onClick={capture}
+                disabled={!canCapture}
+                className={`font-display flex-[1.4] rounded-xl py-3 text-[15px] font-bold transition active:scale-95 ${
+                  canCapture ? "bg-[#F9C74F] text-[#1a1a1a] hover:bg-yellow-400" : "cursor-not-allowed bg-black/10 text-black/30"
+                }`}
+              >
+                {mode === "loading" ? "Memuat model…" : canCapture ? "Ambil Foto" : "Tunggu deteksi wajah…"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── CATALOG: pilih gaya ── */}
+        {stage === "catalog" && (
+          <div className="animate-ha-pop space-y-5">
+            {/* Foto hasil capture + retake */}
+            <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-gray-100">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-black">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={captured} alt="Foto kamu" className="h-full w-full -scale-x-100 object-cover" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-[15px] font-bold leading-tight">Pilih gaya buat dicoba</p>
+                <p className="text-[12px] text-[#666] font-body">
+                  {limitReached ? "Batas percobaan tercapai." : `Sisa ${remaining} percobaan AI sesi ini.`}
+                </p>
+              </div>
+              <button onClick={retake} className="font-display shrink-0 rounded-lg border border-[#1a1a1a]/20 px-3 py-2 text-[12px] font-bold text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white">
+                Ulang foto
+              </button>
+            </div>
+
+            {genError && (
+              <p className="rounded-xl bg-rose-50 px-4 py-3 text-center text-sm text-rose-700 ring-1 ring-rose-200">{genError}</p>
+            )}
+            {limitReached && (
+              <p className="rounded-xl bg-amber-50 px-4 py-3 text-center text-[13px] text-amber-700 ring-1 ring-amber-200 font-body">
+                Kamu sudah pakai {MAX_ATTEMPTS} percobaan. Klik <b>Scan Ulang</b> untuk mulai sesi baru.
+              </p>
+            )}
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {HAIR_STYLES.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => tryStyle(s)}
+                  disabled={limitReached}
+                  className={`group overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-gray-100 transition ${
+                    limitReached ? "cursor-not-allowed opacity-50" : "hover:-translate-y-0.5 hover:shadow-lg hover:ring-[#F9C74F]"
+                  }`}
+                >
+                  <div className="relative aspect-square overflow-hidden bg-gray-50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.reference} alt={s.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-1 bg-gradient-to-t from-black/75 to-transparent p-2.5">
+                      <p className="text-xs font-bold leading-tight text-white">{s.name}</p>
+                      {!limitReached && (
+                        <span className="shrink-0 rounded-full bg-[#F9C74F] px-2 py-0.5 text-[9px] font-bold text-[#1a1a1a]">Coba</span>
+                      )}
+                    </div>
+                  </div>
                 </button>
               ))}
             </div>
 
-            {/* Selected detail */}
-            {selected && (
-              <div className="bg-white/5 rounded-2xl p-5 border border-[#F9C74F]/30">
-                <h3 className="font-black text-lg text-[#F9C74F] mb-2">{selected.name}</h3>
-                <p className="text-gray-300 text-sm mb-3">{selected.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {selected.tags.map((tag) => (
-                    <span key={tag} className="bg-white/10 text-gray-300 text-xs px-2.5 py-1 rounded-full">#{tag}</span>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-400 mb-1">🔧 Maintenance: {selected.maintenance}</p>
-                <button onClick={() => handleBookThis(selected)}
-                  className="w-full mt-3 bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors">
-                  Book Gaya Ini →
-                </button>
-              </div>
-            )}
-
-            <button onClick={reset} className="w-full border-2 border-gray-600 text-gray-300 font-bold py-3 rounded-xl text-sm hover:bg-white/5 transition-colors">
-              🔄 Analisis Ulang
+            <button onClick={reset} className="font-display w-full rounded-xl border-2 border-[#1a1a1a] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white">
+              Scan Ulang
             </button>
           </div>
         )}
 
-        {/* Hidden canvas */}
-        {stage !== "captured" && stage !== "camera" && <canvas ref={canvasRef} className="hidden" />}
+        {/* ── GENERATING ── */}
+        {stage === "generating" && (
+          <div className="space-y-6">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-black shadow-lg ring-1 ring-black/5 sm:aspect-[4/3]">
+              {captured && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={captured} alt="" className="h-full w-full -scale-x-100 object-cover opacity-50" />
+              )}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="animate-ha-sweep absolute left-0 h-1 w-full bg-gradient-to-r from-transparent via-[#F9C74F] to-transparent shadow-[0_0_16px_#F9C74F]" />
+              </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white">
+                <div className="relative h-16 w-16">
+                  <div className="h-16 w-16 rounded-full border-4 border-[#F9C74F]/30" />
+                  <div className="absolute inset-0 animate-spin rounded-full border-4 border-[#F9C74F] border-t-transparent" />
+                </div>
+                <p className="font-display text-lg font-bold">Bikin gaya {activeStyle?.name ?? ""}…</p>
+                <p className="text-xs text-white/70 font-body">AI lagi kerja, bentar ya</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── RESULT: before/after ── */}
+        {stage === "result" && result && (
+          <div className="animate-ha-pop space-y-5">
+            <div className="overflow-hidden rounded-3xl bg-black shadow-lg ring-1 ring-black/5">
+              <div className="aspect-[3/4] sm:aspect-[4/3]">
+                <ReactCompareSlider
+                  className="h-full w-full"
+                  itemOne={<ReactCompareSliderImage src={captured} alt="Sebelum" style={{ objectFit: "cover" }} />}
+                  itemTwo={<ReactCompareSliderImage src={result.imageUrl} alt={result.styleName} style={{ objectFit: "cover" }} />}
+                />
+              </div>
+            </div>
+            <div className="flex justify-between px-1 text-[11px] font-bold uppercase tracking-wider text-[#999] font-body">
+              <span>Sebelum</span>
+              <span className="text-[#178E81]">Sesudah · {result.styleName}</span>
+            </div>
+
+            {/* Detail gaya */}
+            <div className="rounded-3xl bg-white p-4 shadow-md ring-1 ring-[#F9C74F]/40">
+              <div className="flex items-center gap-2">
+                <h3 className="font-display text-lg font-bold text-[#1a1a1a]">{result.styleName}</h3>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${diffColor[result.difficulty] ?? ""}`}>{result.difficulty}</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-[#666] font-body">{result.description}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {result.tags.map((t) => (
+                  <span key={t} className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] text-[#666] font-body">#{t}</span>
+                ))}
+              </div>
+              <p className="mt-3 text-[11px] text-[#999] font-body">Perawatan: {result.maintenance}</p>
+              <button
+                onClick={() => bookThis(result)}
+                className="font-display mt-4 w-full rounded-xl bg-[#F9C74F] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95"
+              >
+                Book Gaya Ini →
+              </button>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setStage("catalog")}
+                disabled={limitReached}
+                className={`font-display flex-1 rounded-xl border-2 py-3 text-[15px] font-bold transition ${
+                  limitReached ? "cursor-not-allowed border-black/10 text-black/30" : "border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+                }`}
+              >
+                {limitReached ? "Batas tercapai" : `Coba gaya lain (${remaining})`}
+              </button>
+              <button onClick={reset} className="font-display flex-1 rounded-xl bg-[#F9C74F] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95">
+                Scan Ulang
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Canvas tersembunyi untuk capture */}
+        <canvas ref={canvasRef} className="hidden" />
       </div>
     </div>
   );
