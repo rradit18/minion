@@ -8,8 +8,6 @@ import barbersData     from "@/src/mocks/barbers.json";
 import servicesData    from "@/src/mocks/services.json";
 import slotsData       from "@/src/mocks/slots.json";
 import promosData      from "@/src/mocks/promos.json";
-import ratingsData     from "@/src/mocks/ratings.json";
-import scheduleData    from "@/src/mocks/barber-schedule.json";
 import hairStylesData  from "@/src/mocks/hair-styles.json";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -101,8 +99,6 @@ export const fetchServices   = (): Service[]   => servicesData as Service[];
 export const fetchPromos     = (): Promo[]     => promosData as Promo[];
 export const fetchHairStyles = (): HairStyle[] => hairStylesData as HairStyle[];
 export const fetchSlots      = ()              => slotsData;
-export const fetchRatings    = ()              => ratingsData;
-export const fetchSchedule   = ()              => scheduleData;
 
 export const fetchBarbersByBranch = (branchId: string): Barber[] =>
   barbersData.filter((b) => b.branch_ids.includes(branchId)) as Barber[];

@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\BarberController;
-use App\Http\Controllers\Api\BarberPortalController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BookingPaymentController;
 use App\Http\Controllers\Api\BranchController;
@@ -63,9 +62,3 @@ Route::middleware(['auth:sanctum', 'role:customer', 'password.changed'])->prefix
 // ─── Promo validate (public + optional auth) ───────────────────────────────
 Route::middleware('optional.auth')->post('/promos/validate', [PromoController::class, 'validate']);
 
-// ─── Barber portal [auth:sanctum + role=barber] ────────────────────────────
-Route::middleware(['auth:sanctum', 'role:barber', 'password.changed'])->prefix('barber')->group(function () {
-    Route::get('/schedule',       [BarberPortalController::class, 'schedule']);
-    Route::get('/bookings/today', [BarberPortalController::class, 'todayBookings']);
-    Route::get('/ratings',        [BarberPortalController::class, 'ratings']);
-});
