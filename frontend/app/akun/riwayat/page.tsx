@@ -65,16 +65,16 @@ export default function RiwayatPage() {
       ) : (
         <div className="space-y-4">
           {filtered.map((b) => (
-            <div key={b.id} className="bg-white rounded-2xl border border-gray-100 p-5">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div>
-                  <p className="font-mono text-xs text-gray-400">{b.id}</p>
-                  <p className="font-black text-[#1a1a1a] mt-1">{b.service_name}</p>
-                  <p className="text-sm text-gray-500">{b.barber_name} · {b.branch_name}</p>
+            <div key={b.id} className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="min-w-0">
+                  <p className="font-mono text-xs text-gray-400 truncate">{b.id}</p>
+                  <p className="font-black text-[#1a1a1a] mt-1 text-sm sm:text-base">{b.service_name}</p>
+                  <p className="text-xs sm:text-sm text-gray-500">{b.barber_name} · {b.branch_name}</p>
                 </div>
                 <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0 ${statusStyle[b.status]}`}>{b.status}</span>
               </div>
-              <div className="flex items-center justify-between text-sm bg-[#F5EFE4] rounded-xl px-4 py-2.5">
+              <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between text-xs sm:text-sm bg-[#F5EFE4] rounded-xl px-3 sm:px-4 py-2.5 gap-1">
                 <span className="text-gray-600">{new Date(b.date).toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "long", year: "numeric" })} · {b.time}</span>
                 <span className="font-black text-[#1a1a1a]">{fmt(b.final_price)}</span>
               </div>

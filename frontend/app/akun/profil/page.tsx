@@ -48,13 +48,13 @@ export default function ProfilPage() {
       <h2 className="text-2xl font-black text-[#1a1a1a]">Profil Saya</h2>
 
       {/* Avatar */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
-        <div className="w-16 h-16 bg-[#F9C74F] rounded-2xl flex items-center justify-center text-3xl font-black text-black flex-shrink-0">
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#F9C74F] rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-black text-black flex-shrink-0">
           {session.name[0]}
         </div>
-        <div>
-          <p className="font-black text-[#1a1a1a] text-lg">{session.name}</p>
-          <p className="text-sm text-gray-400">{session.email}</p>
+        <div className="min-w-0">
+          <p className="font-black text-[#1a1a1a] text-base sm:text-lg truncate">{session.name}</p>
+          <p className="text-xs sm:text-sm text-gray-400 truncate">{session.email}</p>
           <span className="inline-block bg-[#178E81] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest mt-1">{session.role}</span>
         </div>
       </div>

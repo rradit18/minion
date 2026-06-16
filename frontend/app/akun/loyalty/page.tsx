@@ -20,19 +20,19 @@ export default function LoyaltyPage() {
       <h2 className="text-2xl font-black text-[#1a1a1a]">Loyalty Card</h2>
 
       {/* Punch Card */}
-      <div className="bg-[#1a1a1a] rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-[#1a1a1a] rounded-2xl p-5 sm:p-6">
+        <div className="flex items-center justify-between mb-5 sm:mb-6">
           <div>
             <p className="text-[#F9C74F] text-xs font-bold uppercase tracking-widest">Minion Loyalty</p>
-            <p className="text-white text-2xl font-black mt-1">{progress}/{TOTAL} Punch</p>
+            <p className="text-white text-xl sm:text-2xl font-black mt-1">{progress}/{TOTAL} Punch</p>
           </div>
-          <svg className="w-10 h-10 text-[#F9C74F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-8 h-8 sm:w-10 sm:h-10 text-[#F9C74F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
           </svg>
         </div>
 
         {/* Punch grid */}
-        <div className="grid grid-cols-5 gap-3 mb-4">
+        <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-4">
           {Array.from({ length: TOTAL }).map((_, i) => (
             <div key={i} className={`aspect-square rounded-xl flex items-center justify-center transition-all ${i < progress ? "bg-[#F9C74F] shadow-lg scale-105" : "bg-white/10"}`}>
               {i < progress && (

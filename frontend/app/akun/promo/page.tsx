@@ -42,18 +42,18 @@ export default function PromoPage() {
         {promos.map((promo) => {
           const expired = isExpired(promo.valid_until);
           return (
-            <div key={promo.id} className={`bg-white rounded-2xl border-2 p-5 transition-all ${expired ? "border-gray-100 opacity-60" : "border-gray-100 hover:border-[#F9C74F]"}`}>
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+            <div key={promo.id} className={`bg-white rounded-2xl border-2 p-4 sm:p-5 transition-all ${expired ? "border-gray-100 opacity-60" : "border-gray-100 hover:border-[#F9C74F]"}`}>
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="bg-[#1a1a1a] text-[#F9C74F] font-mono font-black text-xs px-2.5 py-1 rounded-lg">{promo.code}</span>
                     {expired && <span className="text-xs text-red-400 font-semibold">Kadaluarsa</span>}
                   </div>
-                  <p className="font-black text-[#1a1a1a]">{promo.title}</p>
-                  <p className="text-sm text-gray-500 mt-1">{promo.description}</p>
+                  <p className="font-black text-[#1a1a1a] text-sm sm:text-base">{promo.title}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">{promo.description}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-2xl font-black text-[#F9C74F]">
+                  <p className="text-xl sm:text-2xl font-black text-[#F9C74F]">
                     {promo.type === "percentage" ? `${promo.value}%` : `Rp ${(promo.value / 1000).toFixed(0)}k`}
                   </p>
                   <p className="text-xs text-gray-400">off</p>

@@ -32,11 +32,11 @@ export default function AkunLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen bg-[#F5EFE4]">
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-100 px-6 py-4">
+      <div className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3 sm:py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-400">Halo,</p>
-            <p className="font-black text-[#1a1a1a] flex items-center gap-1.5">
+            <p className="font-black text-[#1a1a1a] text-sm sm:text-base flex items-center gap-1.5">
               {session.name}
               <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
@@ -51,22 +51,23 @@ export default function AkunLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Tab nav */}
-      <div className="bg-white border-b border-gray-100 overflow-x-auto">
+      <div className="bg-white border-b border-gray-100 overflow-x-auto scrollbar-hide">
         <div className="max-w-4xl mx-auto flex">
           {tabs.map((tab) => {
             const isActive = pathname === tab.href;
             return (
               <Link key={tab.href} href={tab.href}
-                className={`flex items-center gap-1.5 px-5 py-3.5 text-sm font-semibold border-b-2 whitespace-nowrap transition-colors ${isActive ? "border-[#F9C74F] text-[#1a1a1a]" : "border-transparent text-gray-400 hover:text-gray-700"}`}>
+                className={`flex items-center gap-1 sm:gap-1.5 px-3 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm font-semibold border-b-2 whitespace-nowrap transition-colors ${isActive ? "border-[#F9C74F] text-[#1a1a1a]" : "border-transparent text-gray-400 hover:text-gray-700"}`}>
                 {tab.icon}
-                {tab.label}
+                <span className="hidden xs:inline sm:inline">{tab.label}</span>
+                <span className="xs:hidden sm:hidden">{tab.label}</span>
               </Link>
             );
           })}
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-6 py-8">{children}</main>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-8">{children}</main>
     </div>
   );
 }
