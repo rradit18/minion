@@ -16,9 +16,9 @@ interface Barber {
 }
 
 const barbers: Barber[] = [
-  { slug: "hendra",  name: "Hendra Schevenko", title: "Fade Specialist",      handle: "fadeking",   rating: "4.9", reviewCount: "2300+", image: "/hendra.png",  hue: 174 },
-  { slug: "juan",    name: "Juan Samudra",     title: "Classic & Modern Cut", handle: "thesculptor", rating: "4.9", reviewCount: "1850+", image: "/juan.png",    hue: 266 },
-  { slug: "yoga",    name: "Yoga Harahap",     title: "Line Up & Design",     handle: "sharpie",    rating: "4.8", reviewCount: "1420+", image: "/yoga.png",    hue: 45  },
+  { slug: "aldi",  name: "Aldi", title: "Fade Specialist",      handle: "fadeking",   rating: "4.9", reviewCount: "2300+", image: "/aldi.png",  hue: 174 },
+  { slug: "ali",    name: "Ali",     title: "Classic & Modern Cut", handle: "thesculptor", rating: "4.9", reviewCount: "1850+", image: "/ali.png",    hue: 266 },
+  { slug: "ferdi",    name: "Ferdi",     title: "Line Up & Design",     handle: "sharpie",    rating: "4.8", reviewCount: "1420+", image: "/ferdi.png",    hue: 45  },
   { slug: "bastian", name: "Bastian Narendra", title: "Color & Beard Art",    handle: "theartist",  rating: "4.9", reviewCount: "1980+", image: "/bastian.png", hue: 24  },
 ];
 

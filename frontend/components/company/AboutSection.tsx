@@ -44,60 +44,65 @@ const TimelineImage = ({ src, alt }: { src: string; alt: string }) => (
 
 const timelineData: TimelineEntry[] = [
   {
-    title: "2019",
+    title: "2018",
     subtitle: "Awal dari ruko kecil",
     content: (
       <div className="space-y-4">
         <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-          Semua berawal dari satu kursi di ruko sempit Jl. Pramuka. Bermodal nekat, sepasang gunting,
-          dan mimpi bikin orang Tanjungpinang tampil lebih percaya diri.
+          Minion Barbershop merupakan usaha yang bergerak di bidang jasa pangkas rambut dan didirikan pada bulan November 2018. Usaha ini pertama kali beroperasi di sebuah kios kecil yang berlokasi di Jl. H.Ungar. Pada tahap awal, usaha dijalankan secara mandiri oleh pemilik dengan fasilitas yang masih sederhana, yaitu dua kursi layanan.
         </p>
-        <TimelineImage src="/minion1.jfif" alt="Ruko pertama Minion" />
+        <TimelineImage src="/ruko2018.png" alt="Ruko pertama Minion" />
       </div>
     ),
   },
   {
-    title: "2021",
+    title: "2019",
+    subtitle: "Pindah Untuk Lebih Baik",
+    content: (
+      <div className="space-y-4">
+        <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+          Minion Barbershop berpindah lokasi ke Jl. Pramuka yang saat ini menjadi cabang utama. Perpindahan ini dilakukan untuk mendukung pengembangan usaha. Di lokasi baru, kapasitas layanan ditingkatkan menjadi tiga kursi dan terus berkembang seiring meningkatnya jumlah pelanggan.
+
+        </p>
+          <TimelineImage src="/ruko2019.png" alt="Suasana barbershop 2019" />
+      </div>
+    ),
+  },
+  {
+    title: "2020",
     subtitle: "Mulai dikenal",
     content: (
       <div className="space-y-4">
         <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-          Dari mulut ke mulut, antrean makin panjang. Pelanggan rela nunggu demi cukuran rapi.
-          Tahun ini kami berani buka cabang kedua di Kijang.
+         Perkembangan usaha yang positif mendorong pemilik untuk membuka cabang kedua di Kijang pada tahun 2020. Meskipun menghadapi berbagai tantangan, seperti pengelolaan tenaga kerja, sistem operasional, dan persaingan usaha yang semakin meningkat, Minion Barbershop tetap mampu mempertahankan pertumbuhan dan stabilitas usahanya.
+
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          <TimelineImage src="/minion2.jfif" alt="Suasana barbershop 2021" />
-          <TimelineImage src="/gallery5.jpg" alt="Hasil potongan 2021" />
-        </div>
+        <TimelineImage src="/ruko2020.png" alt="Tim Minion berkembang" />
       </div>
     ),
   },
   {
-    title: "2023",
-    subtitle: "Tumbuh jadi tim",
+    title: "2025",
+    subtitle: "Tumbuh Jadi Tim",
     content: (
       <div className="space-y-4">
         <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-          Maestro-maestro baru bergabung. Standar layanan naik kelas — bukan cuma potong rambut,
-          tapi pengalaman grooming yang utuh dari awal sampai akhir.
+          Pada tahun 2025, Minion Barbershop membuka cabang premium di kawasan Jl. D.I Panjaitan dengan konsep yang lebih modern dan fasilitas yang lebih lengkap.
         </p>
-        <TimelineImage src="/minion3.jfif" alt="Tim Minion berkembang" />
+          <TimelineImage src="/ruko2025.png" alt="Cabang Minion 2025" />
       </div>
     ),
   },
   {
     title: "2026",
-    subtitle: "4 cabang, satu visi",
+    subtitle: "4 Cabang, Satu Visi",
     content: (
       <div className="space-y-4">
         <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-          Kini Minion hadir di 4 titik Tanjungpinang. Yang berubah cuma skalanya — misinya tetap sama:
-          bikin setiap orang pulang dengan kepala tegak dan senyum lebar.
+         Keberhasilan cabang keempat mendorong pembukaan cabang baru di Jl. Ganet pada tahun 2026 dengan konsep serupa yang telah disesuaikan dengan perkembangan kebutuhan pelanggan.
+
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          <TimelineImage src="/gallery8.png" alt="Cabang Minion 2026" />
-          <TimelineImage src="/gallery11.jpg" alt="Pelanggan Minion 2026" />
-        </div>
+        <TimelineImage src="/ruko2026.png" alt="Tim Minion berkembang" />
       </div>
     ),
   },
@@ -140,7 +145,7 @@ const AboutSection = () => {
             <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[#178E81]/20 rounded-full -z-0" />
             <figure className="relative z-10 bg-white p-3 pb-5 rounded-2xl shadow-lg border border-gray-100 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
               <div className="overflow-hidden rounded-xl aspect-[4/3] bg-gray-100">
-                <img src="/barber.png" alt="Tim Minion bersama owner" className="w-full h-full object-cover" />
+                <img src="/KeluargaBesar.png" alt="Tim Minion bersama owner" className="w-full h-full object-cover" />
               </div>
               <figcaption className="pt-3 text-center">
                 <span className="block font-display font-bold text-[#1a1a1a]">Keluarga Besar Minion</span>
