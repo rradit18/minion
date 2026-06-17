@@ -9,10 +9,10 @@ interface Props {
 }
 
 const ALL_BARBERS = [
-  { slug: 'hendra',  name: 'Hendra Schevenko', role: 'Fade King',    badge: 'Fade Specialist',    rating: '4.9', reviewCount: '2300+', img: '/hendra.png',  color: 'bg-teal-400'   },
-  { slug: 'juan',    name: 'Juan Samudra',      role: 'Sculptor',     badge: 'Classic Specialist',  rating: '4.9', reviewCount: '1800+', img: '/juan.png',    color: 'bg-purple-400' },
-  { slug: 'yoga',    name: 'Yoga Harahap',      role: 'Sharpie',      badge: 'Line Up Expert',      rating: '4.8', reviewCount: '1500+', img: '/yoga.png',    color: 'bg-yellow-400' },
-  { slug: 'bastian', name: 'Bastian Narendra',  role: 'The Artist',   badge: 'Color Specialist',    rating: '4.9', reviewCount: '2100+', img: '/bastian.png', color: 'bg-orange-400' },
+  { slug: 'aldi',  name: 'Aldi',   role: 'Fade King',    badge: 'Fade Specialist',    rating: '4.9', reviewCount: '2300+', img: '/aldi.png',  color: 'bg-teal-500'   },
+  { slug: 'wanda', name: 'Wanda',  role: 'The Sculptor', badge: 'Classic Specialist',  rating: '4.9', reviewCount: '1850+', img: '/wanda.png', color: 'bg-purple-400' },
+  { slug: 'roni',  name: 'Roni',   role: 'Sharpie',      badge: 'Line Up Expert',      rating: '4.8', reviewCount: '1420+', img: '/roni.png',  color: 'bg-yellow-400' },
+  { slug: 'ali',   name: 'Ali',    role: 'The Artist',   badge: 'Color Specialist',    rating: '4.9', reviewCount: '1980+', img: '/ali.png',   color: 'bg-orange-400' },
 ];
 
 const barberData: Record<string, {
@@ -21,40 +21,40 @@ const barberData: Record<string, {
   speciality: string[]; tools: string[]; portfolio: string[];
   accent: string;
 }> = {
-  hendra: {
+  aldi: {
     title: "Top Rated", rating: 4.9, reviewCount: "2300+", location: "Jl. Pramuka",
     quote: "Fade yang sempurna bukan hanya soal teknik, tapi soal memahami karakter setiap pelanggan. Saya hadir untuk memastikan kamu pulang dengan percaya diri.",
     experience: "7th+ Pengalaman", clientReturns: "380 Client Returns",
     speciality: ["Skin Fade & Mid Fade", "High Taper", "Crew Cut", "Buzz Cut Presisi"],
     tools: ["Wahl Magic Clip", "Andis Fade Master", "Feather Artist Club", "Kamisori Shear"],
-    portfolio: ["/gallery1.jpg", "/gallery2.png", "/gallery3.jpg", "/gallery4.png", "/gallery5.jpg", "/gallery6.png"],
-    accent: "bg-teal-400",
+    portfolio: ["/gallery (1).jpg", "/gallery (2).JPG", "/gallery (3).JPG", "/gallery (4).png", "/gallery (5).png", "/gallery (6).png"],
+    accent: "bg-teal-500",
   },
-  juan: {
-    title: "Top Rated", rating: 4.9, reviewCount: "1800+", location: "Kijang Kota",
+  wanda: {
+    title: "Top Rated", rating: 4.9, reviewCount: "1850+", location: "Kijang Kota",
     quote: "Setiap kepala punya cerita. Saya menciptakan potongan yang menonjolkan kepribadian dan memberikan kesan pertama yang tak terlupakan.",
     experience: "6th+ Pengalaman", clientReturns: "310 Client Returns",
     speciality: ["Classic Cut", "Modern Pompadour", "Textured Quiff", "Undercut Classic"],
     tools: ["Oster Fast Feed", "Wahl Senior", "Kamisori Scissors", "Straight Razor"],
-    portfolio: ["/gallery7.jpg", "/gallery8.png", "/gallery9.jpg", "/gallery10.png", "/gallery11.jpg", "/gallery12.png"],
+    portfolio: ["/gallery (7).png", "/gallery (8).png", "/gallery (9).png", "/gallery (10).png", "/gallery (11).png", "/gallery (12).png"],
     accent: "bg-purple-400",
   },
-  yoga: {
-    title: "Rising Star", rating: 4.8, reviewCount: "1500+", location: "Bt. 9",
+  roni: {
+    title: "Rising Star", rating: 4.8, reviewCount: "1420+", location: "Bt. 9",
     quote: "Line up yang tajam adalah seni. Saya percaya detail kecil yang membuat perbedaan besar antara biasa dan luar biasa.",
     experience: "5th+ Pengalaman", clientReturns: "260 Client Returns",
     speciality: ["Line Up Tajam", "Hard Part Design", "Curly Hair Expert", "Mohawk & Faux Hawk"],
     tools: ["Andis T-Outliner", "Wahl Detailer", "Feather Razor", "Barber Comb Set"],
-    portfolio: ["/gallery13.jpg", "/gallery14.png", "/gallery15.jpg", "/gallery16.png", "/gallery17.jpg", "/gallery18.png"],
+    portfolio: ["/gallery (13).png", "/gallery (14).png", "/gallery (15).png", "/gallery (16).png", "/gallery (17).png", "/gallery (18).png"],
     accent: "bg-yellow-400",
   },
-  bastian: {
-    title: "Top Rated", rating: 4.9, reviewCount: "2100+", location: "Jl. Ganet",
+  ali: {
+    title: "Top Rated", rating: 4.9, reviewCount: "1980+", location: "Jl. Ganet",
     quote: "Mengubah setiap potongan menjadi karya seni yang elit adalah passion. Saya tidak hanya memotong rambut, saya mendefinisikan identitas.",
     experience: "8th+ Pengalaman", clientReturns: "400 Client Returns",
     speciality: ["Skin Fade & Taper Fade", "Hard Part & Line Up", "Textured Crop", "Pompadour & Quiff"],
     tools: ["Wahl Senior Clipper", "Andis T Outliner", "Feather Razor", "Kamisori Shear"],
-    portfolio: ["/gallery1.jpg", "/gallery2.png", "/gallery3.jpg", "/gallery4.png", "/gallery5.jpg", "/gallery6.png"],
+    portfolio: ["/gallery (19).png", "/gallery (20).png", "/gallery (21).png", "/gallery (22).png", "/gallery (23).png", "/gallery (24).png"],
     accent: "bg-orange-400",
   },
 };
@@ -75,9 +75,14 @@ function SocialBtn({ href, label, children }: { href: string; label: string; chi
 }
 
 export default function BarberDetailClients({ barberName, barberSlug }: Props) {
-  const data = barberData[barberSlug] ?? barberData['bastian'];
+  const data = barberData[barberSlug] ?? barberData['ali'];
   const self = ALL_BARBERS.find(b => b.slug === barberSlug);
-  const others = ALL_BARBERS.filter(b => b.slug !== barberSlug);
+
+  // Ambil 3 barber lain secara random, exclude diri sendiri
+  const others = ALL_BARBERS
+    .filter(b => b.slug !== barberSlug)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
 
   const parts = barberName.split(' ');
   const firstName = parts[0];

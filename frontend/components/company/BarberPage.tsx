@@ -8,10 +8,11 @@ interface BarberProps {
   reviewCount: string;
   imageColor: string;
   imageUrl?: string;
+  imageObjectPosition?: string;
 }
 
 export default function BarberPage({
-  name, role, specialty, rating, reviewCount, imageColor, imageUrl,
+  name, role, specialty, rating, reviewCount, imageColor, imageUrl, imageObjectPosition = "top",
 }: BarberProps) {
   return (
     <TiltCard
@@ -44,8 +45,9 @@ export default function BarberPage({
         <img
           src={imageUrl}
           alt={name}
-          className="absolute left-0 bottom-0 object-cover object-top z-20
+          className="absolute left-0 bottom-0 object-cover z-20
                      h-full w-[120px] sm:w-[150px] lg:w-[165px] xl:w-[185px]"
+          style={{ objectPosition: imageObjectPosition }}
         />
       )}
 

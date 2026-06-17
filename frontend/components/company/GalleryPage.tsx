@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import TiltCard from '@/components/ui/TiltCard';
@@ -15,11 +15,34 @@ const ReactCompareSliderImage = dynamic(
 );
 
 const galleryImages = [
-  "/gallery1.jpg", "/gallery2.png", "/gallery3.jpg",
-  "/gallery4.png", "/gallery5.jpg", "/gallery6.png",
+  "/gallery (1).jpg",  "/gallery (2).JPG",  "/gallery (3).JPG",
+  "/gallery (4).png",  "/gallery (5).png",  "/gallery (6).png",
+  "/gallery (7).png",  "/gallery (8).png",  "/gallery (9).png",
+  "/gallery (10).png", "/gallery (11).png", "/gallery (12).png",
+  "/gallery (13).png", "/gallery (14).png", "/gallery (15).png",
+  "/gallery (16).png", "/gallery (17).png", "/gallery (18).png",
+  "/gallery (19).png", "/gallery (20).png", "/gallery (21).png",
+  "/gallery (22).png", "/gallery (23).png", "/gallery (24).png",
+  "/gallery (25).png", "/gallery (26).png", "/gallery (27).png",
+  "/gallery (28).png", "/gallery (29).png", "/gallery (30).png",
+  "/gallery (31).png", "/gallery (32).png", "/gallery (33).png",
+  "/gallery (34).png", "/gallery (35).png", "/gallery (36).png",
+  "/gallery (37).png", "/gallery (38).png", "/gallery (39).png",
+  "/gallery (40).png", "/gallery (41).png", "/gallery (42).png",
+  "/gallery (43).png", "/gallery (44).png", "/gallery (45).png",
+  "/gallery (46).png", "/gallery (47).png", "/gallery (48).png",
+  "/gallery (49).png", "/gallery (50).png", "/gallery (51).png",
+  "/gallery (52).png", "/gallery (53).png", "/gallery (54).png",
+  "/gallery (55).png", "/gallery (56).png", "/gallery (57).png",
+  "/gallery (58).png", "/gallery (59).png", "/gallery (60).png",
 ];
 
-const GalleryCard = ({ imageUrl }: { imageUrl: string }) => (
+// 6 kolom di desktop = 1 baris, awal tampil 2 baris = 12 foto
+const COLS = 6;
+const ROWS_PER_LOAD = 2;
+const INITIAL_ROWS = 2;
+
+const GalleryCard = ({ imageUrl, priority }: { imageUrl: string; priority: boolean }) => (
   <TiltCard
     max={9}
     className="rounded-2xl overflow-hidden relative cursor-pointer shadow-sm hover:shadow-xl group"
@@ -28,23 +51,28 @@ const GalleryCard = ({ imageUrl }: { imageUrl: string }) => (
     <img
       src={imageUrl}
       alt="Gallery"
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
     />
   </TiltCard>
 );
 
-const GalleryRow = () => (
-  <div className="grid grid-cols-6 gap-2.5">
-    {galleryImages.map((item, i) => <GalleryCard key={i} imageUrl={item} />)}
-  </div>
-);
-
 const GalleryPage = () => {
+  const [visibleCount, setVisibleCount] = useState(INITIAL_ROWS * COLS);
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + ROWS_PER_LOAD * COLS, galleryImages.length));
+  };
+
+  const visibleImages = galleryImages.slice(0, visibleCount);
+  const hasMore = visibleCount < galleryImages.length;
+
   return (
     <div 
       className="font-sans text-[#1a1a1a] min-h-screen pb-10"
       style={{
-        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/images/barber-pattern.png')`,
+        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/pattern.png')`,
         backgroundSize: "cover",
         backgroundColor: "#FAF7EE",
       }}
@@ -118,16 +146,27 @@ const GalleryPage = () => {
         </div>
       </div>
 
+      {/* ── Gallery Grid ── */}
       <div className="max-w-7xl mx-auto px-6 space-y-2.5">
-        <GalleryRow />
-        <GalleryRow />
-        <GalleryRow />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+          {visibleImages.map((item, i) => (
+            <GalleryCard key={i} imageUrl={item} priority={i < INITIAL_ROWS * COLS} />
+          ))}
+        </div>
       </div>
 
+      {/* ── Load More ── */}
       <div className="relative text-center py-8">
-        <button className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide">
-          Lihat Semua
-        </button>
+        {hasMore ? (
+          <button
+            onClick={handleLoadMore}
+            className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide"
+          >
+          Tampilkan Lebih Banyak
+          </button>
+        ) : (
+          <p className="text-[13px] text-gray-400 font-semibold">Semua foto sudah ditampilkan</p>
+        )}
         <span className="absolute right-24 bottom-7 text-[#D4AF37] text-[50px] select-none">✦</span>
       </div>
     </div>

@@ -13,6 +13,7 @@ const barbers = [
     reviewCount: "2300+",
     imageColor: "bg-teal-500",
     imageUrl: "/aldi.png",
+    imageObjectPosition: "top",
   },
   {
     slug: "wanda",
@@ -23,6 +24,7 @@ const barbers = [
     reviewCount: "1850+",
     imageColor: "bg-purple-400",
     imageUrl: "/wanda.png",
+    imageObjectPosition: "top",
   },
   {
     slug: "roni",
@@ -33,6 +35,7 @@ const barbers = [
     reviewCount: "1420+",
     imageColor: "bg-yellow-400",
     imageUrl: "/roni.png",
+    imageObjectPosition: "top",
   },
   {
     slug: "ali",
@@ -43,6 +46,7 @@ const barbers = [
     reviewCount: "1980+",
     imageColor: "bg-orange-400",
     imageUrl: "/ali.png",
+    imageObjectPosition: "center",
   },
 ];
 
@@ -69,6 +73,7 @@ export default function BarberPreview() {
               reviewCount={barber.reviewCount}
               imageColor={barber.imageColor}
               imageUrl={barber.imageUrl}
+              imageObjectPosition={barber.imageObjectPosition}
             />
           </Link>
         ))}

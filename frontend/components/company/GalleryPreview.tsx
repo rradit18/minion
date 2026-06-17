@@ -2,8 +2,8 @@ import React from "react";
 import Link from "next/link"; // 1. Import Link
 
 const galleryImages = [
-  "/gallery1.jpg", "/gallery2.png", "/gallery3.jpg",
-  "/gallery4.png", "/gallery5.jpg", "/gallery6.png",
+  "/gallery (1).jpg", "/gallery (2).JPG", "/gallery (3).JPG",
+  "/gallery (4).png", "/gallery (5).png", "/gallery (6).png",
 ];
 
 export default function GallerySection() {
