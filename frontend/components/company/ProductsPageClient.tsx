@@ -224,7 +224,7 @@ export default function ProductsPageClient() {
       {/* ── HERO ── */}
       <div className="max-w-7xl mx-auto px-6 pt-6">
         <section className="relative overflow-hidden rounded-3xl h-[240px] sm:h-[300px] md:h-[340px]">
-          <img src="/minion3.jfif" alt="Minion Barbershop" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <img src="/HeroProducts.png" alt="Minion Barbershop" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/30 to-black/10" />
           <div className="relative z-10 h-full flex flex-col justify-center px-7 md:px-12">
             <p className="text-[#F9C74F] text-xs md:text-sm font-bold tracking-[0.25em] uppercase mb-1">Give All You Need</p>
