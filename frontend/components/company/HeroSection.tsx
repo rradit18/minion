@@ -221,8 +221,12 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             <div className="absolute top-16 right-12 w-16 h-16 bg-[#7B5EA7]/15 rounded-full z-0" />
 
             {/* Foto owner */}
-            <div className="relative z-10 w-full max-w-[560px] lg:max-w-[920px] h-full flex items-end justify-center">
-              <img src="/owner.png" alt="Barber Professional" className="w-full h-full object-contain object-bottom" />
+            <div className="relative z-10 w-full max-w-[680px] lg:max-w-[1100px] h-full flex items-end justify-center">
+              <img src="/teo.png" 
+               alt="Barber Professional" 
+               className="w-full h-full object-contain object-bottom"
+               style={{ transform: 'scale(1.65)', transformOrigin: 'bottom center' }} 
+              />
             </div>
 
             {/* ── Doodle layer — semua inset aman, tidak menyentuh tepi ── */}

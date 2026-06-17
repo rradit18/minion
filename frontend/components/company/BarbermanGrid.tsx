@@ -16,25 +16,42 @@ interface Barber {
 }
 
 const barbers: Barber[] = [
-  { slug: "aldi",  name: "Aldi", title: "Fade Specialist",      handle: "fadeking",   rating: "4.9", reviewCount: "2300+", image: "/aldi.png",  hue: 174 },
-  { slug: "ali",    name: "Ali",     title: "Classic & Modern Cut", handle: "thesculptor", rating: "4.9", reviewCount: "1850+", image: "/ali.png",    hue: 266 },
-  { slug: "ferdi",    name: "Ferdi",     title: "Line Up & Design",     handle: "sharpie",    rating: "4.8", reviewCount: "1420+", image: "/ferdi.png",    hue: 45  },
-  { slug: "bastian", name: "Bastian Narendra", title: "Color & Beard Art",    handle: "theartist",  rating: "4.9", reviewCount: "1980+", image: "/bastian.png", hue: 24  },
+  { slug: "aldi",    name: "Aldi",             title: "Fade Specialist",       handle: "fadeking",     rating: "4.9", reviewCount: "2300+", image: "/aldi.png",    hue: 174 },
+  { slug: "wanda",   name: "Wanda",            title: "Classic & Modern Cut",  handle: "thesculptor",  rating: "4.9", reviewCount: "1850+", image: "/wanda.png",   hue: 266 },
+  { slug: "roni",    name: "Roni",             title: "Line Up & Design",      handle: "sharpie",      rating: "4.8", reviewCount: "1420+", image: "/roni.png",    hue: 45  },
+  { slug: "ali",     name: "Ali",              title: "Color & Beard Art",     handle: "theartist",    rating: "4.9", reviewCount: "1980+", image: "/ali.png",     hue: 24  },
+  { slug: "ferdi",   name: "Ferdi",            title: "Texture & Curly Cut",   handle: "curlmaster",   rating: "4.7", reviewCount: "1190+", image: "/ferdi.png",   hue: 200 },
+  { slug: "gevan",   name: "Gevan",            title: "Pompadour Expert",      handle: "slickstyle",   rating: "4.8", reviewCount: "1650+", image: "/gevan.png",   hue: 320 },
+  { slug: "ipan",    name: "Ipan",             title: "Mullet & Edgy Cut",     handle: "rebelcuts",    rating: "4.9", reviewCount: "2050+", image: "/ipan.png",    hue: 12  },
+  { slug: "iyan",    name: "Iyan",             title: "Buzz Cut Specialist",   handle: "shortnclean",  rating: "4.6", reviewCount: "980+",  image: "/iyan.png",    hue: 88  },
+  { slug: "panda",   name: "Panda",            title: "Crop & Quiff Master",   handle: "topknotpro",   rating: "4.8", reviewCount: "1340+", image: "/panda.png",   hue: 145 },
+  { slug: "ian",     name: "Ian",              title: "Vintage Pomade Style",  handle: "oldschoolcut", rating: "4.7", reviewCount: "1100+", image: "/ian.png",     hue: 300 },
+  { slug: "randy",   name: "Rabdy",            title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/randy.png",   hue: 230 },
+  { slug: "pandu",   name: "Pandu",            title: "Kids & Family Cut",     handle: "littlebarber", rating: "4.8", reviewCount: "1480+", image: "/pandu.png",   hue: 8   },
+  { slug: "emon",    name: "Fil Emon",         title: "Hair Tattoo Design",    handle: "inkedhair",    rating: "4.9", reviewCount: "1920+", image: "/emon.png",    hue: 280 },
 ];
 
 // Holographic behind-gradient yang mengikuti warna aksen tiap barber (tema terang)
-const accentGradient = (h: number) =>
+// offset1/offset2 menambah variasi karakter gradien antar barber tanpa mengubah struktur visual
+const accentGradient = (h: number, offset1: number = 45, offset2: number = 60) =>
   `radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y),hsla(${h},75%,82%,var(--card-opacity)) 4%,hsla(${h},60%,76%,calc(var(--card-opacity)*0.75)) 10%,hsla(${h},45%,72%,calc(var(--card-opacity)*0.5)) 50%,hsla(${h},25%,70%,0) 100%),` +
   `radial-gradient(35% 52% at 55% 20%,hsla(${h},92%,70%,0.55) 0%,hsla(${h},92%,70%,0) 100%),` +
-  `radial-gradient(100% 100% at 50% 50%,hsla(${(h + 45) % 360},85%,72%,0.45) 1%,hsla(${h},85%,72%,0) 76%),` +
-  `conic-gradient(from 124deg at 50% 50%,hsla(${h},85%,72%,0.9) 0%,hsla(${(h + 60) % 360},88%,75%,0.9) 40%,hsla(${(h + 60) % 360},88%,75%,0.9) 60%,hsla(${h},85%,72%,0.9) 100%)`;
+  `radial-gradient(100% 100% at 50% 50%,hsla(${(h + offset1) % 360},85%,72%,0.45) 1%,hsla(${h},85%,72%,0) 76%),` +
+  `conic-gradient(from 124deg at 50% 50%,hsla(${h},85%,72%,0.9) 0%,hsla(${(h + offset2) % 360},88%,75%,0.9) 40%,hsla(${(h + offset2) % 360},88%,75%,0.9) 60%,hsla(${h},85%,72%,0.9) 100%)`;
+
+// Variasi offset per index — siklus 4 kombinasi biar tiap card punya "karakter" gradien sedikit beda
+const gradientOffsets = [
+  { o1: 45, o2: 60 },
+  { o1: 60, o2: 45 },
+  { o1: 30, o2: 75 },
+  { o1: 75, o2: 30 },
+];
 
 export default function BarbermanGrid() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
-  // hint = panah kelap-kelip; berhenti setelah user scroll atau timeout
   const [hint, setHint] = useState(true);
 
   const updateArrows = useCallback(() => {
@@ -52,7 +69,7 @@ export default function BarbermanGrid() {
 
     const onScroll = () => {
       updateArrows();
-      setHint(false); // begitu user mulai scroll, berhenti kelap-kelip
+      setHint(false);
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
@@ -69,7 +86,6 @@ export default function BarbermanGrid() {
   const scrollByCards = (dir: 1 | -1) => {
     const el = scrollRef.current;
     if (!el) return;
-    // geser ~80% lebar viewport agar pindah beberapa kartu
     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
   };
 
@@ -79,8 +95,9 @@ export default function BarbermanGrid() {
         ref={scrollRef}
         className="no-scrollbar flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-px-6 px-1 py-10"
       >
-        {barbers.map((barber) => {
+        {barbers.map((barber, index) => {
           const go = () => router.push(`/barberman/${barber.slug}`);
+          const { o1, o2 } = gradientOffsets[index % gradientOffsets.length];
           return (
             <div
               key={barber.slug}
@@ -98,7 +115,7 @@ export default function BarbermanGrid() {
                 handle={barber.handle}
                 status={`★ ${barber.rating} · ${barber.reviewCount} ulasan`}
                 contactText="Lihat Profil"
-                behindGradient={accentGradient(barber.hue)}
+                behindGradient={accentGradient(barber.hue, o1, o2)}
                 onContactClick={go}
               />
             </div>
@@ -106,7 +123,6 @@ export default function BarbermanGrid() {
         })}
       </div>
 
-      {/* ── Panah kiri (muncul + kelap-kelip hanya saat bisa scroll ke kiri) ── */}
       {canLeft && (
         <button
           type="button"
@@ -120,7 +136,6 @@ export default function BarbermanGrid() {
         </button>
       )}
 
-      {/* ── Panah kanan ── */}
       {canRight && (
         <button
           type="button"
