@@ -2,40 +2,55 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import { setBookingPrefill } from "@/src/lib/localStorage";
 import { useFaceDetection } from "./useFaceDetection";
-import { HAIR_STYLES, type HairStyleOption } from "./styles";
 
-const ReactCompareSlider = dynamic(
-  () => import("react-compare-slider").then((m) => m.ReactCompareSlider),
-  { ssr: false },
-);
-const ReactCompareSliderImage = dynamic(
-  () => import("react-compare-slider").then((m) => m.ReactCompareSliderImage),
-  { ssr: false },
-);
+type Stage = "idle" | "camera" | "preview" | "generating" | "result";
 
-type Stage = "idle" | "camera" | "catalog" | "generating" | "result";
-
-interface AnalysisResult {
-  id: string;
-  styleName: string;
-  description: string;
-  imageUrl: string;
-  difficulty: string;
-  maintenance: string;
-  tags: string[];
-  recommendedServiceId: string;
+interface GridStyle {
+  name: string;
+  visual: string;
+  rating: number;
+  tag: string;
+}
+interface BestPick {
+  rank: number;
+  name: string;
+  benefits: string[];
+  rating: number;
+}
+interface HairAnalysis {
+  face_shape: string;
+  face_shape_desc: string;
+  hair_type: string;
+  current_style: string;
+  grid_styles: GridStyle[];
+  best_picks: BestPick[];
+  hair_tips: string[];
+}
+interface AnalysisResponse {
+  analysis: HairAnalysis;
+  cardImage: string;
+  source: "openai" | "dummy";
+  imageError?: string;
 }
 
-const MAX_ATTEMPTS = 3; // batasi pemanggilan AI per sesi (kontrol biaya)
+const MAX_ATTEMPTS = 1; // hanya 1x analisa AI per sesi (kontrol biaya) — 1 call = 1 gambar
+const CAPTURE_MAX_DIM = 768; // sisi terpanjang foto yg dikirim (jaga payload ringan)
+const CAPTURE_QUALITY = 0.82; // kompresi JPEG
 
-const diffColor: Record<string, string> = {
-  Easy: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-  Medium: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  Hard: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
-};
+// Layanan default untuk tombol Book (kiosk → potong rambut klasik).
+const DEFAULT_SERVICE_ID = "svc-1";
+
+function Stars({ value, gold = false }: { value: number; gold?: boolean }) {
+  const n = Math.max(0, Math.min(5, Math.round(value)));
+  return (
+    <span className={`text-[13px] leading-none ${gold ? "text-[#D4AF37]" : "text-[#F9C74F]"}`}>
+      {"★".repeat(n)}
+      <span className="text-black/15">{"★".repeat(5 - n)}</span>
+    </span>
+  );
+}
 
 export default function HairAnalysisClient() {
   const router = useRouter();
@@ -45,16 +60,14 @@ export default function HairAnalysisClient() {
 
   const [stage, setStage] = useState<Stage>("idle");
   const [captured, setCaptured] = useState<string>("");
-  const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [activeStyle, setActiveStyle] = useState<HairStyleOption | null>(null);
+  const [data, setData] = useState<AnalysisResponse | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [camError, setCamError] = useState("");
   const [genError, setGenError] = useState("");
 
   const { detected, mode } = useFaceDetection(videoRef, stage === "camera");
   const canCapture = detected || mode === "unavailable";
-  const remaining = MAX_ATTEMPTS - attempts;
-  const limitReached = remaining <= 0;
+  const limitReached = attempts >= MAX_ATTEMPTS;
 
   const stopStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -84,6 +97,7 @@ export default function HairAnalysisClient() {
 
   useEffect(() => () => stopStream(), [stopStream]);
 
+  // Ambil frame, perkecil ke CAPTURE_MAX_DIM, kompres JPEG → payload ringan.
   const capture = () => {
     if (!detected && mode !== "unavailable") return;
     const video = videoRef.current;
@@ -91,46 +105,52 @@ export default function HairAnalysisClient() {
     if (!video || !canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
-    setCaptured(canvas.toDataURL("image/jpeg", 0.9));
+
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    if (!vw || !vh) return;
+    const scale = Math.min(1, CAPTURE_MAX_DIM / Math.max(vw, vh));
+    canvas.width = Math.round(vw * scale);
+    canvas.height = Math.round(vh * scale);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    setCaptured(canvas.toDataURL("image/jpeg", CAPTURE_QUALITY));
     stopStream();
-    setStage("catalog");
+    setGenError("");
+    setStage("preview");
   };
 
   const retake = () => {
     setCaptured("");
-    setResult(null);
+    setData(null);
     setGenError("");
     startCamera();
   };
 
-  // Generate SATU gaya on-demand (1 call LightX = 1 gaya = 1 gambar).
-  const tryStyle = async (style: HairStyleOption) => {
+  // Jalankan pipeline AI penuh (STEP 1 vision + STEP 2 image gen) sekali jalan.
+  const analyze = async () => {
     if (limitReached || !captured) return;
     setGenError("");
-    setActiveStyle(style);
     setStage("generating");
     try {
       const res = await fetch("/api/hair-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: captured, styleId: style.id }),
+        body: JSON.stringify({ image: captured }),
       });
       if (!res.ok) throw new Error("gagal");
-      const data = (await res.json()) as { result: AnalysisResult };
-      setResult(data.result);
+      const json = (await res.json()) as AnalysisResponse;
+      setData(json);
       setAttempts((a) => a + 1);
       setStage("result");
     } catch {
-      setGenError("Gagal membuat gaya. Coba lagi sebentar ya.");
-      setStage("catalog");
+      setGenError("Gagal menganalisa. Coba lagi sebentar ya.");
+      setStage("preview");
     }
   };
 
-  const bookThis = (r: AnalysisResult) => {
-    setBookingPrefill({ hair_style: r.styleName, service_id: r.recommendedServiceId });
+  const bookThis = (pick: BestPick) => {
+    setBookingPrefill({ hair_style: pick.name, service_id: DEFAULT_SERVICE_ID });
     router.push("/booking");
   };
 
@@ -138,12 +158,13 @@ export default function HairAnalysisClient() {
     stopStream();
     setStage("idle");
     setCaptured("");
-    setResult(null);
-    setActiveStyle(null);
+    setData(null);
     setAttempts(0);
     setCamError("");
     setGenError("");
   };
+
+  const analysis = data?.analysis;
 
   return (
     <div className="relative min-h-screen bg-[#FAF7EE] text-[#1a1a1a] selection:bg-[#F9C74F] selection:text-[#1a1a1a]">
@@ -161,7 +182,7 @@ export default function HairAnalysisClient() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#178E81] opacity-75" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#178E81]" />
             </span>
-            Teknologi AI · LightX
+            Teknologi AI · Hairstyle Analysis
           </span>
           <h1 className="font-display mt-3 text-3xl font-bold leading-[1.1] tracking-tight sm:text-4xl">
             Scan dulu,{" "}
@@ -173,7 +194,7 @@ export default function HairAnalysisClient() {
             </span>
           </h1>
           <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-[#666] font-body">
-            Pindai wajahmu, pilih gaya, biar AI yang nunjukin hasilnya — tinggal cocok, langsung book.
+            Pindai wajahmu sekali, AI bikin kartu analisa lengkap — bentuk wajah, gaya terbaik, sampai tips rambut.
           </p>
         </div>
 
@@ -274,62 +295,43 @@ export default function HairAnalysisClient() {
           </div>
         )}
 
-        {/* ── CATALOG: pilih gaya ── */}
-        {stage === "catalog" && (
+        {/* ── PREVIEW: konfirmasi foto sebelum analisa ── */}
+        {stage === "preview" && (
           <div className="animate-ha-pop space-y-5">
-            {/* Foto hasil capture + retake */}
-            <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-gray-100">
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-black">
+            <div className="overflow-hidden rounded-3xl bg-black shadow-lg ring-1 ring-black/5">
+              <div className="aspect-[3/4] sm:aspect-[4/3]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={captured} alt="Foto kamu" className="h-full w-full -scale-x-100 object-cover" />
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-display text-[15px] font-bold leading-tight">Pilih gaya buat dicoba</p>
-                <p className="text-[12px] text-[#666] font-body">
-                  {limitReached ? "Batas percobaan tercapai." : `Sisa ${remaining} percobaan AI sesi ini.`}
-                </p>
-              </div>
-              <button onClick={retake} className="font-display shrink-0 rounded-lg border border-[#1a1a1a]/20 px-3 py-2 text-[12px] font-bold text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white">
-                Ulang foto
-              </button>
             </div>
+
+            <p className="text-center text-[13px] text-[#666] font-body">
+              {limitReached ? "Analisa sudah dipakai untuk sesi ini." : "Foto sudah pas? AI cuma menganalisa sekali, jadi pastikan posisimu oke ya."}
+            </p>
 
             {genError && (
               <p className="rounded-xl bg-rose-50 px-4 py-3 text-center text-sm text-rose-700 ring-1 ring-rose-200">{genError}</p>
             )}
             {limitReached && (
               <p className="rounded-xl bg-amber-50 px-4 py-3 text-center text-[13px] text-amber-700 ring-1 ring-amber-200 font-body">
-                Kamu sudah pakai {MAX_ATTEMPTS} percobaan. Klik <b>Scan Ulang</b> untuk mulai sesi baru.
+                Kamu sudah pakai jatah analisa. Klik <b>Scan Ulang</b> untuk mulai sesi baru.
               </p>
             )}
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {HAIR_STYLES.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => tryStyle(s)}
-                  disabled={limitReached}
-                  className={`group overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-gray-100 transition ${
-                    limitReached ? "cursor-not-allowed opacity-50" : "hover:-translate-y-0.5 hover:shadow-lg hover:ring-[#F9C74F]"
-                  }`}
-                >
-                  <div className="relative aspect-square overflow-hidden bg-gray-50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.reference} alt={s.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-1 bg-gradient-to-t from-black/75 to-transparent p-2.5">
-                      <p className="text-xs font-bold leading-tight text-white">{s.name}</p>
-                      {!limitReached && (
-                        <span className="shrink-0 rounded-full bg-[#F9C74F] px-2 py-0.5 text-[9px] font-bold text-[#1a1a1a]">Coba</span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div className="flex gap-3">
+              <button onClick={retake} className="font-display flex-1 rounded-xl border-2 border-[#1a1a1a] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white">
+                Ulang Foto
+              </button>
+              <button
+                onClick={analyze}
+                disabled={limitReached}
+                className={`font-display flex-[1.4] rounded-xl py-3 text-[15px] font-bold transition active:scale-95 ${
+                  limitReached ? "cursor-not-allowed bg-black/10 text-black/30" : "bg-[#F9C74F] text-[#1a1a1a] hover:bg-yellow-400"
+                }`}
+              >
+                Analisa Sekarang →
+              </button>
             </div>
-
-            <button onClick={reset} className="font-display w-full rounded-xl border-2 border-[#1a1a1a] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white">
-              Scan Ulang
-            </button>
           </div>
         )}
 
@@ -349,65 +351,97 @@ export default function HairAnalysisClient() {
                   <div className="h-16 w-16 rounded-full border-4 border-[#F9C74F]/30" />
                   <div className="absolute inset-0 animate-spin rounded-full border-4 border-[#F9C74F] border-t-transparent" />
                 </div>
-                <p className="font-display text-lg font-bold">Bikin gaya {activeStyle?.name ?? ""}…</p>
-                <p className="text-xs text-white/70 font-body">AI lagi kerja, bentar ya</p>
+                <p className="font-display text-lg font-bold">Menganalisa wajahmu…</p>
+                <p className="text-xs text-white/70 font-body">AI lagi nyusun gaya & rekomendasi, bentar ya</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── RESULT: before/after ── */}
-        {stage === "result" && result && (
+        {/* ── RESULT: kartu komposit + analisa ── */}
+        {stage === "result" && analysis && data && (
           <div className="animate-ha-pop space-y-5">
-            <div className="overflow-hidden rounded-3xl bg-black shadow-lg ring-1 ring-black/5">
-              <div className="aspect-[3/4] sm:aspect-[4/3]">
-                <ReactCompareSlider
-                  className="h-full w-full"
-                  itemOne={<ReactCompareSliderImage src={captured} alt="Sebelum" style={{ objectFit: "cover" }} />}
-                  itemTwo={<ReactCompareSliderImage src={result.imageUrl} alt={result.styleName} style={{ objectFit: "cover" }} />}
-                />
+            {/* Grid gaya hasil GPT Image 2 — bisa kosong jika diblokir moderasi */}
+            {data.cardImage ? (
+              <div className="overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-[#F9C74F]/40">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={data.cardImage} alt="Grid gaya rambut yang cocok" className="w-full object-contain" />
               </div>
-            </div>
-            <div className="flex justify-between px-1 text-[11px] font-bold uppercase tracking-wider text-[#999] font-body">
-              <span>Sebelum</span>
-              <span className="text-[#178E81]">Sesudah · {result.styleName}</span>
+            ) : (
+              <div className="rounded-3xl bg-amber-50 p-4 text-center ring-1 ring-amber-200">
+                <p className="font-display text-[14px] font-bold text-amber-800">Visualnya belum bisa dibuat</p>
+                <p className="mt-1 text-[12px] text-amber-700 font-body">
+                  Gambar gaya tidak lolos sistem keamanan AI kali ini, tapi analisa & rekomendasimu di bawah tetap akurat. Coba foto ulang dengan pencahayaan lebih jelas.
+                </p>
+              </div>
+            )}
+            {data.source === "dummy" && (
+              <p className="text-center text-[11px] text-[#999] font-body">
+                Mode demo — grid gaya muncul setelah <code>OPENAI_API_KEY</code> di-set.
+              </p>
+            )}
+
+            {/* Bentuk wajah & tipe rambut */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#999] font-body">Bentuk Wajah</p>
+                <p className="font-display mt-1 text-lg font-bold text-[#1a1a1a]">{analysis.face_shape}</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-[#666] font-body">{analysis.face_shape_desc}</p>
+              </div>
+              <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#999] font-body">Tipe Rambut</p>
+                <p className="font-display mt-1 text-lg font-bold text-[#1a1a1a]">{analysis.hair_type}</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-[#666] font-body">Gaya sekarang: {analysis.current_style}</p>
+              </div>
             </div>
 
-            {/* Detail gaya */}
-            <div className="rounded-3xl bg-white p-4 shadow-md ring-1 ring-[#F9C74F]/40">
-              <div className="flex items-center gap-2">
-                <h3 className="font-display text-lg font-bold text-[#1a1a1a]">{result.styleName}</h3>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${diffColor[result.difficulty] ?? ""}`}>{result.difficulty}</span>
-              </div>
-              <p className="mt-2 text-xs leading-relaxed text-[#666] font-body">{result.description}</p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {result.tags.map((t) => (
-                  <span key={t} className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] text-[#666] font-body">#{t}</span>
+            {/* Best picks */}
+            <div className="rounded-3xl bg-[#2D3B2A] p-4 text-white shadow-md">
+              <p className="font-display mb-3 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-[#D4AF37]">
+                <span aria-hidden>👑</span> Best Picks
+              </p>
+              <div className="space-y-3">
+                {analysis.best_picks.map((pick) => (
+                  <div key={pick.rank} className="flex items-start gap-3 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#D4AF37] text-[13px] font-bold text-[#2D3B2A]">{pick.rank}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-display truncate text-[15px] font-bold">{pick.name}</p>
+                        <Stars value={pick.rating} gold />
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {pick.benefits.filter(Boolean).map((b) => (
+                          <span key={b} className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/80 font-body">{b}</span>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => bookThis(pick)}
+                        className="font-display mt-2.5 rounded-lg bg-[#F9C74F] px-3.5 py-1.5 text-[12px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95"
+                      >
+                        Book Gaya Ini →
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <p className="mt-3 text-[11px] text-[#999] font-body">Perawatan: {result.maintenance}</p>
-              <button
-                onClick={() => bookThis(result)}
-                className="font-display mt-4 w-full rounded-xl bg-[#F9C74F] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95"
-              >
-                Book Gaya Ini →
-              </button>
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setStage("catalog")}
-                disabled={limitReached}
-                className={`font-display flex-1 rounded-xl border-2 py-3 text-[15px] font-bold transition ${
-                  limitReached ? "cursor-not-allowed border-black/10 text-black/30" : "border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
-                }`}
-              >
-                {limitReached ? "Batas tercapai" : `Coba gaya lain (${remaining})`}
-              </button>
-              <button onClick={reset} className="font-display flex-1 rounded-xl bg-[#F9C74F] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95">
-                Scan Ulang
-              </button>
+            {/* Hair tips */}
+            <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
+              <p className="font-display mb-2 text-[13px] font-bold uppercase tracking-wider text-[#178E81]">Hair Tips</p>
+              <ul className="space-y-1.5">
+                {analysis.hair_tips.filter(Boolean).map((tip) => (
+                  <li key={tip} className="flex items-start gap-2 text-[13px] text-[#444] font-body">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9C74F]" />
+                    {tip}
+                  </li>
+                ))}
+              </ul>
             </div>
+
+            <button onClick={reset} className="font-display w-full rounded-xl bg-[#F9C74F] py-3 text-[15px] font-bold text-[#1a1a1a] transition hover:bg-yellow-400 active:scale-95">
+              Scan Ulang
+            </button>
           </div>
         )}
 
