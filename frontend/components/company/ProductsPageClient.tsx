@@ -92,6 +92,8 @@ function MinusIcon({ className = "" }: { className?: string }) {
 
 // ─── Product Card ──────────────────────────────────────────────────────────────
 function ProductCard({ product, onAdd, inCart }: { product: Product; onAdd: (p: Product) => void; inCart: number }) {
+  const [wished, setWished] = useState(false);
+
   return (
     <SpotlightCard
       spotlightColor="rgba(23, 142, 129, 0.1)"
@@ -108,10 +110,25 @@ function ProductCard({ product, onAdd, inCart }: { product: Product; onAdd: (p: 
           </span>
         )}
         <button
-          aria-label="Tambah ke wishlist"
-          className="absolute top-2 right-2 z-10 grid place-items-center w-7 h-7 rounded-full bg-white/90 backdrop-blur text-gray-400 hover:text-[#C0392B] shadow-sm transition-colors"
+          aria-label={wished ? "Hapus dari wishlist" : "Tambah ke wishlist"}
+          onClick={() => setWished((w) => !w)}
+          className={`absolute top-2 right-2 z-10 grid place-items-center w-8 h-8 rounded-full backdrop-blur shadow-sm transition-all duration-200 active:scale-90 ${
+            wished
+              ? "bg-red-50 text-[#C0392B]"
+              : "bg-white/90 text-gray-400 hover:text-[#C0392B]"
+          }`}
         >
-          <HeartIcon className="w-3.5 h-3.5" />
+          <svg
+            viewBox="0 0 24 24"
+            className="w-4 h-4 transition-all duration-200"
+            fill={wished ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
         </button>
         <div className="aspect-square overflow-hidden rounded-xl bg-gray-50">
           <img
