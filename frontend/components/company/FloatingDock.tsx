@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
@@ -51,40 +51,24 @@ export default function FloatingDock() {
   const router = useRouter();
   const [hovered, setHovered] = useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
 
   const go = (href: string) => {
     router.push(href);
     setExpanded(false);
   };
 
-  // Auto-close: tap di luar dock atau saat halaman di-scroll
-  useEffect(() => {
-    if (!expanded) return;
-    const onOutside = (e: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setExpanded(false);
-    };
-    const onScroll = () => setExpanded(false);
-    document.addEventListener("pointerdown", onOutside);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      document.removeEventListener("pointerdown", onOutside);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [expanded]);
 
   return (
     <>
       {/* Backdrop glassmorphism — blur konten di belakang saat expand */}
       <div
-        onClick={() => setExpanded(false)}
         aria-hidden
-        className={`lg:hidden fixed inset-0 z-40 bg-[#1a1a1a]/10 backdrop-blur-md transition-opacity duration-300 ${
-          expanded ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`lg:hidden fixed inset-0 z-40 bg-[#1a1a1a]/10 backdrop-blur-md transition-opacity duration-300 pointer-events-none ${
+          expanded ? "opacity-100" : "opacity-0"
         }`}
       />
 
-      <div ref={rootRef} className="lg:hidden fixed bottom-4 left-1/2 z-50 -translate-x-1/2 flex flex-col items-center gap-3 animate-dock-up">
+      <div className="lg:hidden fixed bottom-4 left-1/2 z-50 -translate-x-1/2 flex flex-col items-center gap-3 animate-dock-up">
 
       {/* ── Menu tambahan (expand ke atas) ── */}
       <div

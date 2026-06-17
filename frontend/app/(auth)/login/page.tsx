@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { findUserByEmail, setSession, getUsers } from "@/src/lib/localStorage";
+import { findUserByEmail, setSession } from "@/src/lib/localStorage";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,10 +11,6 @@ export default function LoginPage() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const demoAccounts = getUsers().filter((u) =>
-    ["user@minion.com", "barber@minion.com"].includes(u.email)
-  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,14 +28,8 @@ export default function LoginPage() {
         return;
       }
       setSession(user);
-      router.push("/akun");
+      router.push("/");
     }, 600);
-  };
-
-  const roleLabel: Record<string, string> = { user: "USER", barber: "BARBER" };
-  const roleBadge: Record<string, string> = {
-    user: "bg-green-400 text-black",
-    barber: "bg-purple-400 text-black",
   };
 
   return (
@@ -53,21 +43,7 @@ export default function LoginPage() {
           <img src="/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
         </div>
         <div className="relative">
-          <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6 animate-auth-up" style={{ animationDelay: "0.1s" }}>Good Hair.<br />Good Vibes.<br />Everyday.</p>
-          <div className="bg-white/5 rounded-2xl p-4 space-y-3 animate-auth-up" style={{ animationDelay: "0.2s" }}>
-            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">Akun Demo — Klik untuk auto-fill</p>
-            {demoAccounts.map((a, i) => (
-              <button key={a.email} type="button" onClick={() => { setForm({ email: a.email, password: a.password }); setError(""); }}
-                style={{ animationDelay: `${0.3 + i * 0.08}s` }}
-                className="animate-auth-up w-full text-left bg-white/5 hover:bg-white/10 rounded-xl px-3 py-2.5 transition-all hover:translate-x-1">
-                <p className="text-white text-xs font-bold">{a.name}</p>
-                <p className="text-white/40 text-[10px] mt-0.5">{a.email} · {a.password}</p>
-                <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 ${roleBadge[a.role] ?? "bg-gray-400 text-black"}`}>
-                  {roleLabel[a.role] ?? a.role}
-                </span>
-              </button>
-            ))}
-          </div>
+          <p className="text-[#F9C74F] text-4xl font-black leading-tight animate-auth-up" style={{ animationDelay: "0.1s" }}>Good Hair.<br />Good Vibes.<br />Everyday.</p>
         </div>
         <div className="opacity-10 absolute bottom-14 right-12 animate-auth-float">
           <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +53,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto relative">
+      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto overflow-x-hidden relative">
         {/* Blob dekoratif */}
         <div aria-hidden className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-[#F9C74F]/20 blur-3xl animate-auth-blob pointer-events-none" />
         <div aria-hidden className="absolute bottom-0 -left-10 w-64 h-64 rounded-full bg-[#178E81]/15 blur-3xl animate-auth-blob pointer-events-none" style={{ animationDelay: "3s" }} />
@@ -140,22 +116,6 @@ export default function LoginPage() {
             </Link>
           </form>
 
-          {/* Mobile demo hint */}
-          <div className="lg:hidden mt-6 bg-white border border-gray-200 rounded-2xl p-4">
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-3">Akun Demo</p>
-            <div className="space-y-2">
-              {demoAccounts.map((a) => (
-                <button key={a.email} type="button" onClick={() => { setForm({ email: a.email, password: a.password }); setError(""); }}
-                  className="w-full flex items-center justify-between bg-gray-50 hover:bg-yellow-50 rounded-xl px-3 py-2 transition-colors text-left">
-                  <div>
-                    <p className="text-xs font-bold text-gray-800">{a.name}</p>
-                    <p className="text-[10px] text-gray-400">{a.email}</p>
-                  </div>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${roleBadge[a.role] ?? "bg-gray-400 text-black"}`}>{roleLabel[a.role]}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

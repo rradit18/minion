@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { saveUser, setSession, findUserByEmail } from "@/src/lib/localStorage";
+import { saveUser, setSession } from "@/src/lib/localStorage";
 import type { AuthUser } from "@/src/lib/localStorage";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", phone: "", password: "", confirm: "" });
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,14 +22,12 @@ export default function RegisterPage() {
     e.preventDefault();
     if (form.password !== form.confirm) { setError("Password tidak cocok!"); return; }
     if (form.password.length < 6) { setError("Password minimal 6 karakter!"); return; }
-    if (findUserByEmail(form.email)) { setError("Email sudah terdaftar!"); return; }
-
     setLoading(true);
     setTimeout(() => {
       const newUser: AuthUser = {
         id: `user-${Date.now()}`,
         name: form.name,
-        email: form.email,
+        email: "",
         phone: `+62${form.phone}`,
         role: "user",
         password: form.password,
@@ -38,7 +36,7 @@ export default function RegisterPage() {
       };
       saveUser(newUser);
       setSession(newUser);
-      router.push("/akun");
+      router.push("/");
     }, 600);
   };
 
@@ -72,7 +70,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto relative">
+      <div className="flex-1 flex items-center justify-center px-6 py-8 bg-[#F5EFE4] overflow-y-auto overflow-x-hidden relative">
         <div aria-hidden className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-[#F9C74F]/20 blur-3xl animate-auth-blob pointer-events-none" />
         <div aria-hidden className="absolute bottom-0 -left-10 w-64 h-64 rounded-full bg-[#7B5EA7]/15 blur-3xl animate-auth-blob pointer-events-none" style={{ animationDelay: "3s" }} />
 
@@ -97,12 +95,6 @@ export default function RegisterPage() {
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="name">Nama Lengkap</label>
               <input id="name" name="name" type="text" required value={form.name} onChange={handleChange} placeholder="John Doe"
-                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
-            </div>
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="email@kamu.com"
                 className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
             </div>
             {/* Phone */}

@@ -3,8 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { Barber } from "@/src/lib/mockData";
 
-const imgFor = (b: Barber) => `/${b.name.split(" ")[0].toLowerCase()}.png`;
-
 interface Props {
   barbers: Barber[];
   value: Barber | null;
@@ -143,7 +141,7 @@ export default function BarberOrbit({ barbers, value, onChange }: Props) {
                 >
                   <span className="text-white font-black" style={{ fontSize: sz * 0.4 }}>{b.name[0]}</span>
                   <img
-                    src={imgFor(b)}
+                    src={b.image}
                     alt={b.name}
                     className="absolute inset-0 w-full h-full object-cover object-top"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}

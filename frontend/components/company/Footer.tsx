@@ -1,8 +1,30 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValidEmail(email)) {
+      setEmailError("Masukkan alamat email yang valid.");
+      return;
+    }
+    setEmailError("");
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSuccess(true);
+      setEmail("");
+    }, 1800);
+  };
+
   return (
     <footer className="bg-[#FAF7EE] pt-10 pb-28 lg:pb-8 border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
@@ -91,16 +113,28 @@ const Footer = () => {
         <div>
           <h3 className="text-black font-display font-bold mb-4 text-sm tracking-wide">STAY UPDATED</h3>
           <p className="text-sm text-gray-600 mb-4">Dapatkan promo & info terbaru langsung di email anda.</p>
-          <div className="flex bg-white rounded-full p-1 border border-gray-200">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full bg-transparent px-4 py-2 text-sm outline-none text-black"
-            />
-            <button className="bg-amber-400 p-2 rounded-full px-4">
-              <span className="text-white font-bold">→</span>
-            </button>
-          </div>
+          <form onSubmit={handleSubscribe} noValidate>
+            <div className={`flex bg-white rounded-full p-1 border transition-colors ${emailError ? "border-red-400" : "border-gray-200"}`}>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
+                className="min-w-0 flex-1 bg-transparent px-4 py-2 text-sm outline-none text-black"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-amber-400 hover:bg-yellow-400 p-2 rounded-full px-4 transition-colors disabled:opacity-60 flex items-center justify-center"
+              >
+                {loading
+                  ? <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  : <span className="text-white font-bold">→</span>
+                }
+              </button>
+            </div>
+            {emailError && <p className="text-red-500 text-xs mt-1.5 pl-4">{emailError}</p>}
+          </form>
         </div>
       </div>
 
@@ -108,6 +142,29 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
         © 2026 Minion Barbershop. Elite Craftsmanship. Digital Rebellion
       </div>
+
+      {/* Popup sukses subscribe */}
+      {success && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center">
+            <div className="w-16 h-16 bg-[#F9C74F] rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg className="w-8 h-8 text-[#1a1a1a]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-black text-[#1a1a1a] mb-2">Terima kasih sudah subscribe!</h3>
+            <p className="text-sm text-gray-500 leading-relaxed mb-6">
+              Kamu sekarang masuk daftar orang pertama yang tahu promo, info terbaru, dan kejutan eksklusif dari Minion Barbershop.
+            </p>
+            <button
+              onClick={() => setSuccess(false)}
+              className="bg-[#1a1a1a] text-white font-bold px-8 py-3 rounded-xl hover:bg-gray-800 transition-colors text-sm"
+            >
+              Siap, king!
+            </button>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };

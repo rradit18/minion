@@ -123,21 +123,6 @@ const Sparkle4 = ({ color }: { color: string }) => (
   </svg>
 );
 
-// Badge "FRESH CUT!" — speech bubble gambar tangan
-const FreshCutBadge = () => (
-  <div className="absolute top-[28%] right-2 z-20 -rotate-[8deg] pointer-events-none">
-    <div className="relative bg-white border-[2.5px] border-[#F97316] rounded-[50%] px-4 py-2">
-      <span className="block text-[#F97316] font-display font-bold text-[15px] leading-[1] text-center">
-        FRESH<br />CUT!
-      </span>
-      {/* ekor bubble */}
-      <svg viewBox="0 0 20 20" className="absolute -left-2 bottom-2 w-4 h-4">
-        <path d="M18 2 L2 14 L16 12 Z" fill="white" stroke="#F97316" strokeWidth="2" strokeLinejoin="round" />
-      </svg>
-    </div>
-  </div>
-);
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const happyCustomers = [
@@ -193,9 +178,12 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             <div className="flex flex-col sm:flex-row gap-3 pt-1 justify-center md:justify-start">
               <Link
                 href="/booking"
-                className="inline-flex items-center justify-center gap-2 bg-[#F9C74F] text-[#1a1a1a] px-6 py-3 rounded-xl font-display font-bold text-[15px] hover:bg-yellow-400 transition"
+                className="group relative inline-flex items-center justify-center gap-2 bg-[#F9C74F] text-[#1a1a1a] px-6 py-3 rounded-xl font-display font-bold text-[15px] overflow-hidden transition-all duration-300 hover:bg-yellow-400 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(249,199,79,0.45)] active:translate-y-0 active:shadow-none"
               >
-                Book Now <span aria-hidden>→</span>
+                <span className="relative z-10">Book Now</span>
+                <span aria-hidden className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
+                {/* shine sweep on hover */}
+                <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 pointer-events-none" />
               </Link>
               <a
                 href="#layanan"
@@ -212,8 +200,14 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             </div>
           </div>
 
-          {/* ── Right: Photo + doodles (rapi, tidak terpotong) ── */}
+          {/* ── Right: Photo + doodles ── */}
           <div className="relative w-full h-[460px] md:h-[520px] lg:h-[560px] hidden md:flex items-end justify-center">
+            <style>{`
+              @keyframes doodleFloat {
+                0%, 100% { transform: translateY(0px); }
+                50%       { transform: translateY(-11px); }
+              }
+            `}</style>
 
             {/* Blob warna di belakang foto */}
             <div className="absolute bottom-6 left-1/2 -translate-x-[40%] w-[320px] h-[290px] lg:w-[360px] lg:h-[330px] bg-[#F9C74F] rounded-[60%_40%_55%_45%/55%_55%_45%_45%] z-0" />
@@ -222,36 +216,70 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
 
             {/* Foto owner */}
             <div className="relative z-10 w-full max-w-[320px] lg:max-w-[1000px] h-full flex items-end justify-center">
-              <img src="/owner.png"
-               alt="Barber Professional"
-               className="w-full h-full object-contain object-bottom"
-              />
+              <img src="/owner.png" alt="Barber Professional" className="w-full h-full object-contain object-bottom" />
             </div>
 
-            {/* ── Doodle layer — semua inset aman, tidak menyentuh tepi ── */}
-            {/* Kolom kiri foto */}
-            <div className="absolute top-8 left-4 w-14 h-20 rotate-[12deg] pointer-events-none z-20"><SprayBottle /></div>
-            <div className="absolute top-[38%] left-5 w-12 h-12 -rotate-[15deg] pointer-events-none z-20"><Scissors /></div>
-            <div className="absolute top-24 left-[26%] w-12 h-10 -rotate-[8deg] pointer-events-none z-20"><PomadeJar /></div>
-            <div className="absolute bottom-28 left-5 w-12 h-5 rotate-[8deg] pointer-events-none z-20"><Razor /></div>
-            <div className="absolute bottom-12 left-10 w-5 h-14 -rotate-[12deg] pointer-events-none z-20"><Brush /></div>
+            {/* ── Doodles kiri ── */}
+            <div className="absolute top-5 left-5 w-11 h-[64px] rotate-[10deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.2s ease-in-out infinite 0s' }}><SprayBottle /></div>
+            </div>
+            <div className="absolute top-[23%] left-[10%] w-12 h-10 -rotate-[6deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 2.8s ease-in-out infinite 0.5s' }}><PomadeJar /></div>
+            </div>
+            <div className="absolute top-[46%] left-4 w-11 h-11 -rotate-[14deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.6s ease-in-out infinite 1.0s' }}><Scissors /></div>
+            </div>
+            <div className="absolute bottom-[28%] left-5 w-12 h-5 rotate-[6deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 2.6s ease-in-out infinite 0.8s' }}><Razor /></div>
+            </div>
+            <div className="absolute bottom-8 left-9 w-5 h-14 -rotate-[8deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.8s ease-in-out infinite 0.2s' }}><Brush /></div>
+            </div>
 
-            {/* Kolom kanan foto */}
-            <div className="absolute top-6 right-6 w-14 h-[72px] pointer-events-none z-20"><FaceDoodlePurple /></div>
-            <div className="absolute top-[36%] right-5 w-12 h-16 rotate-[10deg] pointer-events-none z-20"><Clipper /></div>
-            <div className="absolute top-[54%] right-10 w-14 h-10 -rotate-[10deg] pointer-events-none z-20"><HairDryer /></div>
-            <div className="absolute bottom-28 right-6 w-14 h-7 -rotate-[12deg] pointer-events-none z-20"><Comb /></div>
-            <div className="absolute bottom-6 right-8 w-12 h-14 pointer-events-none z-20"><FaceDoodleGreen /></div>
+            {/* ── Doodles kanan ── */}
+            <div className="absolute top-4 right-6 w-12 h-[66px] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.0s ease-in-out infinite 0.3s' }}><FaceDoodlePurple /></div>
+            </div>
+            {/* Fresh Cut badge */}
+            <div className="absolute top-[26%] right-3 z-20 -rotate-[8deg] pointer-events-none">
+              <div style={{ animation: 'doodleFloat 2.9s ease-in-out infinite 0.7s' }}>
+                <div className="relative bg-white border-[2.5px] border-[#F97316] rounded-[50%] px-4 py-2">
+                  <span className="block text-[#F97316] font-display font-bold text-[15px] leading-[1] text-center">FRESH<br />CUT!</span>
+                  <svg viewBox="0 0 20 20" className="absolute -left-2 bottom-2 w-4 h-4">
+                    <path d="M18 2 L2 14 L16 12 Z" fill="white" stroke="#F97316" strokeWidth="2" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="absolute top-[44%] right-5 w-10 h-[56px] rotate-[8deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.4s ease-in-out infinite 1.1s' }}><Clipper /></div>
+            </div>
+            <div className="absolute bottom-[30%] right-8 w-14 h-10 -rotate-[8deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 2.7s ease-in-out infinite 0.4s' }}><HairDryer /></div>
+            </div>
+            <div className="absolute bottom-[17%] right-5 w-14 h-7 -rotate-[10deg] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.3s ease-in-out infinite 0.9s' }}><Comb /></div>
+            </div>
+            <div className="absolute bottom-4 right-6 w-11 h-[60px] pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.7s ease-in-out infinite 1.3s' }}><FaceDoodleGreen /></div>
+            </div>
 
-            {/* Sparkles & petir — tersebar di area kosong */}
-            <div className="absolute top-4 left-[38%] w-5 h-5 pointer-events-none z-20"><Sparkle4 color="#F9C74F" /></div>
-            <div className="absolute top-12 right-[34%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#178E81" /></div>
-            <div className="absolute top-[30%] left-[22%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#7B5EA7" /></div>
-            <div className="absolute bottom-20 left-[34%] w-4 h-4 pointer-events-none z-20"><Sparkle4 color="#22C55E" /></div>
-            <div className="absolute top-[22%] right-[30%] w-5 h-7 pointer-events-none z-20"><Lightning color="#F97316" /></div>
-
-            {/* FRESH CUT! badge */}
-            <FreshCutBadge />
+            {/* ── Sparkles & petir ── */}
+            <div className="absolute top-[8%] left-[37%] w-5 h-5 pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 2.5s ease-in-out infinite 0.1s' }}><Sparkle4 color="#F9C74F" /></div>
+            </div>
+            <div className="absolute top-[15%] right-[33%] w-4 h-4 pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.1s ease-in-out infinite 0.6s' }}><Sparkle4 color="#178E81" /></div>
+            </div>
+            <div className="absolute top-[34%] left-[23%] w-4 h-4 pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 2.9s ease-in-out infinite 1.5s' }}><Sparkle4 color="#7B5EA7" /></div>
+            </div>
+            <div className="absolute bottom-[23%] left-[35%] w-4 h-4 pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 3.5s ease-in-out infinite 0.3s' }}><Sparkle4 color="#22C55E" /></div>
+            </div>
+            <div className="absolute top-[25%] right-[28%] w-5 h-7 pointer-events-none z-20">
+              <div style={{ animation: 'doodleFloat 2.6s ease-in-out infinite 1.2s' }}><Lightning color="#F97316" /></div>
+            </div>
           </div>
 
         </section>
