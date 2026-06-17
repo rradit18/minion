@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 
 const PER_PAGE = 9;
@@ -222,7 +223,7 @@ export default function ProductsPageClient() {
     <div className="bg-[#FAF7EF] min-h-screen">
 
       {/* ── HERO ── */}
-      <div className="max-w-7xl mx-auto px-6 pt-6">
+      <motion.div className="max-w-7xl mx-auto px-6 pt-6" initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <section className="relative overflow-hidden rounded-3xl h-[240px] sm:h-[300px] md:h-[340px]">
           <img src="/HeroProducts.png" alt="Minion Barbershop" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/30 to-black/10" />
@@ -232,10 +233,10 @@ export default function ProductsPageClient() {
             <p className="text-white/80 text-sm mt-3 max-w-xs">Grooming essentials pilihan, langsung dari para maestro Minion.</p>
           </div>
         </section>
-      </div>
+      </motion.div>
 
       {/* ── BODY: Sidebar + Grid ── */}
-      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8">
+      <motion.div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}>
 
         {/* Sidebar kategori (desktop) */}
         <aside className="hidden lg:block">
@@ -360,7 +361,7 @@ export default function ProductsPageClient() {
             </>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Floating cart button ── */}
       {cartCount > 0 && !cartOpen && (

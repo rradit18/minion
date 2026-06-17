@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -19,15 +20,17 @@ export default function ContactPage() {
   return (
     <section className="bg-[#FAF7EE] min-h-screen px-6 py-20">
       <div className="max-w-xl mx-auto">
-        <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">
-          Hubungi Kami
-        </p>
-        <h1 className="text-4xl font-black text-[#1a1a1a] mb-2 leading-tight">
-          Book Now
-        </h1>
-        <div className="w-12 h-1 bg-[#F9C74F] rounded mb-8" />
+        <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
+          <p className="text-[#178E81] text-xs font-extrabold tracking-[3px] uppercase mb-2">
+            Hubungi Kami
+          </p>
+          <h1 className="text-4xl font-black text-[#1a1a1a] mb-2 leading-tight">
+            Book Now
+          </h1>
+          <div className="w-12 h-1 bg-[#F9C74F] rounded mb-8" />
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <motion.form onSubmit={handleSubmit} className="space-y-5" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}>
           <div>
             <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="name">
               Nama
@@ -67,7 +70,7 @@ export default function ContactPage() {
           >
             Kirim
           </button>
-        </form>
+        </motion.form>
       </div>
     </section>
   );

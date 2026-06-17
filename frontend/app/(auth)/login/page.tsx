@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { findUserByEmail, setSession } from "@/src/lib/localStorage";
 
 export default function LoginPage() {
@@ -33,7 +34,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen overflow-hidden flex">
+    <motion.div className="h-screen overflow-hidden flex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}>
       {/* Left Panel */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto relative">
         {/* Pattern halus */}
@@ -118,6 +119,6 @@ export default function LoginPage() {
 
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

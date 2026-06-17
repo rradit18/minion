@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 interface Branch {
@@ -211,16 +212,26 @@ export default function BranchesPage() {
   return (
     <div className="min-h-screen bg-[#FAF7EE]">
       {/* ── Header ── */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-6">
+      <motion.div
+        className="max-w-7xl mx-auto px-6 pt-10 pb-6"
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         <p className="text-xs font-bold tracking-[0.2em] text-[#178E81] uppercase mb-2">Temukan Kami</p>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#1a1a1a] mb-2">Cabang Terdekat</h1>
         <p className="text-gray-500 text-sm max-w-lg leading-relaxed">
           Pilih cabang untuk melihat layanan, jam buka, dan rute menuju lokasi.
         </p>
-      </div>
+      </motion.div>
 
       {/* ── Finder: Map + Cards ── */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
+      <motion.div
+        className="max-w-7xl mx-auto px-6 pb-12"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(360px,420px)] gap-5">
 
           {/* Map */}
@@ -256,7 +267,7 @@ export default function BranchesPage() {
           </div>
 
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

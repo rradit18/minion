@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import Timeline, { TimelineEntry } from "@/components/ui/Timeline";
 import TestimonialsCarousel from "@/components/company/TestimonialsCarousel";
 
@@ -113,7 +114,7 @@ const AboutSection = () => {
     <div className="bg-[#FAF7EE] text-[#1a1a1a]">
 
       {/* ── 1. Hero ── */}
-      <section className="max-w-7xl mx-auto px-6 pt-12 md:pt-20 pb-10">
+      <motion.section className="max-w-7xl mx-auto px-6 pt-12 md:pt-20 pb-10" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <div className="bg-white p-7 md:p-12 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
           <div className="absolute -top-4 -right-4 text-[#F9C74F] opacity-90">
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-24 h-24 rotate-12">
@@ -134,10 +135,10 @@ const AboutSection = () => {
             </p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ── 2. Tim + Owner dalam satu frame ── */}
-      <section className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+      <motion.section className="max-w-7xl mx-auto px-6 py-12 md:py-16" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Frame foto (GANTI src dengan foto grup tim + owner asli) */}
           <div className="relative mx-auto w-full max-w-md">
@@ -179,10 +180,10 @@ const AboutSection = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ── 3. DNA Kami ── */}
-      <section className="bg-[#178E81] text-white py-16 md:py-20 px-6 relative overflow-hidden">
+      <motion.section className="bg-[#178E81] text-white py-16 md:py-20 px-6 relative overflow-hidden" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: "url(/pattern.png)" }} />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="mb-10 md:mb-12">
@@ -204,10 +205,10 @@ const AboutSection = () => {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ── 4. Sejarah (Timeline Aceternity) ── */}
-      <section className="py-16 md:py-24 px-6">
+      <motion.section className="py-16 md:py-24 px-6" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <div className="max-w-5xl mx-auto mb-4 md:mb-8 text-center">
           <p className="text-xs font-bold tracking-[0.2em] text-[#178E81] uppercase mb-3">Perjalanan Kami</p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight">
@@ -218,13 +219,13 @@ const AboutSection = () => {
           </p>
         </div>
         <Timeline data={timelineData} />
-      </section>
+      </motion.section>
 
       {/* ── 5. Testimoni ── */}
       <TestimonialsCarousel />
 
       {/* ── 6. CTA penutup ── */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-20">
+      <motion.section className="max-w-7xl mx-auto px-6 py-16 md:py-20" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <div className="relative overflow-hidden rounded-3xl bg-[#1a1a1a] text-white px-8 py-12 md:px-14 md:py-16 text-center">
           <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ backgroundImage: "url(/pattern.png)" }} />
           <div className="relative z-10">
@@ -242,7 +243,7 @@ const AboutSection = () => {
             </Link>
           </div>
         </div>
-      </section>
+      </motion.section>
 
     </div>
   );

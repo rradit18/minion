@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { ReactCompareSliderImage } from 'react-compare-slider';
 import TiltCard from '@/components/ui/TiltCard';
 
 const ReactCompareSlider = dynamic(
   () => import('react-compare-slider').then((mod) => mod.ReactCompareSlider),
-  { ssr: false }
-);
-const ReactCompareSliderImage = dynamic(
-  () => import('react-compare-slider').then((mod) => mod.ReactCompareSliderImage),
   { ssr: false }
 );
 
@@ -78,7 +76,12 @@ const GalleryPage = () => {
       }}
     >
       {/* ── Header ── */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-8 flex flex-col items-center text-center md:flex-row md:items-start md:text-left gap-10">
+      <motion.div
+        className="max-w-7xl mx-auto px-6 pt-10 pb-8 flex flex-col items-center text-center md:flex-row md:items-start md:text-left gap-10"
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         <div>
           <h1 className="text-[44px] font-black leading-[1.05] tracking-tight">
             PRESISI<br />
@@ -91,10 +94,15 @@ const GalleryPage = () => {
         <p className="md:ml-auto text-[14px] text-[#555] leading-relaxed max-w-sm pt-1.5 md:text-right">
           Selamat datang di galeri kami. Mulai dari taper klasik hingga cornrow yang fenomenal. Galeri ini berisi masterpiece dari tangan maestro kami.
         </p>
-      </div>
+      </motion.div>
 
       {/* ── Highlight Before/After Card ── */}
-      <div className="max-w-7xl mx-auto px-6 pb-7">
+      <motion.div
+        className="max-w-7xl mx-auto px-6 pb-7"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         <div className="bg-white rounded-2xl flex flex-col md:flex-row overflow-hidden min-h-[300px] relative shadow-sm border border-gray-100">
           
           <div className="absolute inset-0 z-0 opacity-[5] pointer-events-none"
@@ -144,7 +152,7 @@ const GalleryPage = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Gallery Grid ── */}
       <div className="max-w-7xl mx-auto px-6 space-y-2.5">

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import HeroSection from "@/components/company/HeroSection";
@@ -10,6 +10,7 @@ import BarbermanPreview from "@/components/company/BarbermanPreview";
 import LocationSection from "@/components/company/LocationSection";
 import MobileMenu from "@/components/company/MobileMenu";
 import LoadScreen from "@/components/ui/LoadScreen";
+import FadeIn from "@/components/ui/FadeIn";
 
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,12 +20,12 @@ export default function HomePage() {
       <LoadScreen />
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       <HeroSection onMenuClick={() => setIsMenuOpen(true)} />
-      <USPSection />
-      <ServiceSection />
-      <PromoBanner />
-      <GalleryPreview />
-      <BarbermanPreview />
-      <LocationSection />
+      <FadeIn delay={0.05}><USPSection /></FadeIn>
+      <FadeIn delay={0.05}><ServiceSection /></FadeIn>
+      <FadeIn delay={0.05}><PromoBanner /></FadeIn>
+      <FadeIn delay={0.05}><GalleryPreview /></FadeIn>
+      <FadeIn delay={0.05}><BarbermanPreview /></FadeIn>
+      <FadeIn delay={0.05}><LocationSection /></FadeIn>
     </main>
   );
 }

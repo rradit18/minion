@@ -1,9 +1,13 @@
 "use client";
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import AnimatedTooltip from '@/components/ui/AnimatedTooltip';
 import CountUp from '@/components/ui/CountUp';
 import GlitchText from '@/components/ui/GlitchText';
+
+const ease = [0.25, 0.46, 0.45, 0.94] as const;
+const stagger = (i: number) => ({ duration: 0.6, delay: 0.1 + i * 0.12, ease });
 
 interface HeroSectionProps {
   onMenuClick: () => void;
@@ -151,38 +155,35 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
 
           {/* ── Left Content ── */}
           <div className="relative z-10 w-full space-y-4 text-center md:text-left">
-            {/* aksen sparkle dekat heading (rapi, di area kosong) */}
             <div className="absolute -top-2 right-2 w-5 h-5 pointer-events-none hidden md:block"><Sparkle4 color="#F9C74F" /></div>
 
-            <div className="flex justify-center md:hidden mb-1">
+            <motion.div className="flex justify-center md:hidden mb-1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={stagger(0)}>
               <img src="/minion.png" alt="Minion Logo" className="h-25 w-auto object-contain" />
-            </div>
-            <p className="text-[#178E81] text-[12px] font-bold tracking-[2px] uppercase font-body">
+            </motion.div>
+            <motion.p className="text-[#178E81] text-[12px] font-bold tracking-[2px] uppercase font-body" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={stagger(0)}>
               Premium Grooming
-            </p>
-            <h1 className="font-display font-bold leading-[1.05] text-[#1a1a1a] text-[40px] md:text-[58px] lg:text-[72px] tracking-tight">
+            </motion.p>
+            <motion.h1 className="font-display font-bold leading-[1.05] text-[#1a1a1a] text-[40px] md:text-[58px] lg:text-[72px] tracking-tight" initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={stagger(1)}>
               Pantang<br />
               pulang<br />
               sebelum<br />
               <span className="relative inline-block text-[#7B5EA7]">
                 <GlitchText text="gantenggg." />
-                {/* underline doodle kuning */}
                 <svg viewBox="0 0 240 18" className="absolute -bottom-2 left-0 w-full h-3" preserveAspectRatio="none">
                   <path d="M2 9 Q60 3 120 9 T238 8" stroke="#F9C74F" strokeWidth="3" fill="none" strokeLinecap="round" />
                 </svg>
               </span>
-            </h1>
-            <p className="text-[14px] text-[#666] leading-relaxed max-w-[320px] mx-auto md:mx-0 font-body">
+            </motion.h1>
+            <motion.p className="text-[14px] text-[#666] leading-relaxed max-w-[320px] mx-auto md:mx-0 font-body" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={stagger(2)}>
               Potongan terbaik bukan cuma soal gaya — tapi self upgrade tiap hari.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 pt-1 justify-center md:justify-start">
+            </motion.p>
+            <motion.div className="flex flex-col sm:flex-row gap-3 pt-1 justify-center md:justify-start" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={stagger(3)}>
               <Link
                 href="/booking"
                 className="group relative inline-flex items-center justify-center gap-2 bg-[#F9C74F] text-[#1a1a1a] px-6 py-3 rounded-xl font-display font-bold text-[15px] overflow-hidden transition-all duration-300 hover:bg-yellow-400 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(249,199,79,0.45)] active:translate-y-0 active:shadow-none"
               >
                 <span className="relative z-10">Book Now</span>
                 <span aria-hidden className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
-                {/* shine sweep on hover */}
                 <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 pointer-events-none" />
               </Link>
               <a
@@ -191,17 +192,22 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
               >
                 Lihat Layanan <span aria-hidden>↓</span>
               </a>
-            </div>
-            <div className="flex items-center gap-3 pt-2 justify-center md:justify-start">
+            </motion.div>
+            <motion.div className="flex items-center gap-3 pt-2 justify-center md:justify-start" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={stagger(4)}>
               <AnimatedTooltip items={happyCustomers} />
               <span className="text-[12px] text-[#555] font-semibold font-body">
                 <CountUp end={10000} suffix="+" className="font-display font-bold text-[#1a1a1a]" /> Pelanggan Puas
               </span>
-            </div>
+            </motion.div>
           </div>
 
           {/* ── Right: Photo + doodles ── */}
-          <div className="relative w-full h-[460px] md:h-[520px] lg:h-[560px] hidden md:flex items-end justify-center">
+          <motion.div
+            className="relative w-full h-[460px] md:h-[520px] lg:h-[560px] hidden md:flex items-end justify-center"
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease }}
+          >
             <style>{`
               @keyframes doodleFloat {
                 0%, 100% { transform: translateY(0px); }
@@ -280,7 +286,7 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             <div className="absolute top-[25%] right-[28%] w-5 h-7 pointer-events-none z-20">
               <div style={{ animation: 'doodleFloat 2.6s ease-in-out infinite 1.2s' }}><Lightning color="#F97316" /></div>
             </div>
-          </div>
+          </motion.div>
 
         </section>
       </div>
