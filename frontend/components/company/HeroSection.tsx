@@ -141,11 +141,11 @@ const FreshCutBadge = () => (
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const happyCustomers = [
-  { id: 1, name: 'Rizky', designation: 'Fade Cut', image: '/gallery1.jpg' },
-  { id: 2, name: 'Dimas', designation: 'Pompadour', image: '/gallery2.png' },
-  { id: 3, name: 'Arif', designation: 'Buzz Cut', image: '/gallery3.jpg' },
-  { id: 4, name: 'Bagas', designation: 'Mohawk', image: '/gallery4.png' },
-  { id: 5, name: 'Yoga', designation: 'Crop Fade', image: '/gallery5.jpg' },
+  { id: 1, name: 'Rizky', designation: 'Fade Cut',   image: '/gallery%20(1).jpg' },
+  { id: 2, name: 'Dimas', designation: 'Pompadour',  image: '/gallery%20(2).png' },
+  { id: 3, name: 'Arif',  designation: 'Buzz Cut',   image: '/gallery%20(3).png' },
+  { id: 4, name: 'Bagas', designation: 'Mohawk',     image: '/gallery%20(4).png' },
+  { id: 5, name: 'Yoga',  designation: 'Crop Fade',  image: '/gallery%20(5).png' },
 ];
 
 const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
@@ -221,11 +221,10 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             <div className="absolute top-16 right-12 w-16 h-16 bg-[#7B5EA7]/15 rounded-full z-0" />
 
             {/* Foto owner */}
-            <div className="relative z-10 w-full max-w-[680px] lg:max-w-[1100px] h-full flex items-end justify-center">
-              <img src="/teo.png" 
-               alt="Barber Professional" 
+            <div className="relative z-10 w-full max-w-[320px] lg:max-w-[1000px] h-full flex items-end justify-center">
+              <img src="/owner.png"
+               alt="Barber Professional"
                className="w-full h-full object-contain object-bottom"
-               style={{ transform: 'scale(1.65)', transformOrigin: 'bottom center' }} 
               />
             </div>
 

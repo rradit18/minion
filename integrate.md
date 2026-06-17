@@ -55,14 +55,6 @@ Semua digantikan localStorage (`getBookings`, `updateBooking`, `getLoyaltyPunche
 |---|---|---|
 | `POST /promos/validate` | `fetchPromoByCode()` / `promos.json` | `BookingClient` |
 
-## 🔴 Barber portal — belum terintegrasi
-
-| Endpoint | Mock pengganti | Dipakai di |
-|---|---|---|
-| `GET /barber/schedule` | `fetchSchedule()` / `barber-schedule.json` | `barberman-portal/jadwal`, `/page`, `/hari-ini` |
-| `GET /barber/bookings/today` | `fetchSchedule()` | `barberman-portal/hari-ini` |
-| `GET /barber/ratings` | `fetchRatings()` / `ratings.json` | `barberman-portal/rating` |
-
 ---
 
 ## Saran urutan integrasi
