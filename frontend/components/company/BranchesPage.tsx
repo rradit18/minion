@@ -21,8 +21,8 @@ const branches: Branch[] = [
     address: "Jl. Pramuka, Perumahan Mekarsari Block A No. 11",
     tag: "Pusat",
     tagColor: "bg-[#F9C74F] text-[#1a1a1a]",
-    lat: 0.9213,
-    lng: 104.4567,
+    lat: 0.9010124,
+    lng: 104.4626487,
     todayClose: "21:00",
     services: ["Potong Rambut", "Cuci & Pijat Kepala", "Cukur Jenggot", "Hair Coloring", "Hot Towel Treatment"],
     hours: [
@@ -35,8 +35,8 @@ const branches: Branch[] = [
     address: "Jl. Kijang Lama, Tanjungpinang Timur",
     tag: "Cabang",
     tagColor: "bg-[#178E81] text-white",
-    lat: 0.8430,
-    lng: 104.5760,
+    lat: 0.8506738,
+    lng: 104.6081442,
     todayClose: "21:00",
     services: ["Potong Rambut", "Cuci & Pijat Kepala", "Cukur Jenggot", "Kids Haircut"],
     hours: [
@@ -49,8 +49,8 @@ const branches: Branch[] = [
     address: "Jl. D.I. Panjaitan Km. 9, Tanjungpinang",
     tag: "Cabang",
     tagColor: "bg-[#178E81] text-white",
-    lat: 0.9300,
-    lng: 104.4800,
+    lat: 0.9169374,
+    lng: 104.5091971,
     todayClose: "21:00",
     services: ["Potong Rambut", "Cuci & Pijat Kepala", "Hair Tattoo", "Hot Towel Treatment"],
     hours: [
@@ -63,8 +63,8 @@ const branches: Branch[] = [
     address: "Jl. Raya Ganet, Tanjungpinang Timur",
     tag: "Baru Dibuka",
     tagColor: "bg-[#7B5EA7] text-white",
-    lat: 0.9500,
-    lng: 104.5200,
+    lat: 0.9300718,
+    lng: 104.5191602,
     todayClose: "20:00",
     services: ["Potong Rambut", "Cuci & Pijat Kepala", "Cukur Jenggot", "Hair Coloring"],
     hours: [
