@@ -81,7 +81,7 @@ const Footer = () => {
         <div>
           <h3 className="text-black font-display font-bold mb-4 text-sm tracking-wide">KANTOR UTAMA</h3>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Jl. Batu 9 No.7,Tanjungpinang, <br />
+           Jl. DI Panjaitan.Km. 9, Air Raja, <br />
             Tanjungpinang, Kepulauan Riau <br />
             Open Daily 09:00 - 23:00
           </p>
