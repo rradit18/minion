@@ -18,24 +18,17 @@ interface Product {
 const categories = [
   "Semua",
   "Clay & Pomade",
-  "Skincare",
-  "Tools & Accessories",
-  "Fragrance",
-  "Vitamins",
-  "Grooming Kits",
+  "Curl Care",
+  "Styling Powder",
 ];
 
 const products: Product[] = [
-  { id: 0, name: "Obsidian Clay", category: "Clay & Pomade", price: 42000, desc: "High-hold matte clay dengan volcanic ash & sandalwood.", image: "/obsidian-clay.jpg", bestSeller: true },
-  { id: 1, name: "Sea Salt Spray", category: "Clay & Pomade", price: 99000, desc: "Texturize alami untuk rambut bervolume.", image: "/sea-salt.jpg" },
-  { id: 2, name: "Face Wash", category: "Skincare", price: 99000, desc: "Pembersih wajah dengan ekstrak charcoal.", image: "/face-wash.jpg" },
-  { id: 3, name: "Moisturizer", category: "Skincare", price: 99000, desc: "Melembapkan kulit seharian tanpa rasa lengket.", image: "/moisturizer.jpg" },
-  { id: 4, name: "Comb Set", category: "Tools & Accessories", price: 99000, desc: "Sisir premium anti-statis.", image: "/comb-set.jpg" },
-  { id: 5, name: "Eau De Parfum", category: "Fragrance", price: 99000, desc: "Wangi maskulin yang tahan lama.", image: "/parfum.jpg" },
-  { id: 6, name: "Hair Vitamin", category: "Vitamins", price: 99000, desc: "Nutrisi untuk akar rambut kuat.", image: "/hairvit.jpg" },
-  { id: 7, name: "Matte Paste", category: "Clay & Pomade", price: 99000, desc: "Hasil akhir natural matte.", image: "/matte-paste.jpg" },
-  { id: 8, name: "Travel Kit", category: "Grooming Kits", price: 99000, desc: "Paket lengkap untuk traveling.", image: "/travel-kit.jpg" },
-  { id: 9, name: "Face Scrub", category: "Skincare", price: 99000, desc: "Eksfoliasi lembut untuk kulit fresh.", image: "/face-scrub.jpg" },
+  { id: 0, name: "Minion Curly Cream", category: "Curl Care", price: 75000, desc: "Cream pelembap untuk mendefinisikan curl & mengurangi frizz.", image: "/CurlyCream.png", bestSeller: true },
+  { id: 1, name: "Minion Hair Powder", category: "Styling Powder", price: 65000, desc: "Texturize alami untuk rambut bervolume.", image: "/HairPowder.png" },
+  { id: 2, name: "Minion Pomade Vanilla", category: "Clay & Pomade", price: 75000, desc: "Pomade wangi vanilla dengan hold kuat tanpa lengket.", image: "/PomadeVanilla.png" },
+  { id: 3, name: "Minion Pomade Rose", category: "Clay & Pomade", price: 75000, desc: "Pomade aroma rose lembut, mudah dibilas, tahan lama.", image: "/PomadeRose.png" },
+  { id: 4, name: "Minion Pomade Ocean Blue", category: "Clay & Pomade", price: 75000, desc: "Pomade segar aroma ocean blue dengan finishing matte.", image: "/PomadeOceanBlue.png" },
+  { id: 5, name: "Minion Pomade Sunkist", category: "Clay & Pomade", price: 75000, desc: "Pomade aroma jeruk sunkist, wangi maskulin tahan lama.", image: "/PomadeSunkist.png" },
 ];
 
 const formatRupiah = (num: number) =>
