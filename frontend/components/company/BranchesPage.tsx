@@ -12,6 +12,7 @@ interface Branch {
   tagColor?: string;
   lat: number | null;
   lng: number | null;
+  googleMapsUrl: string | null;
   todayClose: string;
   services: string[];
   hours: { label: string; time: string }[];
@@ -36,7 +37,10 @@ function BranchCard({
   onToggle: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("layanan");
-  const routeUrl = `https://www.google.com/maps/dir/?api=1&destination=${branch.lat},${branch.lng}`;
+  const routeUrl = branch.googleMapsUrl
+    ?? (branch.lat != null && branch.lng != null
+      ? `https://www.google.com/maps/dir/?api=1&destination=${branch.lat},${branch.lng}`
+      : `https://www.google.com/maps/search/Minion+Barbershop+${encodeURIComponent(branch.name)}`);
 
   return (
     <article
@@ -156,13 +160,14 @@ export default function BranchesPage() {
         const data: Record<string, unknown>[] = branchRes?.data ?? [];
         setBranches(
           data.map((b) => ({
-            name:       String(b.name),
-            address:    String(b.address ?? ""),
-            lat:        b.latitude != null ? Number(b.latitude) : null,
-            lng:        b.longitude != null ? Number(b.longitude) : null,
-            todayClose: fmt(b.closing_time as string),
-            services:   serviceNames,
-            hours:      [{ label: "Setiap Hari", time: `${fmt(b.opening_time as string)} – ${fmt(b.closing_time as string)}` }],
+            name:          String(b.name),
+            address:       String(b.address ?? ""),
+            lat:           b.latitude  != null ? Number(b.latitude)  : null,
+            lng:           b.longitude != null ? Number(b.longitude) : null,
+            googleMapsUrl: b.google_maps_url ? String(b.google_maps_url) : null,
+            todayClose:    fmt(b.closing_time as string),
+            services:      serviceNames,
+            hours:         [{ label: "Setiap Hari", time: `${fmt(b.opening_time as string)} – ${fmt(b.closing_time as string)}` }],
           }))
         );
       })
@@ -172,12 +177,16 @@ export default function BranchesPage() {
   const list = branches ?? [];
   const isEmpty = branches !== null && branches.length === 0;
   const active = list[mapIdx] ?? list[0];
-  const mapQuery = active
-    ? (active.lat != null && active.lng != null
-        ? `${active.lat},${active.lng}`
-        : encodeURIComponent(`Minion Barbershop ${active.name}`))
-    : "";
-  const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&z=15&hl=id&output=embed`;
+  const mapSrc = (() => {
+    if (!active) return "";
+    if (active.lat != null && active.lng != null) {
+      // Exact pin from database coordinates — zoom 17 matches the original Google Maps URLs
+      const label = encodeURIComponent(`Minion Barbershop ${active.name}`);
+      return `https://maps.google.com/maps?q=${label}@${active.lat},${active.lng}&z=17&hl=id&output=embed`;
+    }
+    // Fallback: text search
+    return `https://maps.google.com/maps?q=${encodeURIComponent(`Minion Barbershop ${active.name}`)}&z=16&hl=id&output=embed`;
+  })();
 
   const handleSelect = (i: number) => {
     setMapIdx(i);

@@ -129,7 +129,7 @@ const GalleryPage = () => {
           </div>
 
           <div className="flex-1 p-8 relative z-10">
-            <span className="absolute top-4 right-12 text-[#D4AF37] text-[90px] font-black opacity-20 select-none">✦</span>
+            <span className="hidden md:block absolute top-4 right-12 text-[#D4AF37] text-[90px] font-black opacity-20 select-none pointer-events-none">✦</span>
             <h2 className="text-[28px] font-black leading-tight mb-1">
               Transformasi Khas<br />
               <span className="text-[#D4AF37]">Minion</span>
@@ -174,30 +174,62 @@ const GalleryPage = () => {
       )}
 
       {/* ── Load More / Less ── */}
-      <div className={`relative text-center py-8 ${isEmpty ? 'hidden' : ''}`}>
-        <div className="flex items-center justify-center gap-3">
-          {hasMore && (
-            <button
-              onClick={handleLoadMore}
-              className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide"
-            >
-              Tampilkan Lebih Banyak
-            </button>
-          )}
-          {visibleCount > INITIAL_ROWS * COLS && (
-            <button
-              onClick={handleLoadLess}
-              className="bg-white border-2 border-[#1a1a1a] text-[#1a1a1a] text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-100 transition tracking-wide"
-            >
-              Tampilkan Lebih Sedikit
-            </button>
-          )}
-          {!hasMore && visibleCount <= INITIAL_ROWS * COLS && (
-            <p className="text-[13px] text-gray-400 font-semibold">Semua foto sudah ditampilkan</p>
-          )}
+      {!isEmpty && (
+        <div className="max-w-7xl mx-auto px-6 pt-6 pb-12">
+          {/* Progress bar + counter */}
+          <div className="flex items-center justify-between mb-3 text-[12px] font-semibold text-[#999] tracking-wide">
+            <span>
+              {visibleCount} <span className="text-[#D4AF37]">/</span> {images.length} foto
+            </span>
+            <span>{Math.round((visibleCount / Math.max(images.length, 1)) * 100)}%</span>
+          </div>
+          <div className="w-full h-[3px] bg-[#e5e0d6] rounded-full mb-6 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#C9A544] to-[#D4AF37] rounded-full transition-all duration-500"
+              style={{ width: `${(visibleCount / Math.max(images.length, 1)) * 100}%` }}
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+            {hasMore && (
+              <button
+                onClick={handleLoadMore}
+                className="group flex items-center justify-center gap-2.5 bg-[#1a1a1a] text-white text-[13px] font-bold px-8 py-4 rounded-xl hover:bg-[#111] active:scale-[0.98] transition-all duration-150 tracking-wide shadow-md hover:shadow-lg"
+              >
+                <span>Tampilkan Lebih Banyak</span>
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                  fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            )}
+
+            {visibleCount > INITIAL_ROWS * COLS && (
+              <button
+                onClick={handleLoadLess}
+                className="group flex items-center justify-center gap-2.5 bg-white border-2 border-[#1a1a1a]/20 text-[#1a1a1a] text-[13px] font-bold px-8 py-4 rounded-xl hover:border-[#1a1a1a] hover:bg-[#f5f0e8] active:scale-[0.98] transition-all duration-150 tracking-wide"
+              >
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5"
+                  fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <span>Kembali ke Awal</span>
+              </button>
+            )}
+
+            {!hasMore && visibleCount <= INITIAL_ROWS * COLS && (
+              <p className="text-[13px] text-[#aaa] font-semibold tracking-wide text-center">
+                Semua foto sudah ditampilkan ✓
+              </p>
+            )}
+          </div>
         </div>
-        <span className="absolute right-24 bottom-7 text-[#D4AF37] text-[50px] select-none">✦</span>
-      </div>
+      )}
     </div>
   );
 };
