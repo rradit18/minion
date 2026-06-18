@@ -15,12 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Hanya seed akun akses (admin, kasir, customer).
+        // Data konten (cabang, layanan, barber, shift) diisi lewat Filament admin.
         $this->call([
-            BranchSeeder::class,
-            ServiceSeeder::class,
             AdminUserSeeder::class,
-            BarberSeeder::class,
-            ShiftSeeder::class,
         ]);
+
+        // Seeder data demo dinonaktifkan — aktifkan kembali bila butuh data contoh:
+        // BranchSeeder::class,
+        // ServiceSeeder::class,
+        // BarberSeeder::class,
+        // ShiftSeeder::class,
     }
 }

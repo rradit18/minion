@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SpotlightCard from "@/components/ui/SpotlightCard";
+import EmptyState from "@/components/ui/EmptyState";
 
 const PER_PAGE = 9;
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   category: string;
   price: number;
@@ -16,20 +17,13 @@ interface Product {
   bestSeller?: boolean;
 }
 
-const categories = [
-  "Semua",
-  "Clay & Pomade",
-  "Curl Care",
-  "Styling Powder",
-];
-
-const products: Product[] = [
-  { id: 0, name: "Minion Curly Cream", category: "Curl Care", price: 75000, desc: "Cream pelembap untuk mendefinisikan curl & mengurangi frizz.", image: "/products/CurlyCream.png", bestSeller: true },
-  { id: 1, name: "Minion Hair Powder", category: "Styling Powder", price: 65000, desc: "Texturize alami untuk rambut bervolume.", image: "/products/HairPowder.png" },
-  { id: 2, name: "Minion Pomade Vanilla", category: "Clay & Pomade", price: 75000, desc: "Pomade wangi vanilla dengan hold kuat tanpa lengket.", image: "/products/PomadeVanilla.png" },
-  { id: 3, name: "Minion Pomade Rose", category: "Clay & Pomade", price: 75000, desc: "Pomade aroma rose lembut, mudah dibilas, tahan lama.", image: "/products/PomadeRose.png" },
-  { id: 4, name: "Minion Pomade Ocean Blue", category: "Clay & Pomade", price: 75000, desc: "Pomade segar aroma ocean blue dengan finishing matte.", image: "/products/PomadeOceanBlue.png" },
-  { id: 5, name: "Minion Pomade Sunkist", category: "Clay & Pomade", price: 75000, desc: "Pomade aroma jeruk sunkist, wangi maskulin tahan lama.", image: "/products/PomadeSunkist.png" },
+const STATIC_PRODUCTS: Product[] = [
+  { id: "0", name: "Minion Curly Cream",     category: "Curl Care",     price: 75000, desc: "Cream pelembap untuk mendefinisikan curl & mengurangi frizz.", image: "/products/CurlyCream.png",    bestSeller: true },
+  { id: "1", name: "Minion Hair Powder",      category: "Styling Powder",price: 65000, desc: "Texturize alami untuk rambut bervolume.",                       image: "/products/HairPowder.png" },
+  { id: "2", name: "Minion Pomade Vanilla",   category: "Clay & Pomade", price: 75000, desc: "Pomade wangi vanilla dengan hold kuat tanpa lengket.",           image: "/products/PomadeVanilla.png" },
+  { id: "3", name: "Minion Pomade Rose",      category: "Clay & Pomade", price: 75000, desc: "Pomade aroma rose lembut, mudah dibilas, tahan lama.",           image: "/products/PomadeRose.png" },
+  { id: "4", name: "Minion Pomade Ocean Blue",category: "Clay & Pomade", price: 75000, desc: "Pomade segar aroma ocean blue dengan finishing matte.",          image: "/products/PomadeOceanBlue.png" },
+  { id: "5", name: "Minion Pomade Sunkist",   category: "Clay & Pomade", price: 75000, desc: "Pomade aroma jeruk sunkist, wangi maskulin tahan lama.",         image: "/products/PomadeSunkist.png" },
 ];
 
 const formatRupiah = (num: number) =>
@@ -160,19 +154,49 @@ function ProductCard({ product, onAdd, inCart }: { product: Product; onAdd: (p: 
 }
 
 export default function ProductsPageClient() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [categories, setCategories] = useState<string[]>(["Semua"]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/products`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: Record<string, unknown>[] = json?.data ?? [];
+        const mapped: Product[] = data.map((p) => ({
+          id:         String(p.id),
+          name:       String(p.name),
+          category:   String(p.category_label ?? p.category ?? "Lainnya"),
+          price:      Number(p.price),
+          desc:       String(p.description ?? ""),
+          image:      String(p.image_url ?? ""),
+          bestSeller: Boolean(p.best_seller),
+        }));
+        setProducts(mapped);
+        setCategories(["Semua", ...Array.from(new Set(mapped.map((p) => p.category)))]);
+      })
+      // Backend down → tampilkan katalog cadangan biar nggak kosong
+      .catch(() => {
+        setProducts(STATIC_PRODUCTS);
+        setCategories(["Semua", "Clay & Pomade", "Curl Care", "Styling Powder"]);
+      })
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const isEmpty = loaded && products.length === 0;
+
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"default" | "low" | "high">("default");
   const [page, setPage] = useState(1);
-  // Keranjang: { [productId]: qty }
-  const [cart, setCart] = useState<Record<number, number>>({});
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [cartOpen, setCartOpen] = useState(false);
 
   const addToCart = (p: Product) => {
     setCart((c) => ({ ...c, [p.id]: (c[p.id] ?? 0) + 1 }));
     setCartOpen(true);
   };
-  const changeQty = (id: number, delta: number) =>
+  const changeQty = (id: string, delta: number) =>
     setCart((c) => {
       const next = (c[id] ?? 0) + delta;
       if (next <= 0) {
@@ -181,16 +205,16 @@ export default function ProductsPageClient() {
       }
       return { ...c, [id]: next };
     });
-  const removeFromCart = (id: number) =>
+  const removeFromCart = (id: string) =>
     setCart((c) => {
       const { [id]: _, ...rest } = c;
       return rest;
     });
 
   const cartItems = Object.entries(cart).map(([id, qty]) => ({
-    product: products.find((p) => p.id === Number(id))!,
+    product: products.find((p) => p.id === id)!,
     qty,
-  }));
+  })).filter((i) => i.product);
   const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
   const cartTotal = cartItems.reduce((sum, i) => sum + i.product.price * i.qty, 0);
 
@@ -330,7 +354,13 @@ export default function ProductsPageClient() {
           </div>
 
           {/* Grid */}
-          {gridProducts.length === 0 ? (
+          {isEmpty ? (
+            <EmptyState
+              emoji="🧴"
+              title="Raknya lagi direstock"
+              subtitle="Produk grooming andalan kami lagi dalam perjalanan. Cek lagi nanti ya!"
+            />
+          ) : gridProducts.length === 0 ? (
             <p className="text-gray-400 text-sm py-16 text-center">
               {isSearching ? `Tidak ada produk yang cocok dengan "${search.trim()}".` : "Tidak ada produk di kategori ini."}
             </p>
@@ -426,14 +456,14 @@ export default function ProductsPageClient() {
                         <h4 className="text-sm font-bold text-[#1a1a1a] truncate">{product.name}</h4>
                         <p className="text-xs text-gray-400">{formatRupiah(product.price)}</p>
                         <div className="flex items-center gap-2 mt-1.5">
-                          <button onClick={() => changeQty(product.id, -1)} aria-label="Kurangi" className="grid place-items-center w-6 h-6 rounded-md border border-gray-200 text-gray-600 hover:border-gray-400">
+                          <button onClick={() => changeQty(String(product.id), -1)} aria-label="Kurangi" className="grid place-items-center w-6 h-6 rounded-md border border-gray-200 text-gray-600 hover:border-gray-400">
                             <MinusIcon className="w-3 h-3" />
                           </button>
                           <span className="text-sm font-bold text-[#1a1a1a] w-5 text-center">{qty}</span>
-                          <button onClick={() => changeQty(product.id, 1)} aria-label="Tambah" className="grid place-items-center w-6 h-6 rounded-md border border-gray-200 text-gray-600 hover:border-gray-400">
+                          <button onClick={() => changeQty(String(product.id), 1)} aria-label="Tambah" className="grid place-items-center w-6 h-6 rounded-md border border-gray-200 text-gray-600 hover:border-gray-400">
                             <PlusIcon className="w-3 h-3" />
                           </button>
-                          <button onClick={() => removeFromCart(product.id)} className="ml-auto text-xs text-red-400 hover:text-red-600 font-medium">Hapus</button>
+                          <button onClick={() => removeFromCart(String(product.id))} className="ml-auto text-xs text-red-400 hover:text-red-600 font-medium">Hapus</button>
                         </div>
                       </div>
                       <span className="text-sm font-extrabold text-[#1a1a1a] whitespace-nowrap">{formatRupiah(product.price * qty)}</span>

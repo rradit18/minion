@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import EmptyState from "@/components/ui/EmptyState";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const IconScissors = () => (
@@ -46,14 +47,26 @@ interface Service {
   popular?: boolean;
 }
 
-const services: Service[] = [
-  { icon: <IconScissors />, name: "Potong Rambut", desc: "Konsultasi gaya + potongan presisi sesuai bentuk wajah.", duration: "30 mnt", accent: "#178E81" },
-  { icon: <IconDroplet />, name: "Cut + Wash", desc: "Potong rambut plus keramas & pijat kepala relaksasi.", duration: "45 mnt", accent: "#7B5EA7" },
-  { icon: <IconRazor />, name: "Cukur Jenggot", desc: "Rapikan & bentuk jenggot dengan hot towel treatment.", duration: "20 mnt", accent: "#E76F51" },
-  { icon: <IconStar />, name: "Complete Package", desc: "Cukur + keramas + jenggot + hot towel + styling lengkap.", duration: "60 mnt", accent: "#F9C74F", popular: true },
-  { icon: <IconPalette />, name: "Hair Coloring", desc: "Pewarnaan rambut profesional, warna tahan lama & merata.", duration: "90 mnt", accent: "#0EA5E9" },
-  { icon: <IconSmile />, name: "Kids Haircut", desc: "Potongan ramah anak — sabar, nyaman, dan tetap rapi.", duration: "25 mnt", accent: "#EC4899" },
+const STATIC_SERVICES: Service[] = [
+  { icon: <IconScissors />, name: "Potong Rambut",   desc: "Konsultasi gaya + potongan presisi sesuai bentuk wajah.",   duration: "30 mnt", accent: "#178E81" },
+  { icon: <IconDroplet />,  name: "Cut + Wash",      desc: "Potong rambut plus keramas & pijat kepala relaksasi.",       duration: "45 mnt", accent: "#7B5EA7" },
+  { icon: <IconRazor />,   name: "Cukur Jenggot",   desc: "Rapikan & bentuk jenggot dengan hot towel treatment.",       duration: "20 mnt", accent: "#E76F51" },
+  { icon: <IconStar />,    name: "Complete Package", desc: "Cukur + keramas + jenggot + hot towel + styling lengkap.",  duration: "60 mnt", accent: "#F9C74F", popular: true },
+  { icon: <IconPalette />, name: "Hair Coloring",    desc: "Pewarnaan rambut profesional, warna tahan lama & merata.",  duration: "90 mnt", accent: "#0EA5E9" },
+  { icon: <IconSmile />,   name: "Kids Haircut",     desc: "Potongan ramah anak — sabar, nyaman, dan tetap rapi.",      duration: "25 mnt", accent: "#EC4899" },
 ];
+
+const ACCENTS = ["#178E81", "#7B5EA7", "#E76F51", "#F9C74F", "#0EA5E9", "#EC4899"];
+
+function iconForService(name: string): React.ReactNode {
+  const n = name.toLowerCase();
+  if (n.includes("jenggot") || n.includes("beard")) return <IconRazor />;
+  if (n.includes("wash") || n.includes("keramas"))  return <IconDroplet />;
+  if (n.includes("warna") || n.includes("color"))   return <IconPalette />;
+  if (n.includes("kids") || n.includes("anak"))     return <IconSmile />;
+  if (n.includes("complete") || n.includes("paket") || n.includes("package")) return <IconStar />;
+  return <IconScissors />;
+}
 
 function ServiceCard({ s }: { s: Service }) {
   return (
@@ -87,6 +100,30 @@ export default function ServiceSection() {
   const trackRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const drag = useRef({ active: false, startX: 0, startScroll: 0 });
+  // null = masih loading; [] = sudah load tapi kosong → empty state
+  const [services, setServices] = useState<Service[] | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/services`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: Record<string, unknown>[] = json?.data ?? [];
+        setServices(
+          data.map((s, i) => ({
+            icon:     iconForService(String(s.name)),
+            name:     String(s.name),
+            desc:     String(s.description ?? ""),
+            duration: `${s.duration_minutes ?? 30} mnt`,
+            accent:   ACCENTS[i % ACCENTS.length],
+          }))
+        );
+      })
+      // Backend down → pakai daftar layanan cadangan
+      .catch(() => setServices(STATIC_SERVICES));
+  }, []);
+
+  const list = services ?? [];
+  const isEmpty = services !== null && services.length === 0;
 
   // Auto-geser ke kiri secara infinite (konten diduplikasi agar mulus)
   useEffect(() => {
@@ -146,20 +183,28 @@ export default function ServiceSection() {
       </div>
 
       {/* Marquee — auto geser ke kiri, bisa di-drag */}
-      <div
-        ref={trackRef}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={endDrag}
-        style={{ touchAction: "pan-y" }}
-        className="no-scrollbar flex gap-5 overflow-x-auto px-6 py-3 cursor-grab active:cursor-grabbing select-none"
-      >
-        {[...services, ...services].map((s, i) => (
-          <ServiceCard key={i} s={s} />
-        ))}
-      </div>
+      {isEmpty ? (
+        <EmptyState
+          emoji="✂️"
+          title="Menu layanan lagi digunting-gunting"
+          subtitle="Daftar layanan andalan kami segera tayang. Sabar ya, biar makin rapi!"
+        />
+      ) : (
+        <div
+          ref={trackRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onPointerLeave={endDrag}
+          style={{ touchAction: "pan-y" }}
+          className="no-scrollbar flex gap-5 overflow-x-auto px-6 py-3 cursor-grab active:cursor-grabbing select-none"
+        >
+          {[...list, ...list].map((s, i) => (
+            <ServiceCard key={i} s={s} />
+          ))}
+        </div>
+      )}
 
       {/* Footer link */}
       <div className="max-w-7xl mx-auto px-6 mt-8 text-center">

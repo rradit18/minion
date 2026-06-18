@@ -1,26 +1,47 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { fetchBranches, fetchBarbers, fetchBarbersByBranch, fetchServices, fetchSlots, fetchPromoByCode} from "@/src/lib/mockData";
-import { saveBooking, getBookingPrefill, clearBookingPrefill, getActivePromo, clearActivePromo} from "@/src/lib/localStorage";
-import type { Branch, Barber, Service } from "@/src/lib/mockData";
-import BarberOrbit from "@/components/booking/BarberOrbit";
+import { apiFetch, firstError } from "@/src/lib/auth";
+import { getSession } from "@/src/lib/localStorage";
 import DatePicker from "@/components/booking/DatePicker";
 
-const PAYMENT_WINDOW = 10 * 60; // detik — slot ditahan 10 menit
+// ─── Tipe dari API ──────────────────────────────────────────────────────────
+interface BranchT {
+  id: string; name: string; address: string; city: string;
+  opening_time: string; closing_time: string; image_url: string | null;
+}
+interface BarberT {
+  id: string; name: string; slug: string; photo_url: string | null;
+  signature_color: string | null; has_shift_today: boolean;
+}
+interface ServiceT {
+  id: string; name: string; description: string | null; duration_minutes: number; price: number;
+}
+interface SlotT { time: string; datetime: string }
+interface BankAccount { bank_name: string; account_number: string; account_holder: string }
+interface PayInfo {
+  total_price: number; qris_image_url: string | null;
+  bank_accounts: BankAccount[]; remaining_seconds: number; status: string;
+}
 
-// ─── Step indicator ───────────────────────────────────────────────────────────
 const STEPS = ["Cabang", "Barber", "Layanan", "Jadwal", "Data Diri", "Konfirmasi", "Pembayaran"];
-// Saat mengikuti barber, langkah "Barber" dilewati (barber sudah dipilih dari halaman detail)
-const BARBER_STEPS = STEPS.filter((s) => s !== "Barber");
 
-function StepBar({ steps, current }: { steps: string[]; current: number }) {
+const COLOR_RING: Record<string, string> = {
+  teal: "ring-teal-400", coral: "ring-orange-400", violet: "ring-purple-400", yellow: "ring-yellow-400",
+};
+
+const fmt = (n: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
+const hhmm = (t?: string | null) => (t ? String(t).slice(0, 5) : "");
+
+// ─── Step indicator ─────────────────────────────────────────────────────────
+function StepBar({ current }: { current: number }) {
   return (
     <div className="mb-8 flex justify-center">
       <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar max-w-full px-1">
-        {steps.map((label, i) => (
+        {STEPS.map((label, i) => (
           <div key={label} className="flex items-center gap-1 sm:gap-1.5">
             <div className="flex flex-col items-center">
               <div className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold transition-all ${i < current ? "bg-[#178E81] text-white" : i === current ? "bg-[#F9C74F] text-black" : "bg-gray-200 text-gray-400"}`}>
@@ -28,7 +49,7 @@ function StepBar({ steps, current }: { steps: string[]; current: number }) {
               </div>
               <span className={`text-[9px] mt-1 hidden sm:block whitespace-nowrap ${i === current ? "text-[#1a1a1a] font-semibold" : "text-gray-400"}`}>{label}</span>
             </div>
-            {i < steps.length - 1 && <div className={`h-0.5 w-4 sm:w-6 shrink-0 sm:mb-4 ${i < current ? "bg-[#178E81]" : "bg-gray-200"}`} />}
+            {i < STEPS.length - 1 && <div className={`h-0.5 w-4 sm:w-6 shrink-0 sm:mb-4 ${i < current ? "bg-[#178E81]" : "bg-gray-200"}`} />}
           </div>
         ))}
       </div>
@@ -36,203 +57,250 @@ function StepBar({ steps, current }: { steps: string[]; current: number }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Main ───────────────────────────────────────────────────────────────────
 export default function BookingClient() {
   const router = useRouter();
-  const branches = fetchBranches();
-  const allSlots = fetchSlots();
+  const session = typeof window !== "undefined" ? getSession() : null;
 
-  const [step, setStep]             = useState(0);
-  const [branch, setBranch]         = useState<Branch | null>(null);
-  const [barber, setBarber]         = useState<Barber | null>(null);
-  // Mode "ikuti barber": barber dipilih lebih dulu lewat CTA di halaman detail barberman
-  const [byBarber, setByBarber]     = useState(false);
-  const [service, setService]       = useState<Service | null>(null);
-  const [date, setDate]             = useState("");
-  const [time, setTime]             = useState("");
-  const [promoCode, setPromoCode]   = useState("");
-  const [promoMsg, setPromoMsg]     = useState("");
-  const [discount, setDiscount]     = useState(0);
-  const [form, setForm]             = useState({ name: "", phone: "", notes: "" });
-  const isPhoneValid                = form.phone.length >= 11 && form.phone.length <= 20;
+  const [step, setStep] = useState(0);
+
+  // Data master
+  const [branches, setBranches] = useState<BranchT[] | null>(null);
+  const [barbers, setBarbers]   = useState<BarberT[]>([]);
+  const [services, setServices] = useState<ServiceT[]>([]);
+
+  // Pilihan
+  const [branch, setBranch]   = useState<BranchT | null>(null);
+  const [barber, setBarber]   = useState<BarberT | null>(null);
+  const [service, setService] = useState<ServiceT | null>(null);
+  const [date, setDate]       = useState("");
+  const [time, setTime]       = useState("");
+  const [preselectBarber, setPreselectBarber] = useState<string | null>(null);
+
+  const [slots, setSlots] = useState<SlotT[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const [serviceQuery, setServiceQuery] = useState("");
-  // Pembayaran
-  const [payMethod, setPayMethod]   = useState<"qris">("qris");
-  const [proofName, setProofName]   = useState("");
-  const [secondsLeft, setSecondsLeft] = useState(PAYMENT_WINDOW);
-  const [verifying, setVerifying]   = useState(false);
-  const [verifyError, setVerifyError] = useState(false);
 
-  // Pre-fill dari sessionStorage + query param ?barber= (mode ikuti barber)
+  const [form, setForm] = useState({ name: "", phone: "", notes: "" });
+  const isPhoneValid = form.phone.length >= 10 && form.phone.length <= 20;
+
+  // Hasil booking + pembayaran
+  const [bookingNo, setBookingNo] = useState<string | null>(null);
+  const [payInfo, setPayInfo]     = useState<PayInfo | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [submitting, setSubmitting]   = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  // Upload bukti
+  const [proofFile, setProofFile]   = useState<File | null>(null);
+  const [uploading, setUploading]   = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  // ── Load branches + prefill ──────────────────────────────────────────────
   useEffect(() => {
-    const prefill = getBookingPrefill();
-    if (prefill?.service_id) {
-      const svc = fetchServices().find((s) => s.id === prefill.service_id);
-      if (svc) setService(svc);
-    }
-    const promoFromSession = getActivePromo();
-    if (promoFromSession) setPromoCode(promoFromSession);
-    clearBookingPrefill();
-    clearActivePromo();
-
-    // Mode ikuti barber: ?barber=<slug|id>. Slug = nama depan huruf kecil (mis. "hendra")
+    apiFetch<BranchT[]>("/branches").then((r) => setBranches(r.data ?? []));
     const key = new URLSearchParams(window.location.search).get("barber");
-    if (key) {
-      const k = key.toLowerCase();
-      const b = fetchBarbers().find(
-        (x) => x.id === k || x.name.split(" ")[0].toLowerCase() === k
-      );
-      if (b) { setBarber(b); setByBarber(true); }
-    }
+    if (key) setPreselectBarber(key.toLowerCase());
+    const s = getSession();
+    if (s) setForm((f) => ({ ...f, name: s.name, phone: (s.phone ?? "").replace(/\D/g, "") }));
   }, []);
 
-  // Countdown pembayaran: reset & mulai saat masuk langkah pembayaran
+  // ── Saat cabang dipilih: muat barber & layanan cabang ──────────────────────
+  const loadBranchData = useCallback(async (b: BranchT) => {
+    setBarbers([]); setServices([]);
+    const [bz, sv] = await Promise.all([
+      apiFetch<BarberT[]>(`/branches/${b.id}/barbers`),
+      apiFetch<ServiceT[]>(`/branches/${b.id}/services`),
+    ]);
+    const barberList = bz.data ?? [];
+    setBarbers(barberList);
+    setServices(sv.data ?? []);
+    // Pra-pilih barber dari ?barber=slug bila ada di cabang ini
+    if (preselectBarber) {
+      const match = barberList.find(
+        (x) => x.slug === preselectBarber || x.name.split(" ")[0].toLowerCase() === preselectBarber,
+      );
+      if (match) setBarber(match);
+    }
+  }, [preselectBarber]);
+
+  const selectBranch = (b: BranchT) => {
+    setBranch(b); setBarber(null); setService(null); setDate(""); setTime("");
+    loadBranchData(b);
+  };
+
+  // ── Muat slot saat barber + layanan + tanggal siap ────────────────────────
   useEffect(() => {
-    if (step !== 6) return;
-    setSecondsLeft(PAYMENT_WINDOW);
-    const t = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) { clearInterval(t); return 0; }
-        return s - 1;
-      });
-    }, 1000);
+    if (step !== 3 || !barber || !service || !date) { setSlots([]); return; }
+    setSlotsLoading(true); setTime("");
+    const params = new URLSearchParams({ barber_id: barber.id, date });
+    params.append("service_ids[]", service.id);
+    apiFetch<SlotT[]>(`/availability?${params.toString()}`)
+      .then((r) => {
+        // Buang slot yang waktunya sudah lewat (mis. jam pagi di hari yang sama)
+        const now = Date.now();
+        const list = (r.ok ? (r.data ?? []) : []).filter((s) => new Date(s.datetime).getTime() > now + 5 * 60_000);
+        setSlots(list);
+      })
+      .finally(() => setSlotsLoading(false));
+  }, [step, barber, service, date]);
+
+  // ── Countdown pembayaran (sumber waktu = server) ──────────────────────────
+  useEffect(() => {
+    if (step !== 6 || secondsLeft <= 0) return;
+    const t = setInterval(() => setSecondsLeft((s) => (s <= 1 ? 0 : s - 1)), 1000);
     return () => clearInterval(t);
-  }, [step]);
+  }, [step, secondsLeft]);
 
-  const barbers  = branch ? fetchBarbersByBranch(branch.id) : [];
-  const services = fetchServices();
-  const price    = service && branch ? service.prices[branch.id] ?? 0 : 0;
-  const final    = Math.max(0, price - discount);
-
-  // Mode ikuti barber: cabang dibatasi hanya yang punya barber tsb; langkah "Barber" dilewati
-  const visibleBranches = byBarber && barber
-    ? branches.filter((b) => barber.branch_ids.includes(b.id))
-    : branches;
-  const stepLabels = byBarber ? BARBER_STEPS : STEPS;
-  // Petakan index numerik internal (step) ke posisi pada label yang tampil
-  const displayStep = byBarber ? (step === 0 ? 0 : step - 1) : step;
-
-  // Rentang tanggal yang bisa dipilih: besok s/d 14 hari ke depan
-  const minDate = new Date(); minDate.setDate(minDate.getDate() + 1);
+  const minDate = new Date();
   const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 14);
 
-  const bookedSlots = barber ? (allSlots.booked_mock[barber.id as keyof typeof allSlots.booked_mock] ?? []) : [];
-  const availableSlots = allSlots.template.filter((s) => !bookedSlots.includes(s.time));
+  // ── Buat booking → pindah ke pembayaran ───────────────────────────────────
+  const confirmBooking = async () => {
+    if (!branch || !barber || !service) return;
+    const slot = slots.find((s) => s.time === time);
+    if (!slot) { setSubmitError("Slot tidak valid, pilih ulang jadwal."); setStep(3); return; }
 
-  const applyPromo = () => {
-    const promo = fetchPromoByCode(promoCode);
-    if (!promo) { setPromoMsg("Kode promo tidak valid."); setDiscount(0); return; }
-    if (price < promo.min_transaction) { setPromoMsg(`Min. transaksi ${promo.min_transaction.toLocaleString()}`); return; }
-    const disc = promo.type === "percentage" ? Math.min(Math.round(price * promo.value / 100), promo.max_discount) : promo.value;
-    setDiscount(disc);
-    setPromoMsg(`✓ Hemat Rp ${disc.toLocaleString()}`);
+    setSubmitting(true); setSubmitError("");
+    const res = await apiFetch<{ booking_number: string }>("/bookings", {
+      method: "POST",
+      body: JSON.stringify({
+        branch_id: branch.id,
+        barber_id: barber.id,
+        service_ids: [service.id],
+        scheduled_at: slot.datetime,
+        customer_name: form.name,
+        customer_phone: form.phone,
+        notes: form.notes || undefined,
+      }),
+    });
+    setSubmitting(false);
+
+    if (!res.ok || !res.data?.booking_number) {
+      setSubmitError(firstError(res));
+      return;
+    }
+    const no = res.data.booking_number;
+    setBookingNo(no);
+    // Ambil info pembayaran (QRIS, rekening, sisa waktu dari server)
+    const pay = await apiFetch<PayInfo>(`/bookings/${no}/payment`);
+    if (pay.ok && pay.data) {
+      setPayInfo(pay.data);
+      setSecondsLeft(pay.data.remaining_seconds);
+    }
+    setStep(6);
   };
 
-  const confirmBooking = () => {
-    const booking = {
-      id: `BK-${Date.now()}`,
-      branch_id: branch!.id, branch_name: branch!.name,
-      barber_id: barber!.id, barber_name: barber!.name,
-      service_id: service!.id, service_name: service!.name,
-      date, time,
-      customer_name: form.name, customer_phone: `+62${form.phone}`, customer_email: "",
-      price, promo_code: discount > 0 ? promoCode : undefined,
-      discount, final_price: final,
-      status: "Upcoming" as const,
-      created_at: new Date().toISOString(),
-    };
-    saveBooking(booking);
-    router.push("/booking/sukses");
+  // ── Upload bukti pembayaran ───────────────────────────────────────────────
+  const submitProof = async () => {
+    if (!bookingNo || !proofFile) return;
+    setUploading(true); setUploadError("");
+    const fd = new FormData();
+    fd.append("payment_method", "qris_external");
+    fd.append("proof", proofFile);
+    const res = await apiFetch<{ status: string }>(`/bookings/${bookingNo}/payment-proof`, {
+      method: "POST",
+      body: fd,
+    });
+    setUploading(false);
+    if (!res.ok) { setUploadError(firstError(res)); return; }
+    // Sukses → simpan no booking untuk halaman status
+    sessionStorage.setItem("last_booking_no", bookingNo);
+    router.push(`/booking/sukses?no=${encodeURIComponent(bookingNo)}`);
   };
 
-  const resetBooking = () => {
-    setStep(0); setPayMethod("qris"); setProofName(""); setSecondsLeft(PAYMENT_WINDOW); setVerifying(false); setVerifyError(false);
-  };
-
-  const payExpired = secondsLeft <= 0;
+  const payExpired = step === 6 && secondsLeft <= 0;
   const mmss = `${String(Math.floor(secondsLeft / 60)).padStart(2, "0")}:${String(secondsLeft % 60).padStart(2, "0")}`;
 
-  const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
+  const filteredServices = (() => {
+    const q = serviceQuery.trim().toLowerCase();
+    return services.filter((s) => !q || s.name.toLowerCase().includes(q) || (s.description ?? "").toLowerCase().includes(q));
+  })();
 
   return (
     <div className="relative min-h-screen py-10 px-4 sm:px-6">
-      {/* ── Background pattern ── */}
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#F5EFE4]" />
-      <div
-        aria-hidden
-        className="fixed inset-0 -z-10 bg-[url('/ui/pattern.png')] bg-repeat opacity-[0.45]"
+      <div aria-hidden className="fixed inset-0 -z-10 bg-[url('/ui/pattern.png')] bg-repeat opacity-[0.45]"
         style={{
           WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
           maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
-        }}
-      />
+        }} />
 
       <div className="max-w-2xl mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors mb-4"
-        >
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors mb-4">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
           Kembali ke Beranda
         </Link>
         <h1 className="text-2xl sm:text-3xl font-black text-[#1a1a1a] text-center mb-2">Booking Sekarang</h1>
-        <p className="text-gray-500 text-sm text-center mb-8 px-4">
-          {byBarber && barber
-            ? <>Booking bareng <span className="font-bold text-[#1a1a1a]">{barber.name}</span> — selesaikan {stepLabels.length} langkah</>
-            : <>Selesaikan {stepLabels.length} langkah untuk konfirmasi booking kamu</>}
-        </p>
-        <StepBar steps={stepLabels} current={displayStep} />
+        <p className="text-gray-500 text-sm text-center mb-2 px-4">Selesaikan {STEPS.length} langkah untuk konfirmasi booking kamu</p>
+        {!session && (
+          <p className="text-gray-400 text-xs text-center mb-6 px-4">
+            Booking sebagai tamu — atau <Link href="/login" className="text-[#178E81] font-bold hover:underline">login</Link> agar tersimpan di riwayat.
+          </p>
+        )}
+        {session && <div className="mb-6" />}
+        <StepBar current={step} />
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 md:p-8">
 
-          {/* Step 0: Pilih Cabang */}
+          {/* Step 0: Cabang */}
           {step === 0 && (
             <div>
-              {/* Banner barber yang diikuti (mode ikuti barber) */}
-              {byBarber && barber && (
-                <div className="flex items-center gap-3 bg-[#F5EFE4] rounded-xl p-3 mb-5">
-                  <span className={`relative grid place-items-center w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ${barber.color}`}>
-                    <span className="text-white font-black text-lg">{barber.name[0]}</span>
-                    <img src={`/${barber.name.split(" ")[0].toLowerCase()}.png`} alt={barber.name}
-                      className="absolute w-11 h-11 rounded-full object-cover object-top"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#178E81]">Kamu mengikuti barber</p>
-                    <p className="font-black text-[#1a1a1a] leading-tight truncate">{barber.name} <span className="text-gray-400 font-semibold">· {barber.nickname}</span></p>
-                  </div>
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pilih Cabang</h2>
+              <p className="text-xs text-gray-400 mb-4">Tentukan lokasi yang paling dekat denganmu.</p>
+              {branches === null ? (
+                <p className="text-gray-400 text-sm py-8 text-center">Memuat cabang…</p>
+              ) : branches.length === 0 ? (
+                <p className="text-gray-400 text-sm py-8 text-center">📍 Belum ada cabang tersedia.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                  {branches.map((b) => (
+                    <button key={b.id} onClick={() => selectBranch(b)}
+                      className={`p-4 rounded-xl border-2 text-left transition-all ${branch?.id === b.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
+                      <p className="font-bold text-[#1a1a1a]">{b.name}</p>
+                      <p className="text-xs text-gray-500 mt-1">{b.address}</p>
+                      <p className="text-xs text-gray-400 mt-1">⏰ {hhmm(b.opening_time)} – {hhmm(b.closing_time)}</p>
+                    </button>
+                  ))}
                 </div>
               )}
-              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pilih Cabang</h2>
-              {byBarber && barber && (
-                <p className="text-xs text-gray-400 mb-4">Hanya menampilkan cabang tempat {barber.name.split(" ")[0]} bertugas.</p>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                {visibleBranches.map((b) => (
-                  <button key={b.id} onClick={() => setBranch(b)}
-                    className={`p-4 rounded-xl border-2 text-left transition-all ${branch?.id === b.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
-                    <p className="font-bold text-[#1a1a1a]">{b.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{b.address}</p>
-                    <p className="text-xs text-gray-400 mt-1">⏰ {b.hours}</p>
-                    <p className="text-xs text-[#178E81] font-semibold mt-1">⭐ {b.rating} ({b.total_reviews} review)</p>
-                  </button>
-                ))}
-              </div>
-              <button disabled={!branch} onClick={() => setStep(byBarber ? 2 : 1)}
+              <button disabled={!branch} onClick={() => setStep(1)}
                 className="mt-6 w-full bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">
                 Lanjut →
               </button>
             </div>
           )}
 
-          {/* Step 1: Pilih Barber — character select orbit */}
+          {/* Step 1: Barber */}
           {step === 1 && (
             <div>
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pilih Barber</h2>
-              <p className="text-xs text-gray-400 mb-5">Geser atau ketuk avatar untuk memilih maestro-mu.</p>
-              <BarberOrbit barbers={barbers} value={barber} onChange={setBarber} />
+              <p className="text-xs text-gray-400 mb-4">Pilih maestro yang akan menangani kamu.</p>
+              {barbers.length === 0 ? (
+                <p className="text-gray-400 text-sm py-8 text-center">💈 Belum ada barber di cabang ini.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {barbers.map((b) => {
+                    const selected = barber?.id === b.id;
+                    return (
+                      <button key={b.id} onClick={() => setBarber(b)}
+                        className={`p-3 rounded-xl border-2 flex flex-col items-center text-center transition-all ${selected ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
+                        <span className={`relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 ring-2 ${COLOR_RING[b.signature_color ?? ""] ?? "ring-gray-200"} ${selected ? "ring-offset-2" : ""}`}>
+                          <img src={b.photo_url ?? `/barbers/${b.slug}.png`} alt={b.name}
+                            className="w-full h-full object-cover object-top"
+                            onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
+                        </span>
+                        <p className="font-bold text-[#1a1a1a] text-sm mt-2 leading-tight">{b.name}</p>
+                        <span className={`text-[10px] mt-1 font-semibold ${b.has_shift_today ? "text-[#178E81]" : "text-gray-400"}`}>
+                          {b.has_shift_today ? "● Bertugas hari ini" : "Cek jadwal"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               <div className="flex gap-3 mt-7">
                 <button onClick={() => setStep(0)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
                 <button disabled={!barber} onClick={() => setStep(2)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
@@ -240,80 +308,70 @@ export default function BookingClient() {
             </div>
           )}
 
-          {/* Step 2: Pilih Layanan */}
-          {step === 2 && (() => {
-            const q = serviceQuery.trim().toLowerCase();
-            const filteredServices = services.filter(
-              (s) => !q || s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)
-            );
-            return (
-              <div>
-                <h2 className="text-xl font-black text-[#1a1a1a] mb-4">Pilih Layanan</h2>
-
-                {/* Search */}
-                <div className="relative mb-3">
-                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.3-4.3" />
-                  </svg>
-                  <input
-                    type="text"
-                    value={serviceQuery}
-                    onChange={(e) => setServiceQuery(e.target.value)}
-                    placeholder="Cari layanan..."
-                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl pl-9 pr-3 py-2.5 text-sm text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors"
-                  />
-                </div>
-
-                {/* List (scrollable) */}
-                <div className="max-h-[300px] overflow-y-auto pr-1 space-y-2 [scrollbar-width:thin]">
-                  {filteredServices.length === 0 ? (
-                    <p className="text-gray-400 text-sm py-8 text-center">Layanan tidak ditemukan.</p>
-                  ) : (
-                    filteredServices.map((s) => (
-                      <button key={s.id} onClick={() => setService(s)}
-                        className={`w-full p-3 rounded-xl border-2 text-left transition-all ${service?.id === s.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="font-bold text-[#1a1a1a] text-sm leading-tight">{s.name}</p>
-                            <p className="text-xs text-gray-500 leading-snug line-clamp-2 mt-0.5">{s.description}</p>
-                            <p className="text-[11px] text-gray-400 mt-1">{s.duration_minutes} menit</p>
-                          </div>
-                          <p className="text-[#1a1a1a] font-extrabold text-sm flex-shrink-0">{fmt(s.prices[branch!.id] ?? 0)}</p>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-
-                <div className="flex gap-3 mt-6">
-                  <button onClick={() => setStep(byBarber ? 0 : 1)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
-                  <button disabled={!service} onClick={() => setStep(3)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
-                </div>
+          {/* Step 2: Layanan */}
+          {step === 2 && (
+            <div>
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-4">Pilih Layanan</h2>
+              <div className="relative mb-3">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.3-4.3" />
+                </svg>
+                <input type="text" value={serviceQuery} onChange={(e) => setServiceQuery(e.target.value)} placeholder="Cari layanan..."
+                  className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl pl-9 pr-3 py-2.5 text-sm text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors" />
               </div>
-            );
-          })()}
+              <div className="max-h-[300px] overflow-y-auto pr-1 space-y-2 [scrollbar-width:thin]">
+                {services.length === 0 ? (
+                  <p className="text-gray-400 text-sm py-8 text-center">✂️ Belum ada layanan di cabang ini.</p>
+                ) : filteredServices.length === 0 ? (
+                  <p className="text-gray-400 text-sm py-8 text-center">Layanan tidak ditemukan.</p>
+                ) : (
+                  filteredServices.map((s) => (
+                    <button key={s.id} onClick={() => setService(s)}
+                      className={`w-full p-3 rounded-xl border-2 text-left transition-all ${service?.id === s.id ? "border-[#F9C74F] bg-yellow-50" : "border-gray-200 hover:border-yellow-300"}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-[#1a1a1a] text-sm leading-tight">{s.name}</p>
+                          {s.description && <p className="text-xs text-gray-500 leading-snug line-clamp-2 mt-0.5">{s.description}</p>}
+                          <p className="text-[11px] text-gray-400 mt-1">{s.duration_minutes} menit</p>
+                        </div>
+                        <p className="text-[#1a1a1a] font-extrabold text-sm flex-shrink-0">{fmt(s.price)}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
+                <button disabled={!service} onClick={() => setStep(3)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-yellow-400 transition-colors">Lanjut →</button>
+              </div>
+            </div>
+          )}
 
-          {/* Step 3: Pilih Jadwal */}
+          {/* Step 3: Jadwal */}
           {step === 3 && (
             <div>
               <h2 className="text-xl font-black text-[#1a1a1a] mb-5">Pilih Jadwal</h2>
-              {/* Tanggal */}
               <p className="text-sm font-bold text-gray-700 mb-2">Tanggal</p>
               <div className="mb-4">
                 <DatePicker value={date} onChange={setDate} minDate={minDate} maxDate={maxDate} />
               </div>
-              {/* Waktu */}
               {date && (
                 <>
                   <p className="text-sm font-bold text-gray-700 mb-2">Waktu</p>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {availableSlots.map((s) => (
-                      <button key={s.time} onClick={() => setTime(s.time)}
-                        className={`py-2 rounded-xl text-xs font-bold border-2 transition-all ${time === s.time ? "border-[#F9C74F] bg-yellow-50 text-[#1a1a1a]" : "border-gray-200 text-gray-600 hover:border-yellow-300"}`}>
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
+                  {slotsLoading ? (
+                    <p className="text-gray-400 text-sm py-4 text-center">Mengecek ketersediaan…</p>
+                  ) : slots.length === 0 ? (
+                    <p className="text-gray-400 text-sm py-4 text-center">😴 Tidak ada slot tersedia di tanggal ini. Coba tanggal lain.</p>
+                  ) : (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {slots.map((s) => (
+                        <button key={s.datetime} onClick={() => setTime(s.time)}
+                          className={`py-2 rounded-xl text-xs font-bold border-2 transition-all ${time === s.time ? "border-[#F9C74F] bg-yellow-50 text-[#1a1a1a]" : "border-gray-200 text-gray-600 hover:border-yellow-300"}`}>
+                          {s.time}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </>
               )}
               <div className="flex gap-3 mt-6">
@@ -328,43 +386,23 @@ export default function BookingClient() {
             <div>
               <h2 className="text-xl font-black text-[#1a1a1a] mb-5">Data Diri</h2>
               <div className="space-y-4">
-                {[
-                  { label: "Nama Lengkap", name: "name", type: "text", placeholder: "John Doe" },
-                ].map((f) => (
-                  <div key={f.name}>
-                    <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">{f.label}</label>
-                    <input type={f.type} placeholder={f.placeholder} value={form[f.name as keyof typeof form]}
-                      onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} required
-                      className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
-                  </div>
-                ))}
+                <div>
+                  <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Nama Lengkap</label>
+                  <input type="text" placeholder="John Doe" value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })} required
+                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
+                </div>
                 <div>
                   <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">No. WhatsApp</label>
-                  <div className="flex">
-                    <span className="bg-gray-50 border-2 border-r-0 border-gray-200 rounded-l-xl px-4 flex items-center text-sm text-gray-500 font-medium">+62</span>
-                    <input type="tel" inputMode="numeric" placeholder="8123456789" maxLength={20} value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 20) })} required
-                      className={`flex-1 bg-gray-50 border-2 border-l-0 rounded-r-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none transition-colors text-sm ${form.phone && !isPhoneValid ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#F9C74F]"}`} />
-                  </div>
-                  {form.phone && !isPhoneValid && (
-                    <p className="text-xs mt-1 font-medium text-red-500">Nomor HP harus terdiri dari 11 - 20 angka.</p>
-                  )}
+                  <input type="tel" inputMode="numeric" placeholder="08123456789" maxLength={20} value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 20) })} required
+                    className={`w-full bg-gray-50 border-2 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none transition-colors text-sm ${form.phone && !isPhoneValid ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#F9C74F]"}`} />
+                  {form.phone && !isPhoneValid && <p className="text-xs mt-1 font-medium text-red-500">Nomor HP harus 10 - 20 angka.</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Catatan (opsional)</label>
                   <textarea rows={3} placeholder="Referensi gaya, permintaan khusus, dll." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm resize-none" />
-                </div>
-                {/* Promo */}
-                <div>
-                  <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Kode Promo</label>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="Masukkan kode promo" value={promoCode}
-                      onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoMsg(""); setDiscount(0); }}
-                      className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm uppercase" />
-                    <button type="button" onClick={applyPromo} className="bg-[#1a1a1a] text-white font-bold px-5 rounded-xl text-sm hover:bg-gray-800 transition-colors">Pakai</button>
-                  </div>
-                  {promoMsg && <p className={`text-xs mt-1 font-medium ${promoMsg.startsWith("✓") ? "text-green-600" : "text-red-500"}`}>{promoMsg}</p>}
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
@@ -382,27 +420,31 @@ export default function BookingClient() {
               <div className="bg-[#F5EFE4] rounded-xl p-5 space-y-3 text-sm">
                 {[
                   ["Cabang", branch?.name],
-                  ["Barber", `${barber?.name} (${barber?.nickname})`],
+                  ["Barber", barber?.name],
                   ["Layanan", service?.name],
-                  ["Tanggal", new Date(date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })],
+                  ["Tanggal", date ? new Date(date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : ""],
                   ["Waktu", time],
                   ["Nama", form.name],
-                  ["WhatsApp", `+62${form.phone}`],
+                  ["WhatsApp", form.phone],
                 ].map(([label, val]) => (
                   <div key={label} className="flex justify-between gap-3">
                     <span className="text-gray-500 flex-shrink-0">{label}</span>
                     <span className="font-semibold text-[#1a1a1a] text-right break-words">{val}</span>
                   </div>
                 ))}
-                <div className="border-t border-gray-300 pt-3 space-y-1">
-                  <div className="flex justify-between"><span className="text-gray-500">Harga</span><span>{fmt(price)}</span></div>
-                  {discount > 0 && <div className="flex justify-between text-green-600"><span>Diskon ({promoCode})</span><span>-{fmt(discount)}</span></div>}
-                  <div className="flex justify-between font-black text-[#1a1a1a] text-base pt-1"><span>Total</span><span className="text-[#F9C74F]">{fmt(final)}</span></div>
+                <div className="border-t border-gray-300 pt-3">
+                  <div className="flex justify-between font-black text-[#1a1a1a] text-base"><span>Total</span><span className="text-[#F9C74F]">{fmt(service?.price ?? 0)}</span></div>
                 </div>
               </div>
+              {submitError && <p className="text-red-500 text-sm mt-3 font-medium">{submitError}</p>}
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep(4)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">← Kembali</button>
-                <button onClick={() => setStep(6)} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors">Lanjut ke Pembayaran →</button>
+                <button onClick={() => setStep(4)} disabled={submitting} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40">← Kembali</button>
+                <button onClick={confirmBooking} disabled={submitting}
+                  className="flex-1 bg-[#178E81] text-white font-bold py-3 rounded-xl hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                  {submitting ? (
+                    <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Memproses...</>
+                  ) : "Buat Booking & Bayar →"}
+                </button>
               </div>
             </div>
           )}
@@ -411,16 +453,16 @@ export default function BookingClient() {
           {step === 6 && (
             <div>
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Pembayaran</h2>
-              <p className="text-gray-500 text-sm mb-5">Bayar dulu untuk mengamankan slot kamu. Booking baru dikonfirmasi setelah pembayaran diverifikasi kasir.</p>
+              <p className="text-gray-500 text-sm mb-2">No. Booking: <span className="font-mono font-bold text-[#178E81]">{bookingNo}</span></p>
+              <p className="text-gray-500 text-sm mb-5">Bayar lalu unggah bukti. Booking dikonfirmasi setelah diverifikasi kasir.</p>
 
-              {/* Countdown */}
               {!payExpired ? (
                 <div className="bg-[#1a1a1a] rounded-xl p-4 mb-5 flex items-center justify-between gap-4">
                   <div>
                     <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Selesaikan dalam</p>
                     <p className="text-[#F9C74F] text-2xl font-black font-mono tabular-nums">{mmss}</p>
                   </div>
-                  <p className="text-gray-400 text-[11px] max-w-[170px] text-right leading-snug">Slot kamu diamankan sementara selama menunggu pembayaran.</p>
+                  <p className="text-gray-400 text-[11px] max-w-[170px] text-right leading-snug">Slot diamankan sementara selama menunggu pembayaran.</p>
                 </div>
               ) : (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-5 text-center">
@@ -429,85 +471,70 @@ export default function BookingClient() {
                 </div>
               )}
 
-              {/* Total */}
               <div className="bg-[#F5EFE4] rounded-xl p-5 mb-5 flex items-center justify-between">
                 <span className="text-gray-500 text-sm font-semibold">Total Pembayaran</span>
-                <span className="text-2xl font-black text-[#178E81]">{fmt(final)}</span>
+                <span className="text-2xl font-black text-[#178E81]">{fmt(payInfo?.total_price ?? service?.price ?? 0)}</span>
               </div>
 
               {/* QRIS */}
-              <p className="text-sm font-bold text-[#1a1a1a] mb-3">Metode Pembayaran</p>
+              <p className="text-sm font-bold text-[#1a1a1a] mb-3">Metode Pembayaran — QRIS</p>
               <div className="border-2 border-[#F9C74F] bg-[#FFF9E8] rounded-xl p-5 mb-5 flex flex-col items-center">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#178E81] mb-1">QRIS</span>
                 <span className="text-[11px] text-gray-400 mb-3">{branch?.name}</span>
-                <div className="bg-white border border-gray-200 rounded-lg p-2">
-                  <img
-                    src={["branch-2", "branch-4"].includes(branch?.id ?? "") ? "/qris/qris-ganet-kijang.png" : "/qris/qris-km9-pramuka.jpeg"}
-                    alt={`QRIS ${branch?.name}`}
-                    className="w-44 h-44 object-contain"
-                  />
-                </div>
-                <p className="text-xs text-gray-400 mt-3 text-center max-w-[220px]">Scan dengan aplikasi e-wallet / m-banking apa pun yang mendukung QRIS.</p>
+                {payInfo?.qris_image_url ? (
+                  <div className="bg-white border border-gray-200 rounded-lg p-2">
+                    <img src={payInfo.qris_image_url} alt={`QRIS ${branch?.name}`} className="w-44 h-44 object-contain" />
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500 text-center max-w-[240px]">QRIS belum tersedia untuk cabang ini. Silakan transfer ke rekening di bawah.</p>
+                )}
+                {payInfo?.bank_accounts && payInfo.bank_accounts.length > 0 && (
+                  <div className="w-full mt-4 space-y-2">
+                    {payInfo.bank_accounts.map((acc, i) => (
+                      <div key={i} className="bg-white rounded-lg border border-gray-200 px-3 py-2 text-xs">
+                        <p className="font-bold text-[#1a1a1a]">{acc.bank_name}</p>
+                        <p className="font-mono text-[#178E81]">{acc.account_number}</p>
+                        <p className="text-gray-400">a.n. {acc.account_holder}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-gray-400 mt-3 text-center max-w-[220px]">Scan dengan e-wallet / m-banking apa pun yang mendukung QRIS.</p>
               </div>
 
               {/* Upload bukti */}
-              {payMethod && !payExpired && (
+              {!payExpired && (
                 <div className="mb-1">
                   <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Upload Bukti Pembayaran</label>
                   <label className="flex items-center gap-3 border-2 border-dashed border-gray-300 rounded-xl px-4 py-4 cursor-pointer hover:border-[#F9C74F] transition-colors">
                     <input type="file" accept="image/*" className="hidden"
-                      onChange={(e) => { const f = e.target.files?.[0]; if (f) setProofName(f.name); }} />
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) { setProofFile(f); setUploadError(""); } }} />
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6H17a5 5 0 010 10M9 12l3-3m0 0l3 3m-3-3v9" />
                     </svg>
-                    <span className={`text-sm truncate ${proofName ? "text-[#1a1a1a] font-semibold" : "text-gray-400"}`}>{proofName || "Pilih gambar bukti pembayaran QRIS"}</span>
+                    <span className={`text-sm truncate ${proofFile ? "text-[#1a1a1a] font-semibold" : "text-gray-400"}`}>{proofFile?.name || "Pilih gambar bukti pembayaran (maks 4MB)"}</span>
                   </label>
                 </div>
               )}
 
-              {/* Error verifikasi */}
-              {verifyError && (
-                <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
+              {uploadError && (
+                <div className="mt-4 mb-1 bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
                   <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                   </svg>
-                  <div>
-                    <p className="text-sm font-bold text-red-600">Bukti pembayaran tidak valid</p>
-                    <p className="text-xs text-red-400 mt-0.5">Sistem tidak dapat memverifikasi pembayaran kamu. Pastikan bukti jelas dan nominal sesuai, lalu coba lagi.</p>
-                  </div>
+                  <p className="text-sm font-medium text-red-600">{uploadError}</p>
                 </div>
               )}
 
-              {/* Aksi */}
               <div className="flex gap-3 mt-4">
                 {payExpired ? (
-                  <button onClick={resetBooking} className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors">Ulangi Booking</button>
+                  <Link href="/booking" className="flex-1 bg-[#F9C74F] text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors text-center">Ulangi Booking</Link>
                 ) : (
-                  <>
-                    <button onClick={() => setStep(5)} disabled={verifying} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40">← Kembali</button>
-                    <button
-                      disabled={!proofName || verifying}
-                      onClick={() => {
-                        setVerifyError(false);
-                        setVerifying(true);
-                        setTimeout(() => {
-                          setVerifying(false);
-                          setVerifyError(true);
-                        }, 3000);
-                      }}
-                      className="flex-1 bg-[#178E81] text-white font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
-                    >
-                      {verifying ? (
-                        <>
-                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                          Memverifikasi...
-                        </>
-                      ) : verifyError ? "Coba Lagi" : "Kirim Bukti Pembayaran"}
-                    </button>
-                  </>
+                  <button disabled={!proofFile || uploading} onClick={submitProof}
+                    className="flex-1 bg-[#178E81] text-white font-bold py-3 rounded-xl disabled:opacity-40 hover:bg-teal-700 transition-colors flex items-center justify-center gap-2">
+                    {uploading ? (
+                      <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Mengirim...</>
+                    ) : "Kirim Bukti Pembayaran"}
+                  </button>
                 )}
               </div>
             </div>

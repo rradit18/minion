@@ -15,7 +15,23 @@ class BranchController extends Controller
     {
         $branches = Branch::where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'slug', 'address', 'city', 'phone', 'opening_time', 'closing_time', 'google_maps_url']);
+            ->get(['id', 'name', 'slug', 'address', 'city', 'phone', 'latitude', 'longitude', 'opening_time', 'closing_time', 'google_maps_url', 'image_path'])
+            ->map(fn($b) => [
+                'id'              => $b->id,
+                'name'            => $b->name,
+                'slug'            => $b->slug,
+                'address'         => $b->address,
+                'city'            => $b->city,
+                'phone'           => $b->phone,
+                'latitude'        => $b->latitude !== null ? (float) $b->latitude : null,
+                'longitude'       => $b->longitude !== null ? (float) $b->longitude : null,
+                'opening_time'    => $b->opening_time,
+                'closing_time'    => $b->closing_time,
+                'google_maps_url' => $b->google_maps_url,
+                'image_url'       => $b->image_path
+                    ? \Illuminate\Support\Facades\Storage::disk('public')->url($b->image_path)
+                    : null,
+            ]);
 
         return $this->ok('OK', $branches);
     }

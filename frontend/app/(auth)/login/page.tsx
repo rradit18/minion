@@ -4,33 +4,33 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { findUserByEmail, setSession } from "@/src/lib/localStorage";
+import { login, firstError } from "@/src/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ phone: "", password: "" });
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const value = e.target.name === "phone" ? e.target.value.replace(/\D/g, "") : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
     setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      const user = findUserByEmail(form.email);
-      if (!user || user.password !== form.password) {
-        setError("Email atau password salah.");
-        setLoading(false);
-        return;
-      }
-      setSession(user);
-      router.push("/");
-    }, 600);
+    setError("");
+    // Backend memakai nomor HP sebagai identitas login
+    const res = await login(form.phone, form.password);
+    if (!res.ok) {
+      setError(firstError(res));
+      setLoading(false);
+      return;
+    }
+    router.push("/akun");
   };
 
   return (
@@ -79,8 +79,8 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="animate-auth-up" style={{ animationDelay: "0.24s" }}>
-              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="email@kamu.com"
+              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="phone">No. WhatsApp</label>
+              <input id="phone" name="phone" type="tel" inputMode="numeric" required value={form.phone} onChange={handleChange} placeholder="08123456789"
                 className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
             </div>
             <div className="animate-auth-up" style={{ animationDelay: "0.3s" }}>

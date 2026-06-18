@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import EmptyState from "@/components/ui/EmptyState";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 interface Branch {
@@ -9,71 +10,14 @@ interface Branch {
   address: string;
   tag?: string;
   tagColor?: string;
-  lat: number;
-  lng: number;
+  lat: number | null;
+  lng: number | null;
   todayClose: string;
   services: string[];
   hours: { label: string; time: string }[];
 }
 
-const branches: Branch[] = [
-  {
-    name: "Pramuka",
-    address: "Jl. Pramuka, Perumahan Mekarsari Block A No. 11",
-    tag: "Pusat",
-    tagColor: "bg-[#F9C74F] text-[#1a1a1a]",
-    lat: 0.9010124,
-    lng: 104.4626487,
-    todayClose: "21:00",
-    services: ["Potong Rambut", "Cuci & Pijat Kepala", "Cukur Jenggot", "Hair Coloring", "Hot Towel Treatment"],
-    hours: [
-      { label: "Senin – Jumat", time: "10:00 – 21:00" },
-      { label: "Sabtu – Minggu", time: "09:00 – 22:00" },
-    ],
-  },
-  {
-    name: "Kijang",
-    address: "Jl. Kijang Lama, Tanjungpinang Timur",
-    tag: "Cabang",
-    tagColor: "bg-[#178E81] text-white",
-    lat: 0.8506738,
-    lng: 104.6081442,
-    todayClose: "21:00",
-    services: ["Potong Rambut", "Cuci & Pijat Kepala", "Cukur Jenggot", "Kids Haircut"],
-    hours: [
-      { label: "Senin – Jumat", time: "10:00 – 21:00" },
-      { label: "Sabtu – Minggu", time: "10:00 – 21:00" },
-    ],
-  },
-  {
-    name: "Km. 9",
-    address: "Jl. D.I. Panjaitan Km. 9, Tanjungpinang",
-    tag: "Cabang",
-    tagColor: "bg-[#178E81] text-white",
-    lat: 0.9169374,
-    lng: 104.5091971,
-    todayClose: "21:00",
-    services: ["Potong Rambut", "Cuci & Pijat Kepala", "Hair Tattoo", "Hot Towel Treatment"],
-    hours: [
-      { label: "Senin – Jumat", time: "10:00 – 21:00" },
-      { label: "Sabtu – Minggu", time: "09:00 – 22:00" },
-    ],
-  },
-  {
-    name: "Ganet",
-    address: "Jl. Raya Ganet, Tanjungpinang Timur",
-    tag: "Baru Dibuka",
-    tagColor: "bg-[#7B5EA7] text-white",
-    lat: 0.9300718,
-    lng: 104.5191602,
-    todayClose: "20:00",
-    services: ["Potong Rambut", "Cuci & Pijat Kepala", "Cukur Jenggot", "Hair Coloring"],
-    hours: [
-      { label: "Senin – Jumat", time: "10:00 – 20:00" },
-      { label: "Sabtu – Minggu", time: "10:00 – 21:00" },
-    ],
-  },
-];
+const fmt = (t?: string | null) => (t ? String(t).slice(0, 5) : "—");
 
 type Tab = "layanan" | "jam";
 
@@ -197,8 +141,43 @@ function BranchCard({
 export default function BranchesPage() {
   const [mapIdx, setMapIdx] = useState(0);
   const [openIdx, setOpenIdx] = useState<number | null>(0);
-  const active = branches[mapIdx];
-  const mapSrc = `https://maps.google.com/maps?q=${active.lat},${active.lng}&z=15&hl=id&output=embed`;
+  // null = loading; [] = kosong → empty state
+  const [branches, setBranches] = useState<Branch[] | null>(null);
+
+  useEffect(() => {
+    const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
+    // Layanan kini bersifat global (tidak per-cabang), jadi dipakai bersama untuk semua cabang
+    Promise.all([
+      fetch(`${base}/branches`).then((r) => r.ok ? r.json() : Promise.reject()),
+      fetch(`${base}/services`).then((r) => r.ok ? r.json() : { data: [] }).catch(() => ({ data: [] })),
+    ])
+      .then(([branchRes, serviceRes]) => {
+        const serviceNames: string[] = (serviceRes?.data ?? []).map((s: { name: string }) => s.name);
+        const data: Record<string, unknown>[] = branchRes?.data ?? [];
+        setBranches(
+          data.map((b) => ({
+            name:       String(b.name),
+            address:    String(b.address ?? ""),
+            lat:        b.latitude != null ? Number(b.latitude) : null,
+            lng:        b.longitude != null ? Number(b.longitude) : null,
+            todayClose: fmt(b.closing_time as string),
+            services:   serviceNames,
+            hours:      [{ label: "Setiap Hari", time: `${fmt(b.opening_time as string)} – ${fmt(b.closing_time as string)}` }],
+          }))
+        );
+      })
+      .catch(() => setBranches([]));
+  }, []);
+
+  const list = branches ?? [];
+  const isEmpty = branches !== null && branches.length === 0;
+  const active = list[mapIdx] ?? list[0];
+  const mapQuery = active
+    ? (active.lat != null && active.lng != null
+        ? `${active.lat},${active.lng}`
+        : encodeURIComponent(`Minion Barbershop ${active.name}`))
+    : "";
+  const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&z=15&hl=id&output=embed`;
 
   const handleSelect = (i: number) => {
     setMapIdx(i);
@@ -232,6 +211,15 @@ export default function BranchesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.65, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
+        {isEmpty ? (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <EmptyState
+              emoji="📍"
+              title="Belum ada cabang yang nongol"
+              subtitle="Lokasi cabang kami belum terdaftar. Pantengin terus, segera dibuka!"
+            />
+          </div>
+        ) : active ? (
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(360px,420px)] gap-5">
 
           {/* Map */}
@@ -254,7 +242,7 @@ export default function BranchesPage() {
 
           {/* Cards list */}
           <div className="order-2 flex flex-col gap-4 px-1 py-1 lg:max-h-[600px] lg:overflow-y-auto lg:pr-2 lg:[scrollbar-width:thin]">
-            {branches.map((branch, i) => (
+            {list.map((branch, i) => (
               <BranchCard
                 key={branch.name}
                 branch={branch}
@@ -267,6 +255,9 @@ export default function BranchesPage() {
           </div>
 
         </div>
+        ) : (
+          <div className="py-10" aria-hidden />
+        )}
       </motion.div>
     </div>
   );

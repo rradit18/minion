@@ -4,41 +4,40 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { saveUser, setSession } from "@/src/lib/localStorage";
-import type { AuthUser } from "@/src/lib/localStorage";
+import { register, firstError } from "@/src/lib/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", phone: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", confirm: "" });
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const value = e.target.name === "phone" ? e.target.value.replace(/\D/g, "") : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
     setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirm) { setError("Password tidak cocok!"); return; }
-    if (form.password.length < 6) { setError("Password minimal 6 karakter!"); return; }
+    if (form.password.length < 8) { setError("Password minimal 8 karakter!"); return; }
     setLoading(true);
-    setTimeout(() => {
-      const newUser: AuthUser = {
-        id: `user-${Date.now()}`,
-        name: form.name,
-        email: "",
-        phone: `+62${form.phone}`,
-        role: "user",
-        password: form.password,
-        loyalty_punches: 0,
-        created_at: new Date().toISOString().split("T")[0],
-      };
-      saveUser(newUser);
-      setSession(newUser);
-      router.push("/");
-    }, 600);
+    setError("");
+    const res = await register({
+      name: form.name,
+      phone: form.phone,
+      email: form.email.trim() || undefined,
+      password: form.password,
+      password_confirmation: form.confirm,
+    });
+    if (!res.ok) {
+      setError(firstError(res));
+      setLoading(false);
+      return;
+    }
+    router.push("/akun");
   };
 
   return (
@@ -101,17 +100,20 @@ export default function RegisterPage() {
             {/* Phone */}
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="phone">No. WhatsApp</label>
-              <div className="flex">
-                <span className="bg-white border-2 border-r-0 border-gray-200 rounded-l-xl px-4 flex items-center text-sm text-gray-500 font-medium">+62</span>
-                <input id="phone" name="phone" type="tel" required value={form.phone} onChange={handleChange} placeholder="8123456789"
-                  className="flex-1 bg-white border-2 border-l-0 border-gray-200 rounded-r-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
-              </div>
+              <input id="phone" name="phone" type="tel" inputMode="numeric" required value={form.phone} onChange={handleChange} placeholder="08123456789"
+                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
+            </div>
+            {/* Email (opsional) */}
+            <div>
+              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="email">Email <span className="text-gray-400 font-normal">(opsional)</span></label>
+              <input id="email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="email@kamu.com"
+                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
             </div>
             {/* Password */}
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="password">Password</label>
               <div className="relative">
-                <input id="password" name="password" type={show ? "text" : "password"} required minLength={6} value={form.password} onChange={handleChange} placeholder="Min. 6 karakter"
+                <input id="password" name="password" type={show ? "text" : "password"} required minLength={8} value={form.password} onChange={handleChange} placeholder="Min. 8 karakter"
                   className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 pr-12 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm" />
                 <button type="button" onClick={() => setShow(!show)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   {show ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>

@@ -1,9 +1,26 @@
-const locations = [
-  { name: "Jl. Pramuka",  address: "Jl. Pramuka No.6, Tj. Ayun Sakti, Kec. Bukit Bestari, Kota Tanjung Pinang, Kepulauan Riau 29124", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/Barbershop+Minion/@0.9010178,104.4600738,17z/data=!3m1!4b1!4m6!3m5!1s0x31d9729a2fd7f6c1:0xfd182ba5ef80f29a!8m2!3d0.9010124!4d104.4626487!16s%2Fg%2F11h4n0m5t3?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D", color: "#F59E0B" },
-  { name: "Kijang Kota",  address: "Jl. Kijang Raya No.45, Bintan", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/MINION+BARBERSHOP/@0.8506792,104.6055693,17z/data=!4m15!1m8!3m7!1s0x31d914e30ea79c63:0x6f3fcc8b56a09504!2sMINION+BARBERSHOP!8m2!3d0.8506738!4d104.6081442!10e1!16s%2Fg%2F11vrfb28md!3m5!1s0x31d914e30ea79c63:0x6f3fcc8b56a09504!8m2!3d0.8506738!4d104.6081442!16s%2Fg%2F11vrfb28md?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D", color: "#14B8A6" },
-  { name: "Bt. 9",        address: "Jl. Batu 9 No.7,Tanjungpinang", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/Minion+Barbershop/@0.9169428,104.5066222,17z/data=!3m1!4b1!4m6!3m5!1s0x31d96d3366244d41:0x27815164e2a20aa!8m2!3d0.9169374!4d104.5091971!16s%2Fg%2F11xs8s5khf?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D", color: "#EF4444" },
-  { name: "Jl. Ganet",    address: "Jl. Ganet No.22,Tanjungpinang", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/0%C2%B055'48.3%22N+104%C2%B031'09.0%22E/@0.9301105,104.5182254,19.52z/data=!4m4!3m3!8m2!3d0.9300718!4d104.5191602!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D", color: "#8B5CF6" },
+"use client";
+
+import { useEffect, useState } from "react";
+import EmptyState from "@/components/ui/EmptyState";
+
+interface Location {
+  name: string;
+  address: string;
+  hours: string;
+  maps: string;
+  color: string;
+}
+
+const PIN_COLORS = ["#F59E0B", "#14B8A6", "#EF4444", "#8B5CF6"];
+
+const STATIC_LOCATIONS: Location[] = [
+  { name: "Jl. Pramuka", address: "Jl. Pramuka No.6, Tj. Ayun Sakti, Kec. Bukit Bestari, Kota Tanjung Pinang, Kepulauan Riau 29124", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/Barbershop+Minion/@0.9010178,104.4600738,17z", color: "#F59E0B" },
+  { name: "Kijang Kota", address: "Jl. Kijang Raya No.45, Bintan", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/MINION+BARBERSHOP/@0.8506792,104.6055693,17z", color: "#14B8A6" },
+  { name: "Bt. 9",       address: "Jl. Batu 9 No.7,Tanjungpinang", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/Minion+Barbershop/@0.9169428,104.5066222,17z", color: "#EF4444" },
+  { name: "Jl. Ganet",   address: "Jl. Ganet No.22,Tanjungpinang", hours: "09:00 - 23:00", maps: "https://www.google.com/maps/place/0%C2%B055'48.3%22N+104%C2%B031'09.0%22E/@0.9301105,104.5182254,19.52z", color: "#8B5CF6" },
 ];
+
+const fmt = (t?: string | null) => (t ? String(t).slice(0, 5) : "—");
 
 // Barber pole SVG illustration
 const BarberPole = () => (
@@ -43,6 +60,32 @@ const Squiggle = () => (
 );
 
 const LocationSection = () => {
+  // null = loading; [] = kosong → empty state
+  const [locations, setLocations] = useState<Location[] | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/branches`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: Record<string, unknown>[] = json?.data ?? [];
+        setLocations(
+          data.map((b, i) => ({
+            name:    String(b.name),
+            address: String(b.address ?? ""),
+            hours:   `${fmt(b.opening_time as string)} - ${fmt(b.closing_time as string)}`,
+            maps:    String(
+              b.google_maps_url ??
+              (b.latitude && b.longitude ? `https://www.google.com/maps?q=${b.latitude},${b.longitude}` : "#")
+            ),
+            color:   PIN_COLORS[i % PIN_COLORS.length],
+          }))
+        );
+      })
+      .catch(() => setLocations(STATIC_LOCATIONS));
+  }, []);
+
+  const isEmpty = locations !== null && locations.length === 0;
+
   return (
     <section className="bg-[#FAF7EE] py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -63,52 +106,62 @@ const LocationSection = () => {
 
           {/* Right — location list dalam card ber-border */}
           <div className="w-full md:flex-1 min-w-0">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-100 overflow-hidden">
-              {locations.map((loc, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 sm:gap-4 py-3.5 px-4 sm:px-6 hover:bg-gray-50/70 transition-colors group"
-                >
-                  {/* Pin icon — warna berbeda tiap lokasi */}
+            {isEmpty ? (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+                <EmptyState
+                  emoji="📍"
+                  title="Cabang lagi ngumpet"
+                  subtitle="Lokasi studio kami belum terdaftar. Sebentar lagi muncul, janji!"
+                />
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-100 overflow-hidden">
+                {(locations ?? []).map((loc, i) => (
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: `${loc.color}1A` }}
+                    key={i}
+                    className="flex items-center gap-3 sm:gap-4 py-3.5 px-4 sm:px-6 hover:bg-gray-50/70 transition-colors group"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke={loc.color} strokeWidth={2} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s7-7.16 7-12a7 7 0 10-14 0c0 4.84 7 12 7 12z"/>
-                      <circle cx="12" cy="9" r="2.5" fill={loc.color} stroke="none"/>
-                    </svg>
-                  </div>
+                    {/* Pin icon — warna berbeda tiap lokasi */}
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${loc.color}1A` }}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke={loc.color} strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s7-7.16 7-12a7 7 0 10-14 0c0 4.84 7 12 7 12z"/>
+                        <circle cx="12" cy="9" r="2.5" fill={loc.color} stroke="none"/>
+                      </svg>
+                    </div>
 
-                  {/* Name + address + hours — stack di mobile, sejajar di layar lebar */}
-                  <div className="min-w-0 flex-1 flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-4">
-                    <p className="font-display font-bold text-[#1a1a1a] text-sm truncate sm:w-28 sm:flex-shrink-0">
-                      {loc.name}
-                    </p>
-                    <p className="text-gray-400 text-xs truncate min-w-0 sm:flex-1">
-                      {loc.address}
-                    </p>
-                    <p className="text-gray-500 text-[11px] sm:text-xs font-medium whitespace-nowrap sm:w-24 sm:flex-shrink-0 sm:text-right md:text-left">
-                      {loc.hours}
-                    </p>
-                  </div>
+                    {/* Name + address + hours */}
+                    <div className="min-w-0 flex-1 flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-4">
+                      <p className="font-display font-bold text-[#1a1a1a] text-sm truncate sm:w-28 sm:flex-shrink-0">
+                        {loc.name}
+                      </p>
+                      <p className="text-gray-400 text-xs truncate min-w-0 sm:flex-1">
+                        {loc.address}
+                      </p>
+                      <p className="text-gray-500 text-[11px] sm:text-xs font-medium whitespace-nowrap sm:w-24 sm:flex-shrink-0 sm:text-right md:text-left">
+                        {loc.hours}
+                      </p>
+                    </div>
 
-                  {/* Google Maps — ikon saja di mobile, teks penuh di layar lebar */}
-                  <a
-                    href={loc.maps}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Buka ${loc.name} di Google Maps`}
-                    className="flex items-center gap-1 text-xs font-bold text-[#1a1a1a] hover:text-[#178E81] transition-colors whitespace-nowrap flex-shrink-0"
-                  >
-                    <span className="hidden sm:inline">Google Maps</span>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                  </a>
-                </div>
-              ))}
-            </div>
+                    {/* Google Maps */}
+                    <a
+                      href={loc.maps}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Buka ${loc.name} di Google Maps`}
+                      className="flex items-center gap-1 text-xs font-bold text-[#1a1a1a] hover:text-[#178E81] transition-colors whitespace-nowrap flex-shrink-0"
+                    >
+                      <span className="hidden sm:inline">Google Maps</span>
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                      </svg>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>

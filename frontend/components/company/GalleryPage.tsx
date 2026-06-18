@@ -1,39 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { ReactCompareSliderImage } from 'react-compare-slider';
 import TiltCard from '@/components/ui/TiltCard';
+import EmptyState from '@/components/ui/EmptyState';
 
 const ReactCompareSlider = dynamic(
   () => import('react-compare-slider').then((mod) => mod.ReactCompareSlider),
   { ssr: false }
 );
 
-const galleryImages = [
-  "/gallery/gallery (1).jpg",  "/gallery/gallery (2).JPG",  "/gallery/gallery (3).JPG",
-  "/gallery/gallery (4).png",  "/gallery/gallery (5).png",  "/gallery/gallery (6).png",
-  "/gallery/gallery (7).png",  "/gallery/gallery (8).png",  "/gallery/gallery (9).png",
-  "/gallery/gallery (10).png", "/gallery/gallery (11).png", "/gallery/gallery (12).png",
-  "/gallery/gallery (13).png", "/gallery/gallery (14).png", "/gallery/gallery (15).png",
-  "/gallery/gallery (16).png", "/gallery/gallery (17).png", "/gallery/gallery (18).png",
-  "/gallery/gallery (19).png", "/gallery/gallery (20).png", "/gallery/gallery (21).png",
-  "/gallery/gallery (22).png", "/gallery/gallery (23).png", "/gallery/gallery (24).png",
-  "/gallery/gallery (25).png", "/gallery/gallery (26).png", "/gallery/gallery (27).png",
-  "/gallery/gallery (28).png", "/gallery/gallery (29).png", "/gallery/gallery (30).png",
-  "/gallery/gallery (31).png", "/gallery/gallery (32).png", "/gallery/gallery (33).png",
-  "/gallery/gallery (34).png", "/gallery/gallery (35).png", "/gallery/gallery (36).png",
-  "/gallery/gallery (37).png", "/gallery/gallery (38).png", "/gallery/gallery (39).png",
-  "/gallery/gallery (40).png", "/gallery/gallery (41).png", "/gallery/gallery (42).png",
-  "/gallery/gallery (43).png", "/gallery/gallery (44).png", "/gallery/gallery (45).png",
-  "/gallery/gallery (46).png", "/gallery/gallery (47).png", "/gallery/gallery (48).png",
-  "/gallery/gallery (49).png", "/gallery/gallery (50).png", "/gallery/gallery (51).png",
-  "/gallery/gallery (52).png", "/gallery/gallery (53).png", "/gallery/gallery (54).png",
-  "/gallery/gallery (55).png", "/gallery/gallery (56).png", "/gallery/gallery (57).png",
-  "/gallery/gallery (58).png", "/gallery/gallery (59).png", "/gallery/gallery (60).png",
-];
+const STATIC_GALLERY: string[] = Array.from({ length: 60 }, (_, i) =>
+  `/gallery/gallery (${i + 1}).${i === 0 ? 'jpg' : i < 3 ? 'JPG' : 'png'}`
+);
 
 // 6 kolom di desktop = 1 baris, awal tampil 2 baris = 12 foto
 const COLS = 6;
@@ -57,18 +39,34 @@ const GalleryCard = ({ imageUrl, priority }: { imageUrl: string; priority: boole
 );
 
 const GalleryPage = () => {
+  // null = masih loading; [] = sudah load tapi kosong → empty state
+  const [galleryImages, setGalleryImages] = useState<string[] | null>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_ROWS * COLS);
 
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/gallery`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: { image_url: string }[] = json?.data ?? [];
+        setGalleryImages(data.map((g) => g.image_url));
+      })
+      // Backend down → pakai cadangan biar galeri nggak ompong
+      .catch(() => setGalleryImages(STATIC_GALLERY));
+  }, []);
+
+  const images = galleryImages ?? [];
+
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + ROWS_PER_LOAD * COLS, galleryImages.length));
+    setVisibleCount((prev) => Math.min(prev + ROWS_PER_LOAD * COLS, images.length));
   };
 
   const handleLoadLess = () => {
     setVisibleCount(INITIAL_ROWS * COLS);
   };
 
-  const visibleImages = galleryImages.slice(0, visibleCount);
-  const hasMore = visibleCount < galleryImages.length;
+  const visibleImages = images.slice(0, visibleCount);
+  const hasMore = visibleCount < images.length;
+  const isEmpty = galleryImages !== null && galleryImages.length === 0;
 
   return (
     <div 
@@ -159,16 +157,24 @@ const GalleryPage = () => {
       </motion.div>
 
       {/* ── Gallery Grid ── */}
-      <div className="max-w-7xl mx-auto px-6 space-y-2.5">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
-          {visibleImages.map((item, i) => (
-            <GalleryCard key={i} imageUrl={item} priority={i < INITIAL_ROWS * COLS} />
-          ))}
+      {isEmpty ? (
+        <EmptyState
+          emoji="📸"
+          title="Galeri masih kosong melompong"
+          subtitle="Fotografernya lagi nyari angle paling cakep. Karya-karya kece bakal muncul di sini!"
+        />
+      ) : (
+        <div className="max-w-7xl mx-auto px-6 space-y-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+            {visibleImages.map((item, i) => (
+              <GalleryCard key={i} imageUrl={item} priority={i < INITIAL_ROWS * COLS} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Load More / Less ── */}
-      <div className="relative text-center py-8">
+      <div className={`relative text-center py-8 ${isEmpty ? 'hidden' : ''}`}>
         <div className="flex items-center justify-center gap-3">
           {hasMore && (
             <button

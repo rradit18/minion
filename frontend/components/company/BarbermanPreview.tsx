@@ -1,56 +1,62 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import BarberPage from "@/components/company/BarberPage";
+import EmptyState from "@/components/ui/EmptyState";
 
-const barbers = [
-  {
-    slug: "aldi",
-    name: "Aldi",
-    role: "Fade King",
-    specialty: "Fade Specialist",
-    rating: "4.9",
-    reviewCount: "2300+",
-    imageColor: "bg-teal-500",
-    imageUrl: "/barbers/aldi.png",
-    imageObjectPosition: "top",
-  },
-  {
-    slug: "wanda",
-    name: "Wanda",
-    role: "The Sculptor",
-    specialty: "Classic & Modern Cut",
-    rating: "4.9",
-    reviewCount: "1850+",
-    imageColor: "bg-purple-400",
-    imageUrl: "/barbers/wanda.png",
-    imageObjectPosition: "top",
-  },
-  {
-    slug: "roni",
-    name: "Roni",
-    role: "Sharpie",
-    specialty: "Line Up & Design",
-    rating: "4.8",
-    reviewCount: "1420+",
-    imageColor: "bg-yellow-400",
-    imageUrl: "/barbers/roni.png",
-    imageObjectPosition: "top",
-  },
-  {
-    slug: "ali",
-    name: "Ali",
-    role: "The Artist",
-    specialty: "Color & Beard Art",
-    rating: "4.9",
-    reviewCount: "1980+",
-    imageColor: "bg-orange-400",
-    imageUrl: "/barbers/ali.png",
-    imageObjectPosition: "center",
-  },
+interface PreviewBarber {
+  slug: string;
+  name: string;
+  role: string;
+  specialty: string;
+  rating: string;
+  reviewCount: string;
+  imageColor: string;
+  imageUrl: string;
+  imageObjectPosition: string;
+}
+
+const COLOR_CLASS: Record<string, string> = {
+  teal:   "bg-teal-500",
+  coral:  "bg-orange-400",
+  violet: "bg-purple-400",
+  yellow: "bg-yellow-400",
+};
+
+const STATIC_PREVIEW: PreviewBarber[] = [
+  { slug: "aldi",  name: "Aldi",  role: "Fade King",    specialty: "Fade Specialist",      rating: "4.9", reviewCount: "2300+", imageColor: "bg-teal-500",   imageUrl: "/barbers/aldi.png",  imageObjectPosition: "top" },
+  { slug: "wanda", name: "Wanda", role: "The Sculptor", specialty: "Classic & Modern Cut", rating: "4.9", reviewCount: "1850+", imageColor: "bg-purple-400", imageUrl: "/barbers/wanda.png", imageObjectPosition: "top" },
+  { slug: "roni",  name: "Roni",  role: "Sharpie",      specialty: "Line Up & Design",     rating: "4.8", reviewCount: "1420+", imageColor: "bg-yellow-400", imageUrl: "/barbers/roni.png",  imageObjectPosition: "top" },
+  { slug: "ali",   name: "Ali",   role: "The Artist",   specialty: "Color & Beard Art",    rating: "4.9", reviewCount: "1980+", imageColor: "bg-orange-400", imageUrl: "/barbers/ali.png",   imageObjectPosition: "center" },
 ];
 
 export default function BarberPreview() {
+  // null = loading; [] = kosong → empty state
+  const [barbers, setBarbers] = useState<PreviewBarber[] | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/barbers`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: Record<string, unknown>[] = json?.data ?? [];
+        setBarbers(
+          data.slice(0, 4).map((b) => ({
+            slug:                String(b.slug),
+            name:                String(b.name),
+            role:                String(b.tagline ?? "Barberman Kece"),
+            specialty:           String((b.branches as { name: string }[] | undefined)?.[0]?.name ?? "Minion Barber"),
+            rating:              b.avg_rating ? Number(b.avg_rating).toFixed(1) : "—",
+            reviewCount:         "ulasan",
+            imageColor:          COLOR_CLASS[String(b.signature_color ?? '')] ?? "bg-teal-500",
+            imageUrl:            String(b.photo_url ?? `/barbers/${b.slug}.png`),
+            imageObjectPosition: "top",
+          }))
+        );
+      })
+      .catch(() => setBarbers(STATIC_PREVIEW));
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-6 relative">
       <div className="flex items-center gap-2 mb-6">
@@ -62,8 +68,15 @@ export default function BarberPreview() {
         </svg>
       </div>
 
+      {barbers !== null && barbers.length === 0 ? (
+        <EmptyState
+          emoji="💈"
+          title="Barberman-nya lagi sibuk ✂️"
+          subtitle="Belum ada maestro yang nongol. Tim kami lagi nyukur, balik lagi nanti ya!"
+        />
+      ) : (
       <div className="relative grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-10 pt-4">
-        {barbers.map((barber) => (
+        {(barbers ?? []).map((barber) => (
           <Link key={barber.slug} href={`/barberman/${barber.slug}`}>
             <BarberPage
               name={barber.name}
@@ -124,6 +137,7 @@ export default function BarberPreview() {
           </svg>
         </div>
       </div>
+      )}
 
       <div className="mt-8 text-center">
         <Link

@@ -9,7 +9,6 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -56,8 +55,6 @@ class BarberResource extends Resource
                     Textarea::make('bio')
                         ->label('Bio')
                         ->rows(3),
-                    TagsInput::make('specializations')
-                        ->label('Spesialisasi'),
                     TextInput::make('instagram')
                         ->label('Instagram')
                         ->prefix('@'),

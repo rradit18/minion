@@ -1,88 +1,81 @@
 "use client";
 
-import Link from "next/link";
-import { fetchPromos } from "@/src/lib/mockData";
-import { setActivePromo, getLoyaltyRewardCode } from "@/src/lib/localStorage";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/src/lib/auth";
+
+interface Promo {
+  id: string;
+  code: string;
+  name: string;
+  discount_type: string;
+  discount_value: number | string;
+  valid_until: string;
+  min_order: number | string | null;
+}
+
+const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
 export default function PromoPage() {
-  const router = useRouter();
-  const promos = fetchPromos();
-  const loyaltyCode = getLoyaltyRewardCode();
+  const [promos, setPromos] = useState<Promo[] | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const handleUse = (code: string) => {
-    setActivePromo(code);
-    router.push("/booking");
+  useEffect(() => {
+    apiFetch<Promo[]>("/customer/promos").then((r) => setPromos(r.data ?? []));
+  }, []);
+
+  const copy = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopied(code);
+    setTimeout(() => setCopied(null), 2000);
   };
 
-  const isExpired = (date: string) => new Date(date) < new Date();
+  const discountLabel = (p: Promo) =>
+    p.discount_type === "percentage" ? `${Number(p.discount_value)}%` : `Rp ${(Number(p.discount_value) / 1000).toFixed(0)}k`;
 
   return (
     <div className="space-y-5">
       <h2 className="text-2xl font-black text-[#1a1a1a]">Promo & Voucher</h2>
 
-      {/* Loyalty reward */}
-      {loyaltyCode && (
-        <div className="bg-[#F9C74F] rounded-2xl p-5">
-          <p className="text-xs font-bold uppercase tracking-widest text-black/60 mb-1 flex items-center gap-1.5">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            Reward Loyalty
-          </p>
-          <p className="text-xl font-black text-[#1a1a1a]">1x Classic Cut Gratis!</p>
-          <p className="text-sm text-black/60 mt-1 mb-4">Tukarkan 10 punch loyalty kamu</p>
-          <button onClick={() => handleUse(loyaltyCode)}
-            className="bg-[#1a1a1a] text-white font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-gray-800 transition-colors">
-            Gunakan Sekarang →
-          </button>
+      {promos === null ? (
+        <p className="text-gray-400 text-sm py-12 text-center">Memuat promo…</p>
+      ) : promos.length === 0 ? (
+        <div className="bg-white rounded-2xl p-12 text-center border border-gray-100">
+          <p className="text-4xl mb-3">🎟️</p>
+          <p className="text-gray-400 font-medium">Belum ada promo aktif saat ini.</p>
+          <p className="text-gray-400 text-xs mt-1">Pantau terus — promo seru bakal muncul di sini!</p>
         </div>
-      )}
-
-      {/* Promo list */}
-      <div className="space-y-4">
-        {promos.map((promo) => {
-          const expired = isExpired(promo.valid_until);
-          return (
-            <div key={promo.id} className={`bg-white rounded-2xl border-2 p-4 sm:p-5 transition-all ${expired ? "border-gray-100 opacity-60" : "border-gray-100 hover:border-[#F9C74F]"}`}>
+      ) : (
+        <div className="space-y-4">
+          {promos.map((promo) => (
+            <div key={promo.id} className="bg-white rounded-2xl border-2 border-gray-100 hover:border-[#F9C74F] p-4 sm:p-5 transition-all">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="bg-[#1a1a1a] text-[#F9C74F] font-mono font-black text-xs px-2.5 py-1 rounded-lg">{promo.code}</span>
-                    {expired && <span className="text-xs text-red-400 font-semibold">Kadaluarsa</span>}
-                  </div>
-                  <p className="font-black text-[#1a1a1a] text-sm sm:text-base">{promo.title}</p>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">{promo.description}</p>
+                  <span className="bg-[#1a1a1a] text-[#F9C74F] font-mono font-black text-xs px-2.5 py-1 rounded-lg inline-block mb-2">{promo.code}</span>
+                  <p className="font-black text-[#1a1a1a] text-sm sm:text-base">{promo.name}</p>
+                  {promo.min_order != null && Number(promo.min_order) > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">Min. transaksi {fmt(Number(promo.min_order))}</p>
+                  )}
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xl sm:text-2xl font-black text-[#F9C74F]">
-                    {promo.type === "percentage" ? `${promo.value}%` : `Rp ${(promo.value / 1000).toFixed(0)}k`}
-                  </p>
+                  <p className="text-xl sm:text-2xl font-black text-[#F9C74F]">{discountLabel(promo)}</p>
                   <p className="text-xs text-gray-400">off</p>
                 </div>
               </div>
-
-              {/* Terms */}
-              <ul className="space-y-1 mb-4">
-                {promo.terms.map((t) => (
-                  <li key={t} className="text-xs text-gray-400 flex items-start gap-1.5">
-                    <svg className="w-3 h-3 text-[#178E81] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-
               <div className="flex items-center justify-between">
                 <p className="text-xs text-gray-400">Berlaku s/d {new Date(promo.valid_until).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
-                {!expired && (
-                  <button onClick={() => handleUse(promo.code)}
-                    className="bg-[#F9C74F] text-black font-bold px-4 py-2 rounded-xl text-xs hover:bg-yellow-400 transition-colors">
-                    Gunakan →
-                  </button>
-                )}
+                <button onClick={() => copy(promo.code)}
+                  className="bg-[#F9C74F] text-black font-bold px-4 py-2 rounded-xl text-xs hover:bg-yellow-400 transition-colors">
+                  {copied === promo.code ? "✓ Disalin" : "Salin Kode"}
+                </button>
               </div>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+
+      <p className="text-xs text-gray-400 text-center px-6">
+        Tunjukkan kode promo ke kasir saat pembayaran untuk mendapatkan potongan.
+      </p>
     </div>
   );
 }
