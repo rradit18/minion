@@ -29,21 +29,28 @@ export default function CountUp({
     const el = ref.current;
     if (!el) return;
 
+    const startCount = () => {
+      if (started.current) return;
+      started.current = true;
+      const startTime = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        setValue(Math.floor(eased * end));
+        if (p < 1) requestAnimationFrame(tick);
+        else setValue(end);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    // IntersectionObserver guard — Safari 12.1+; older Safari starts immediately
+    if (!("IntersectionObserver" in window)) {
+      startCount();
+      return;
+    }
+
     const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !started.current) {
-          started.current = true;
-          const startTime = performance.now();
-          const tick = (now: number) => {
-            const p = Math.min((now - startTime) / duration, 1);
-            const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
-            setValue(Math.floor(eased * end));
-            if (p < 1) requestAnimationFrame(tick);
-            else setValue(end);
-          };
-          requestAnimationFrame(tick);
-        }
-      },
+      (entries) => { if (entries[0].isIntersecting) startCount(); },
       { threshold: 0.5 }
     );
 

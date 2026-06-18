@@ -24,11 +24,12 @@ export default function Timeline({ data }: { data: TimelineEntry[] }) {
       if (ref.current) setHeight(ref.current.getBoundingClientRect().height);
     };
     measure();
-    const ro = new ResizeObserver(measure);
-    if (ref.current) ro.observe(ref.current);
+    // ResizeObserver guard — Safari 13.1+ only; older Safari falls back to window resize
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (ref.current && ro) ro.observe(ref.current);
     window.addEventListener("resize", measure);
     return () => {
-      ro.disconnect();
+      ro?.disconnect();
       window.removeEventListener("resize", measure);
     };
   }, [data]);
