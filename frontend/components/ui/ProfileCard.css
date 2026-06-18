@@ -24,7 +24,9 @@
   position: relative;
   perspective: 600px;
   transform: translate3d(0, 0, 0.1px);
-  touch-action: none;
+  /* Tilt hanya pakai pointer/mouse — di layar sentuh (iOS) `none` memblokir
+     scroll carousel & halaman saat jari menyentuh kartu. `auto` = scroll normal. */
+  touch-action: auto;
   width: 100%;
 }
 
