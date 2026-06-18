@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('phone', 20)->nullable();
             $table->time('opening_time')->default('08:00:00');
             $table->time('closing_time')->default('21:00:00');
-            $table->string('google_maps_url')->nullable();
+            $table->text('google_maps_url')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
