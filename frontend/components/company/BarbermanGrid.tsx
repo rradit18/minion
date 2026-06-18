@@ -26,7 +26,7 @@ const barbers: Barber[] = [
   { slug: "iyan",    name: "Iyan",             title: "Buzz Cut Specialist",   handle: "shortnclean",  rating: "4.6", reviewCount: "980+",  image: "/barbers/iyan.png",    hue: 88  },
   { slug: "panda",   name: "Panda",            title: "Crop & Quiff Master",   handle: "topknotpro",   rating: "4.8", reviewCount: "1340+", image: "/barbers/panda.png",   hue: 145 },
   { slug: "ian",     name: "Ian",              title: "Vintage Pomade Style",  handle: "oldschoolcut", rating: "4.7", reviewCount: "1100+", image: "/barbers/ian.png",     hue: 300 },
-  { slug: "randy",   name: "Rabdy",            title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/barbers/randy.png",   hue: 230 },
+  { slug: "randy",   name: "Randy",            title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/barbers/randy.png",   hue: 230 },
   { slug: "pandu",   name: "Pandu",            title: "Kids & Family Cut",     handle: "littlebarber", rating: "4.8", reviewCount: "1480+", image: "/barbers/pandu.png",   hue: 8   },
   { slug: "emon",    name: "Fil Emon",         title: "Hair Tattoo Design",    handle: "inkedhair",    rating: "4.9", reviewCount: "1920+", image: "/barbers/emon.png",    hue: 280 },
 ];

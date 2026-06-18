@@ -63,6 +63,10 @@ const GalleryPage = () => {
     setVisibleCount((prev) => Math.min(prev + ROWS_PER_LOAD * COLS, galleryImages.length));
   };
 
+  const handleLoadLess = () => {
+    setVisibleCount(INITIAL_ROWS * COLS);
+  };
+
   const visibleImages = galleryImages.slice(0, visibleCount);
   const hasMore = visibleCount < galleryImages.length;
 
@@ -163,18 +167,29 @@ const GalleryPage = () => {
         </div>
       </div>
 
-      {/* ── Load More ── */}
+      {/* ── Load More / Less ── */}
       <div className="relative text-center py-8">
-        {hasMore ? (
-          <button
-            onClick={handleLoadMore}
-            className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide"
-          >
-          Tampilkan Lebih Banyak
-          </button>
-        ) : (
-          <p className="text-[13px] text-gray-400 font-semibold">Semua foto sudah ditampilkan</p>
-        )}
+        <div className="flex items-center justify-center gap-3">
+          {hasMore && (
+            <button
+              onClick={handleLoadMore}
+              className="bg-[#1a1a1a] text-white text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-800 transition tracking-wide"
+            >
+              Tampilkan Lebih Banyak
+            </button>
+          )}
+          {visibleCount > INITIAL_ROWS * COLS && (
+            <button
+              onClick={handleLoadLess}
+              className="bg-white border-2 border-[#1a1a1a] text-[#1a1a1a] text-[13px] font-bold px-10 py-3.5 rounded-lg hover:bg-gray-100 transition tracking-wide"
+            >
+              Tampilkan Lebih Sedikit
+            </button>
+          )}
+          {!hasMore && visibleCount <= INITIAL_ROWS * COLS && (
+            <p className="text-[13px] text-gray-400 font-semibold">Semua foto sudah ditampilkan</p>
+          )}
+        </div>
         <span className="absolute right-24 bottom-7 text-[#D4AF37] text-[50px] select-none">✦</span>
       </div>
     </div>
