@@ -1,0 +1,111 @@
+services:
+
+  # ─── PHP-FPM App ───────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minion_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - vendor_cache:/var/www/html/vendor
+      - public_build:/var/www/html/public/build
+      - storage_data:/var/www/html/storage/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - minion
+    env_file: .env
+
+  # ─── Nginx ─────────────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: minion_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"          # Host nginx proxy ke sini untuk SSL termination
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - public_build:/var/www/html/public/build:ro
+      - storage_data:/var/www/html/storage/app:ro
+    depends_on:
+      - app
+    networks:
+      - minion
+
+  # ─── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: minion_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-minion_barbershop}
+      POSTGRES_USER: ${DB_USERNAME:-minion}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Tidak expose port ke host di production (akses hanya dari dalam Docker network)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-minion} -d ${DB_DATABASE:-minion_barbershop}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - minion
+
+  # ─── Redis ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: minion_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    # Tidak expose port ke host di production
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - minion
+
+  # ─── Queue Worker ──────────────────────────────────────────────────────────
+  queue-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minion_queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    entrypoint: ["/usr/local/bin/queue-entrypoint.sh"]
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - .:/var/www/html
+      - vendor_cache:/var/www/html/vendor
+      - public_build:/var/www/html/public/build
+      - storage_data:/var/www/html/storage/app
+    depends_on:
+      - app
+      - postgres
+      - redis
+    networks:
+      - minion
+    env_file: .env
+
+networks:
+  minion:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  vendor_cache:
+  public_build:
+  storage_data:
