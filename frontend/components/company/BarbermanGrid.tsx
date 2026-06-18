@@ -16,19 +16,19 @@ interface Barber {
 }
 
 const barbers: Barber[] = [
-  { slug: "aldi",    name: "Aldi",             title: "Fade Specialist",       handle: "fadeking",     rating: "4.9", reviewCount: "2300+", image: "/aldi.png",    hue: 174 },
-  { slug: "wanda",   name: "Wanda",            title: "Classic & Modern Cut",  handle: "thesculptor",  rating: "4.9", reviewCount: "1850+", image: "/wanda.png",   hue: 266 },
-  { slug: "roni",    name: "Roni",             title: "Line Up & Design",      handle: "sharpie",      rating: "4.8", reviewCount: "1420+", image: "/roni.png",    hue: 45  },
-  { slug: "ali",     name: "Ali",              title: "Color & Beard Art",     handle: "theartist",    rating: "4.9", reviewCount: "1980+", image: "/ali.png",     hue: 24  },
-  { slug: "ferdi",   name: "Ferdi",            title: "Texture & Curly Cut",   handle: "curlmaster",   rating: "4.7", reviewCount: "1190+", image: "/ferdi.png",   hue: 200 },
-  { slug: "gevan",   name: "Gevan",            title: "Pompadour Expert",      handle: "slickstyle",   rating: "4.8", reviewCount: "1650+", image: "/gevan.png",   hue: 320 },
-  { slug: "ipan",    name: "Ipan",             title: "Mullet & Edgy Cut",     handle: "rebelcuts",    rating: "4.9", reviewCount: "2050+", image: "/ipan.png",    hue: 12  },
-  { slug: "iyan",    name: "Iyan",             title: "Buzz Cut Specialist",   handle: "shortnclean",  rating: "4.6", reviewCount: "980+",  image: "/iyan.png",    hue: 88  },
-  { slug: "panda",   name: "Panda",            title: "Crop & Quiff Master",   handle: "topknotpro",   rating: "4.8", reviewCount: "1340+", image: "/panda.png",   hue: 145 },
-  { slug: "ian",     name: "Ian",              title: "Vintage Pomade Style",  handle: "oldschoolcut", rating: "4.7", reviewCount: "1100+", image: "/ian.png",     hue: 300 },
-  { slug: "randy",   name: "Rabdy",            title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/randy.png",   hue: 230 },
-  { slug: "pandu",   name: "Pandu",            title: "Kids & Family Cut",     handle: "littlebarber", rating: "4.8", reviewCount: "1480+", image: "/pandu.png",   hue: 8   },
-  { slug: "emon",    name: "Fil Emon",         title: "Hair Tattoo Design",    handle: "inkedhair",    rating: "4.9", reviewCount: "1920+", image: "/emon.png",    hue: 280 },
+  { slug: "aldi",    name: "Aldi",             title: "Fade Specialist",       handle: "fadeking",     rating: "4.9", reviewCount: "2300+", image: "/barbers/aldi.png",    hue: 174 },
+  { slug: "wanda",   name: "Wanda",            title: "Classic & Modern Cut",  handle: "thesculptor",  rating: "4.9", reviewCount: "1850+", image: "/barbers/wanda.png",   hue: 266 },
+  { slug: "roni",    name: "Roni",             title: "Line Up & Design",      handle: "sharpie",      rating: "4.8", reviewCount: "1420+", image: "/barbers/roni.png",    hue: 45  },
+  { slug: "ali",     name: "Ali",              title: "Color & Beard Art",     handle: "theartist",    rating: "4.9", reviewCount: "1980+", image: "/barbers/ali.png",     hue: 24  },
+  { slug: "ferdi",   name: "Ferdi",            title: "Texture & Curly Cut",   handle: "curlmaster",   rating: "4.7", reviewCount: "1190+", image: "/barbers/ferdi.png",   hue: 200 },
+  { slug: "gevan",   name: "Gevan",            title: "Pompadour Expert",      handle: "slickstyle",   rating: "4.8", reviewCount: "1650+", image: "/barbers/gevan.png",   hue: 320 },
+  { slug: "ipan",    name: "Ipan",             title: "Mullet & Edgy Cut",     handle: "rebelcuts",    rating: "4.9", reviewCount: "2050+", image: "/barbers/ipan.png",    hue: 12  },
+  { slug: "iyan",    name: "Iyan",             title: "Buzz Cut Specialist",   handle: "shortnclean",  rating: "4.6", reviewCount: "980+",  image: "/barbers/iyan.png",    hue: 88  },
+  { slug: "panda",   name: "Panda",            title: "Crop & Quiff Master",   handle: "topknotpro",   rating: "4.8", reviewCount: "1340+", image: "/barbers/panda.png",   hue: 145 },
+  { slug: "ian",     name: "Ian",              title: "Vintage Pomade Style",  handle: "oldschoolcut", rating: "4.7", reviewCount: "1100+", image: "/barbers/ian.png",     hue: 300 },
+  { slug: "randy",   name: "Rabdy",            title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/barbers/randy.png",   hue: 230 },
+  { slug: "pandu",   name: "Pandu",            title: "Kids & Family Cut",     handle: "littlebarber", rating: "4.8", reviewCount: "1480+", image: "/barbers/pandu.png",   hue: 8   },
+  { slug: "emon",    name: "Fil Emon",         title: "Hair Tattoo Design",    handle: "inkedhair",    rating: "4.9", reviewCount: "1920+", image: "/barbers/emon.png",    hue: 280 },
 ];
 
 // Holographic behind-gradient yang mengikuti warna aksen tiap barber (tema terang)

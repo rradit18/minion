@@ -12,7 +12,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "2300+",
     imageColor: "bg-teal-500",
-    imageUrl: "/aldi.png",
+    imageUrl: "/barbers/aldi.png",
     imageObjectPosition: "top",
   },
   {
@@ -23,7 +23,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "1850+",
     imageColor: "bg-purple-400",
-    imageUrl: "/wanda.png",
+    imageUrl: "/barbers/wanda.png",
     imageObjectPosition: "top",
   },
   {
@@ -34,7 +34,7 @@ const barbers = [
     rating: "4.8",
     reviewCount: "1420+",
     imageColor: "bg-yellow-400",
-    imageUrl: "/roni.png",
+    imageUrl: "/barbers/roni.png",
     imageObjectPosition: "top",
   },
   {
@@ -45,7 +45,7 @@ const barbers = [
     rating: "4.9",
     reviewCount: "1980+",
     imageColor: "bg-orange-400",
-    imageUrl: "/ali.png",
+    imageUrl: "/barbers/ali.png",
     imageObjectPosition: "center",
   },
 ];

@@ -45,10 +45,10 @@ export default function RegisterPage() {
     <motion.div className="h-screen overflow-hidden flex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}>
       {/* Left Panel */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto relative">
-        <div aria-hidden className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "url('/pattern.png')", backgroundRepeat: "repeat" }} />
+        <div aria-hidden className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "url('/ui/pattern.png')", backgroundRepeat: "repeat" }} />
 
         <div className="relative animate-auth-in-left">
-          <img src="/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
+          <img src="/brand/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
         </div>
         <div className="relative">
           <p className="text-[#F9C74F] text-4xl font-black leading-tight mb-6 animate-auth-up" style={{ animationDelay: "0.1s" }}>Join The<br />Rebellion.</p>

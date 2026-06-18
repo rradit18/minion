@@ -32,7 +32,7 @@ const Footer = () => {
         {/* Kolom 1: Logo */}
         <div className="md:col-span-1">
           <img 
-            src="/minion.png" 
+            src="/brand/minion.png" 
             alt="Minion Barbershop" 
             className="h-20 w-auto mb-4 object-contain" 
           />

@@ -52,7 +52,7 @@ const timelineData: TimelineEntry[] = [
         <p className="text-sm md:text-base text-gray-600 leading-relaxed">
           Minion Barbershop merupakan usaha yang bergerak di bidang jasa pangkas rambut dan didirikan pada bulan November 2018. Usaha ini pertama kali beroperasi di sebuah kios kecil yang berlokasi di Jl. H.Ungar. Pada tahap awal, usaha dijalankan secara mandiri oleh pemilik dengan fasilitas yang masih sederhana, yaitu dua kursi layanan.
         </p>
-        <TimelineImage src="/ruko2018.png" alt="Ruko pertama Minion" />
+        <TimelineImage src="/about/ruko2018.png" alt="Ruko pertama Minion" />
       </div>
     ),
   },
@@ -65,7 +65,7 @@ const timelineData: TimelineEntry[] = [
           Minion Barbershop berpindah lokasi ke Jl. Pramuka yang saat ini menjadi cabang utama. Perpindahan ini dilakukan untuk mendukung pengembangan usaha. Di lokasi baru, kapasitas layanan ditingkatkan menjadi tiga kursi dan terus berkembang seiring meningkatnya jumlah pelanggan.
 
         </p>
-          <TimelineImage src="/ruko2019.png" alt="Suasana barbershop 2019" />
+          <TimelineImage src="/about/ruko2019.png" alt="Suasana barbershop 2019" />
       </div>
     ),
   },
@@ -78,7 +78,7 @@ const timelineData: TimelineEntry[] = [
          Perkembangan usaha yang positif mendorong pemilik untuk membuka cabang kedua di Kijang pada tahun 2020. Meskipun menghadapi berbagai tantangan, seperti pengelolaan tenaga kerja, sistem operasional, dan persaingan usaha yang semakin meningkat, Minion Barbershop tetap mampu mempertahankan pertumbuhan dan stabilitas usahanya.
 
         </p>
-        <TimelineImage src="/ruko2020.png" alt="Tim Minion berkembang" />
+        <TimelineImage src="/about/ruko2020.png" alt="Tim Minion berkembang" />
       </div>
     ),
   },
@@ -90,7 +90,7 @@ const timelineData: TimelineEntry[] = [
         <p className="text-sm md:text-base text-gray-600 leading-relaxed">
           Pada tahun 2025, Minion Barbershop membuka cabang premium di kawasan Jl. D.I Panjaitan dengan konsep yang lebih modern dan fasilitas yang lebih lengkap.
         </p>
-          <TimelineImage src="/ruko2025.png" alt="Cabang Minion 2025" />
+          <TimelineImage src="/about/ruko2025.png" alt="Cabang Minion 2025" />
       </div>
     ),
   },
@@ -103,7 +103,7 @@ const timelineData: TimelineEntry[] = [
          Keberhasilan cabang keempat mendorong pembukaan cabang baru di Jl. Ganet pada tahun 2026 dengan konsep serupa yang telah disesuaikan dengan perkembangan kebutuhan pelanggan.
 
         </p>
-        <TimelineImage src="/ruko2026.png" alt="Tim Minion berkembang" />
+        <TimelineImage src="/about/ruko2026.png" alt="Tim Minion berkembang" />
       </div>
     ),
   },
@@ -124,7 +124,7 @@ const AboutSection = () => {
           <p className="text-xs md:text-sm font-bold tracking-[0.25em] uppercase mb-5 text-gray-400">Filosofi Nama Minion</p>
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="flex items-center">
-              <img src="/minion.png" alt="Minion Barbershop" className="w-64 md:w-80 object-contain" />
+              <img src="/brand/minion.png" alt="Minion Barbershop" className="w-64 md:w-80 object-contain" />
             </div>
             <p className="text-base md:text-lg font-medium leading-relaxed border-l-4 border-[#1a1a1a] pl-5 md:pl-8 text-gray-700">
               &ldquo;Minion ga cuma barbershop biasa, king. Kami{" "}
@@ -146,7 +146,7 @@ const AboutSection = () => {
             <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[#178E81]/20 rounded-full -z-0" />
             <figure className="relative z-10 bg-white p-3 pb-5 rounded-2xl shadow-lg border border-gray-100 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
               <div className="overflow-hidden rounded-xl aspect-[4/3] bg-gray-100">
-                <img src="/KeluargaBesar.png" alt="Tim Minion bersama owner" className="w-full h-full object-cover" />
+                <img src="/about/KeluargaBesar.png" alt="Tim Minion bersama owner" className="w-full h-full object-cover" />
               </div>
               <figcaption className="pt-3 text-center">
                 <span className="block font-display font-bold text-[#1a1a1a]">Keluarga Besar Minion</span>

@@ -160,7 +160,7 @@ export default function BookingClient() {
       <div aria-hidden className="fixed inset-0 -z-10 bg-[#F5EFE4]" />
       <div
         aria-hidden
-        className="fixed inset-0 -z-10 bg-[url('/pattern.png')] bg-repeat opacity-[0.45]"
+        className="fixed inset-0 -z-10 bg-[url('/ui/pattern.png')] bg-repeat opacity-[0.45]"
         style={{
           WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
           maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.15) 100%)",
@@ -442,7 +442,7 @@ export default function BookingClient() {
                 <span className="text-[11px] text-gray-400 mb-3">{branch?.name}</span>
                 <div className="bg-white border border-gray-200 rounded-lg p-2">
                   <img
-                    src={["branch-2", "branch-4"].includes(branch?.id ?? "") ? "/qris-ganet-kijang.png" : "/qris-km9-pramuka.jpeg"}
+                    src={["branch-2", "branch-4"].includes(branch?.id ?? "") ? "/qris/qris-ganet-kijang.png" : "/qris/qris-km9-pramuka.jpeg"}
                     alt={`QRIS ${branch?.name}`}
                     className="w-44 h-44 object-contain"
                   />

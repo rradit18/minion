@@ -38,10 +38,10 @@ export default function LoginPage() {
       {/* Left Panel */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-[#1a1a1a] px-12 py-14 overflow-y-auto relative">
         {/* Pattern halus */}
-        <div aria-hidden className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "url('/pattern.png')", backgroundRepeat: "repeat" }} />
+        <div aria-hidden className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "url('/ui/pattern.png')", backgroundRepeat: "repeat" }} />
 
         <div className="relative animate-auth-in-left">
-          <img src="/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
+          <img src="/brand/minion.png" alt="Minion Barbershop" className="h-14 w-auto object-contain brightness-0 invert" />
         </div>
         <div className="relative">
           <p className="text-[#F9C74F] text-4xl font-black leading-tight animate-auth-up" style={{ animationDelay: "0.1s" }}>Good Hair.<br />Good Vibes.<br />Everyday.</p>

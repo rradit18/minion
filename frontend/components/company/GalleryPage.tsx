@@ -13,26 +13,26 @@ const ReactCompareSlider = dynamic(
 );
 
 const galleryImages = [
-  "/gallery (1).jpg",  "/gallery (2).JPG",  "/gallery (3).JPG",
-  "/gallery (4).png",  "/gallery (5).png",  "/gallery (6).png",
-  "/gallery (7).png",  "/gallery (8).png",  "/gallery (9).png",
-  "/gallery (10).png", "/gallery (11).png", "/gallery (12).png",
-  "/gallery (13).png", "/gallery (14).png", "/gallery (15).png",
-  "/gallery (16).png", "/gallery (17).png", "/gallery (18).png",
-  "/gallery (19).png", "/gallery (20).png", "/gallery (21).png",
-  "/gallery (22).png", "/gallery (23).png", "/gallery (24).png",
-  "/gallery (25).png", "/gallery (26).png", "/gallery (27).png",
-  "/gallery (28).png", "/gallery (29).png", "/gallery (30).png",
-  "/gallery (31).png", "/gallery (32).png", "/gallery (33).png",
-  "/gallery (34).png", "/gallery (35).png", "/gallery (36).png",
-  "/gallery (37).png", "/gallery (38).png", "/gallery (39).png",
-  "/gallery (40).png", "/gallery (41).png", "/gallery (42).png",
-  "/gallery (43).png", "/gallery (44).png", "/gallery (45).png",
-  "/gallery (46).png", "/gallery (47).png", "/gallery (48).png",
-  "/gallery (49).png", "/gallery (50).png", "/gallery (51).png",
-  "/gallery (52).png", "/gallery (53).png", "/gallery (54).png",
-  "/gallery (55).png", "/gallery (56).png", "/gallery (57).png",
-  "/gallery (58).png", "/gallery (59).png", "/gallery (60).png",
+  "/gallery/gallery (1).jpg",  "/gallery/gallery (2).JPG",  "/gallery/gallery (3).JPG",
+  "/gallery/gallery (4).png",  "/gallery/gallery (5).png",  "/gallery/gallery (6).png",
+  "/gallery/gallery (7).png",  "/gallery/gallery (8).png",  "/gallery/gallery (9).png",
+  "/gallery/gallery (10).png", "/gallery/gallery (11).png", "/gallery/gallery (12).png",
+  "/gallery/gallery (13).png", "/gallery/gallery (14).png", "/gallery/gallery (15).png",
+  "/gallery/gallery (16).png", "/gallery/gallery (17).png", "/gallery/gallery (18).png",
+  "/gallery/gallery (19).png", "/gallery/gallery (20).png", "/gallery/gallery (21).png",
+  "/gallery/gallery (22).png", "/gallery/gallery (23).png", "/gallery/gallery (24).png",
+  "/gallery/gallery (25).png", "/gallery/gallery (26).png", "/gallery/gallery (27).png",
+  "/gallery/gallery (28).png", "/gallery/gallery (29).png", "/gallery/gallery (30).png",
+  "/gallery/gallery (31).png", "/gallery/gallery (32).png", "/gallery/gallery (33).png",
+  "/gallery/gallery (34).png", "/gallery/gallery (35).png", "/gallery/gallery (36).png",
+  "/gallery/gallery (37).png", "/gallery/gallery (38).png", "/gallery/gallery (39).png",
+  "/gallery/gallery (40).png", "/gallery/gallery (41).png", "/gallery/gallery (42).png",
+  "/gallery/gallery (43).png", "/gallery/gallery (44).png", "/gallery/gallery (45).png",
+  "/gallery/gallery (46).png", "/gallery/gallery (47).png", "/gallery/gallery (48).png",
+  "/gallery/gallery (49).png", "/gallery/gallery (50).png", "/gallery/gallery (51).png",
+  "/gallery/gallery (52).png", "/gallery/gallery (53).png", "/gallery/gallery (54).png",
+  "/gallery/gallery (55).png", "/gallery/gallery (56).png", "/gallery/gallery (57).png",
+  "/gallery/gallery (58).png", "/gallery/gallery (59).png", "/gallery/gallery (60).png",
 ];
 
 // 6 kolom di desktop = 1 baris, awal tampil 2 baris = 12 foto
@@ -70,7 +70,7 @@ const GalleryPage = () => {
     <div 
       className="font-sans text-[#1a1a1a] min-h-screen pb-10"
       style={{
-        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/pattern.png')`,
+        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/ui/pattern.png')`,
         backgroundSize: "cover",
         backgroundColor: "#FAF7EE",
       }}
@@ -107,15 +107,15 @@ const GalleryPage = () => {
           
           <div className="absolute inset-0 z-0 opacity-[5] pointer-events-none"
             style={{
-              backgroundImage: "url('/pattern.png')",
+              backgroundImage: "url('/ui/pattern.png')",
               backgroundRepeat: "repeat"
             }}
           />
 
           <div className="w-full md:w-72 flex-shrink-0 relative overflow-hidden bg-[#d0c8bc] z-10">
             <ReactCompareSlider
-              itemOne={<ReactCompareSliderImage src="/sebelum.jpeg" alt="Sebelum" />}
-              itemTwo={<ReactCompareSliderImage src="/sesudah.jpeg" alt="Sesudah" />}
+              itemOne={<ReactCompareSliderImage src="/gallery/sebelum.jpeg" alt="Sebelum" />}
+              itemTwo={<ReactCompareSliderImage src="/gallery/sesudah.jpeg" alt="Sesudah" />}
               className="h-full min-h-[300px]"
             />
             <span className="absolute top-3.5 left-3.5 bg-[#178E81] text-white text-[10px] font-bold px-2.5 py-1 rounded-md z-20 tracking-wide pointer-events-none">

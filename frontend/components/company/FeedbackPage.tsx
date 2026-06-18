@@ -34,7 +34,7 @@ export default function FeedbackPage() {
         className="absolute inset-0 z-0"
         style={{
           backgroundColor: "#F5EFE4",
-          backgroundImage: "url('/pattern.png')",
+          backgroundImage: "url('/ui/pattern.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

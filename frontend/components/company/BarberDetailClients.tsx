@@ -9,10 +9,10 @@ interface Props {
 }
 
 const ALL_BARBERS = [
-  { slug: 'aldi',  name: 'Aldi',   role: 'Fade King',    badge: 'Fade Specialist',    rating: '4.9', reviewCount: '2300+', img: '/aldi.png',  color: 'bg-teal-500'   },
-  { slug: 'wanda', name: 'Wanda',  role: 'The Sculptor', badge: 'Classic Specialist',  rating: '4.9', reviewCount: '1850+', img: '/wanda.png', color: 'bg-purple-400' },
-  { slug: 'roni',  name: 'Roni',   role: 'Sharpie',      badge: 'Line Up Expert',      rating: '4.8', reviewCount: '1420+', img: '/roni.png',  color: 'bg-yellow-400' },
-  { slug: 'ali',   name: 'Ali',    role: 'The Artist',   badge: 'Color Specialist',    rating: '4.9', reviewCount: '1980+', img: '/ali.png',   color: 'bg-orange-400' },
+  { slug: 'aldi',  name: 'Aldi',   role: 'Fade King',    badge: 'Fade Specialist',    rating: '4.9', reviewCount: '2300+', img: '/barbers/aldi.png',  color: 'bg-teal-500'   },
+  { slug: 'wanda', name: 'Wanda',  role: 'The Sculptor', badge: 'Classic Specialist',  rating: '4.9', reviewCount: '1850+', img: '/barbers/wanda.png', color: 'bg-purple-400' },
+  { slug: 'roni',  name: 'Roni',   role: 'Sharpie',      badge: 'Line Up Expert',      rating: '4.8', reviewCount: '1420+', img: '/barbers/roni.png',  color: 'bg-yellow-400' },
+  { slug: 'ali',   name: 'Ali',    role: 'The Artist',   badge: 'Color Specialist',    rating: '4.9', reviewCount: '1980+', img: '/barbers/ali.png',   color: 'bg-orange-400' },
 ];
 
 const barberData: Record<string, {
@@ -27,7 +27,7 @@ const barberData: Record<string, {
     experience: "7th+ Pengalaman", clientReturns: "380 Client Returns",
     speciality: ["Skin Fade & Mid Fade", "High Taper", "Crew Cut", "Buzz Cut Presisi"],
     tools: ["Wahl Magic Clip", "Andis Fade Master", "Feather Artist Club", "Kamisori Shear"],
-    portfolio: ["/gallery (1).jpg", "/gallery (2).JPG", "/gallery (3).JPG", "/gallery (4).png", "/gallery (5).png", "/gallery (6).png"],
+    portfolio: ["/gallery/gallery (1).jpg", "/gallery/gallery (2).JPG", "/gallery/gallery (3).JPG", "/gallery/gallery (4).png", "/gallery/gallery (5).png", "/gallery/gallery (6).png"],
     accent: "bg-teal-500",
   },
   wanda: {
@@ -36,7 +36,7 @@ const barberData: Record<string, {
     experience: "6th+ Pengalaman", clientReturns: "310 Client Returns",
     speciality: ["Classic Cut", "Modern Pompadour", "Textured Quiff", "Undercut Classic"],
     tools: ["Oster Fast Feed", "Wahl Senior", "Kamisori Scissors", "Straight Razor"],
-    portfolio: ["/gallery (7).png", "/gallery (8).png", "/gallery (9).png", "/gallery (10).png", "/gallery (11).png", "/gallery (12).png"],
+    portfolio: ["/gallery/gallery (7).png", "/gallery/gallery (8).png", "/gallery/gallery (9).png", "/gallery/gallery (10).png", "/gallery/gallery (11).png", "/gallery/gallery (12).png"],
     accent: "bg-purple-400",
   },
   roni: {
@@ -45,7 +45,7 @@ const barberData: Record<string, {
     experience: "5th+ Pengalaman", clientReturns: "260 Client Returns",
     speciality: ["Line Up Tajam", "Hard Part Design", "Curly Hair Expert", "Mohawk & Faux Hawk"],
     tools: ["Andis T-Outliner", "Wahl Detailer", "Feather Razor", "Barber Comb Set"],
-    portfolio: ["/gallery (13).png", "/gallery (14).png", "/gallery (15).png", "/gallery (16).png", "/gallery (17).png", "/gallery (18).png"],
+    portfolio: ["/gallery/gallery (13).png", "/gallery/gallery (14).png", "/gallery/gallery (15).png", "/gallery/gallery (16).png", "/gallery/gallery (17).png", "/gallery/gallery (18).png"],
     accent: "bg-yellow-400",
   },
   ali: {
@@ -54,7 +54,7 @@ const barberData: Record<string, {
     experience: "8th+ Pengalaman", clientReturns: "400 Client Returns",
     speciality: ["Skin Fade & Taper Fade", "Hard Part & Line Up", "Textured Crop", "Pompadour & Quiff"],
     tools: ["Wahl Senior Clipper", "Andis T Outliner", "Feather Razor", "Kamisori Shear"],
-    portfolio: ["/gallery (19).png", "/gallery (20).png", "/gallery (21).png", "/gallery (22).png", "/gallery (23).png", "/gallery (24).png"],
+    portfolio: ["/gallery/gallery (19).png", "/gallery/gallery (20).png", "/gallery/gallery (21).png", "/gallery/gallery (22).png", "/gallery/gallery (23).png", "/gallery/gallery (24).png"],
     accent: "bg-orange-400",
   },
 };
