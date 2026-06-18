@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch, firstError } from "@/src/lib/auth";
+import DatePicker from "@/components/booking/DatePicker";
 
 interface ApiBooking {
   id: string;
@@ -10,10 +11,14 @@ interface ApiBooking {
   status: string;
   scheduled_at: string;
   total_price: number | string;
-  barber?: { name: string } | null;
-  branch?: { name: string } | null;
-  services?: { service_name: string }[];
+  barber_id?: string;
+  barber?: { id: string; name: string; slug: string } | null;
+  branch?: { id: string; name: string; slug: string } | null;
+  services?: { service_id: string; service_name: string }[];
+  reschedule_count?: number;
 }
+
+interface SlotT { time: string; datetime: string }
 
 const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
@@ -34,13 +39,24 @@ const TABS: { label: string; query: string }[] = [
   { label: "Dibatalkan", query: "cancelled" },
 ];
 
+const RESCHEDULE_STATUSES = new Set(["pending_confirmation", "confirmed"]);
+
 export default function RiwayatPage() {
   const [tab, setTab] = useState(0);
   const [bookings, setBookings] = useState<ApiBooking[] | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  // Rating modal
   const [ratingModal, setRatingModal] = useState<{ id: string } | null>(null);
   const [ratingVal, setRatingVal] = useState(5);
   const [ratingText, setRatingText] = useState("");
-  const [busy, setBusy] = useState(false);
+
+  // Reschedule modal
+  const [rescheduleModal, setRescheduleModal] = useState<{ booking: ApiBooking } | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleTime, setRescheduleTime] = useState("");
+  const [rescheduleSlots, setRescheduleSlots] = useState<SlotT[]>([]);
+  const [rescheduleSlotsLoading, setRescheduleSlotsLoading] = useState(false);
 
   const load = useCallback(async (q: string) => {
     setBookings(null);
@@ -49,6 +65,28 @@ export default function RiwayatPage() {
   }, []);
 
   useEffect(() => { load(TABS[tab].query); }, [tab, load]);
+
+  // Muat slot saat tanggal reschedule berubah
+  useEffect(() => {
+    if (!rescheduleModal || !rescheduleDate) { setRescheduleSlots([]); return; }
+    const { booking } = rescheduleModal;
+    const barberId = booking.barber_id ?? booking.barber?.id;
+    if (!barberId) return;
+    const serviceIds = (booking.services ?? []).map((s) => s.service_id).filter(Boolean);
+    setRescheduleSlotsLoading(true);
+    setRescheduleTime("");
+    const params = new URLSearchParams({ barber_id: barberId, date: rescheduleDate });
+    serviceIds.forEach((id) => params.append("service_ids[]", id));
+    const now = Date.now();
+    apiFetch<SlotT[]>(`/availability?${params.toString()}`)
+      .then((r) => {
+        const list = (r.ok ? (r.data ?? []) : []).filter(
+          (s) => new Date(s.datetime).getTime() > now + 60_000
+        );
+        setRescheduleSlots(list);
+      })
+      .finally(() => setRescheduleSlotsLoading(false));
+  }, [rescheduleDate, rescheduleModal]);
 
   const handleCancel = async (id: string) => {
     if (!confirm("Batalkan booking ini?")) return;
@@ -71,6 +109,25 @@ export default function RiwayatPage() {
     setRatingModal(null); setRatingText(""); setRatingVal(5);
     load(TABS[tab].query);
   };
+
+  const submitReschedule = async () => {
+    if (!rescheduleModal || !rescheduleDate || !rescheduleTime) return;
+    const slot = rescheduleSlots.find((s) => s.time === rescheduleTime);
+    if (!slot) return;
+    setBusy(true);
+    const res = await apiFetch(`/customer/bookings/${rescheduleModal.booking.id}/reschedule`, {
+      method: "PATCH",
+      body: JSON.stringify({ scheduled_at: slot.datetime }),
+    });
+    setBusy(false);
+    if (!res.ok) { alert(firstError(res)); return; }
+    setRescheduleModal(null);
+    setRescheduleDate(""); setRescheduleTime(""); setRescheduleSlots([]);
+    load(TABS[tab].query);
+  };
+
+  const minDate = new Date();
+  const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 14);
 
   return (
     <div className="space-y-5">
@@ -105,6 +162,7 @@ export default function RiwayatPage() {
           {bookings.map((b) => {
             const meta = STATUS_META[b.status] ?? { label: b.status, cls: "bg-gray-100 text-gray-600" };
             const services = (b.services ?? []).map((s) => s.service_name).join(", ");
+            const canReschedule = RESCHEDULE_STATUSES.has(b.status) && (b.reschedule_count ?? 0) < 1;
             return (
               <div key={b.id} className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -124,6 +182,16 @@ export default function RiwayatPage() {
                     <button onClick={() => handleCancel(b.id)} disabled={busy}
                       className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50">
                       Batalkan
+                    </button>
+                  )}
+                  {canReschedule && (
+                    <button
+                      onClick={() => { setRescheduleModal({ booking: b }); setRescheduleDate(""); setRescheduleTime(""); setRescheduleSlots([]); }}
+                      className="px-3 py-1.5 text-xs font-bold bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 transition-colors flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Reschedule
                     </button>
                   )}
                   {b.status === "completed" && (
@@ -165,6 +233,68 @@ export default function RiwayatPage() {
               <button onClick={() => setRatingModal(null)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-50">Batal</button>
               <button onClick={submitRating} disabled={busy} className="flex-1 bg-[#F9C74F] text-black font-bold py-2.5 rounded-xl text-sm hover:bg-yellow-400 disabled:opacity-50">Kirim</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Modal */}
+      {rescheduleModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4 py-6">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-black text-[#1a1a1a]">Reschedule Booking</h3>
+              <button onClick={() => setRescheduleModal(null)} className="text-gray-400 hover:text-gray-700">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            <div className="bg-[#F5EFE4] rounded-xl px-4 py-3 mb-4 text-sm">
+              <p className="font-bold text-[#1a1a1a]">{(rescheduleModal.booking.services ?? []).map(s => s.service_name).join(", ")}</p>
+              <p className="text-gray-500 text-xs mt-0.5">
+                {rescheduleModal.booking.barber?.name} · Jadwal saat ini: {new Date(rescheduleModal.booking.scheduled_at).toLocaleString("id-ID", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
+
+            <p className="text-sm font-bold text-gray-700 mb-2">Pilih Tanggal Baru</p>
+            <div className="mb-4">
+              <DatePicker value={rescheduleDate} onChange={setRescheduleDate} minDate={minDate} maxDate={maxDate} />
+            </div>
+
+            {rescheduleDate && (
+              <>
+                <p className="text-sm font-bold text-gray-700 mb-2">Pilih Waktu</p>
+                {rescheduleSlotsLoading ? (
+                  <p className="text-gray-400 text-sm py-4 text-center">Mengecek ketersediaan…</p>
+                ) : rescheduleSlots.length === 0 ? (
+                  <p className="text-gray-400 text-sm py-4 text-center">Tidak ada slot tersedia. Coba tanggal lain.</p>
+                ) : (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4">
+                    {rescheduleSlots.map((s) => (
+                      <button key={s.datetime} onClick={() => setRescheduleTime(s.time)}
+                        className={`py-2 rounded-xl text-xs font-bold border-2 transition-all ${rescheduleTime === s.time ? "border-[#F9C74F] bg-yellow-50 text-[#1a1a1a]" : "border-gray-200 text-gray-600 hover:border-yellow-300"}`}>
+                        {s.time}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            <div className="flex gap-3 mt-2">
+              <button onClick={() => setRescheduleModal(null)} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-50">Batal</button>
+              <button
+                onClick={submitReschedule}
+                disabled={busy || !rescheduleDate || !rescheduleTime}
+                className="flex-1 bg-[#178E81] text-white font-bold py-2.5 rounded-xl text-sm hover:bg-teal-700 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                {busy ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                ) : null}
+                Konfirmasi
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-400 mt-3 text-center">Reschedule hanya bisa dilakukan 1x dan min. 1 jam sebelum jadwal.</p>
           </div>
         </div>
       )}

@@ -111,7 +111,7 @@ export default function BarbersListPage() {
         <FadeIn delay={0.05}>
           <section className="mt-16">
             <div className="relative overflow-hidden rounded-3xl bg-[#1a1a1a] px-8 py-12 md:px-14 md:py-16 text-center">
-              <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ backgroundImage: "url(/pattern.png)" }} />
+              <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ backgroundImage: "url(/ui/pattern.png)" }} />
               <div className="relative z-10">
                 <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-white mb-3">
                   Udah nemu maestro <span className="text-[#F9C74F]">favoritmu?</span>

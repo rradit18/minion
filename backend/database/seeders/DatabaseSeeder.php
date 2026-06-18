@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
         // Data konten (cabang, layanan, barber, shift) diisi lewat Filament admin.
         $this->call([
             AdminUserSeeder::class,
+            BranchSeeder::class,
+            ServiceSeeder::class,
         ]);
 
-        // Seeder data demo dinonaktifkan — aktifkan kembali bila butuh data contoh:
-        // BranchSeeder::class,
-        // ServiceSeeder::class,
+        // Aktifkan bila butuh data barber & shift demo:
         // BarberSeeder::class,
         // ShiftSeeder::class,
     }

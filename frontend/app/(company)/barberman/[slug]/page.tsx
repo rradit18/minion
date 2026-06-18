@@ -1,33 +1,28 @@
 import { notFound } from 'next/navigation';
-import BarberDetailClients from "@/components/company/BarberDetailClients";
+import BarberDetailClients, { type ApiBarberDetail, type OtherBarber } from "@/components/company/BarberDetailClients";
 
-const barbers = [
-  { slug: "aldi",  name: "Aldi" },
-  { slug: "wanda", name: "Wanda"      },
-  { slug: "roni",  name: "Roni"      },
-  { slug: "ali",   name: "Ali"  },
-  { slug: "ferdi",   name: "Ferdi"  },
-  { slug: "gevan",   name: "Gevan"  },
-  { slug: "ipan",   name: "Ipan"  },
-  { slug: "iyan",   name: "Iyan"  },
-  { slug: "panda",   name: "Panda"  },
-  { slug: "ian",   name: "Ian"  },
-  { slug: "randy",   name: "Randy"  },
-  { slug: "pandu",   name: "Pandu"  },
-  { slug: "emon",   name: "Emon"  },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
 
 export default async function BarberDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const barber = barbers.find(b => b.slug === slug);
+  const [barberRes, allRes] = await Promise.all([
+    fetch(`${API_BASE}/barbers/${slug}`, { next: { revalidate: 60 } }),
+    fetch(`${API_BASE}/barbers`, { next: { revalidate: 60 } }),
+  ]);
 
-  if (!barber) return notFound();
+  if (!barberRes.ok) return notFound();
 
-  return (
-    <BarberDetailClients
-      barberName={barber.name}
-      barberSlug={barber.slug}
-    />
-  );
+  const barberJson = await barberRes.json();
+  const barber: ApiBarberDetail = barberJson.data;
+
+  let otherBarbers: OtherBarber[] = [];
+  if (allRes.ok) {
+    const allJson = await allRes.json();
+    otherBarbers = ((allJson.data ?? []) as OtherBarber[])
+      .filter((b) => b.slug !== slug)
+      .slice(0, 3);
+  }
+
+  return <BarberDetailClients barber={barber} otherBarbers={otherBarbers} />;
 }

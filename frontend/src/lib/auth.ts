@@ -97,8 +97,11 @@ export async function loadMe(): Promise<AuthUser | null> {
   return user;
 }
 
-export async function login(phone: string, password: string): Promise<ApiResult<{ token: string }>> {
-  const res = await apiFetch<{ token: string }>("/auth/login", {
+export async function login(
+  phone: string,
+  password: string,
+): Promise<ApiResult<{ token: string; force_password_change: boolean }>> {
+  const res = await apiFetch<{ token: string; force_password_change: boolean }>("/auth/login", {
     method: "POST",
     body: JSON.stringify({ phone, password }),
   });

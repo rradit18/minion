@@ -25,7 +25,7 @@ class KasirPanelProvider extends PanelProvider
         return $panel
             ->id('kasir')
             ->path('kasir-panel')
-            ->login()
+            ->login(\App\Filament\Kasir\Pages\Login::class)
             ->profile()
             ->darkMode(true)
             ->sidebarCollapsibleOnDesktop()
@@ -33,6 +33,16 @@ class KasirPanelProvider extends PanelProvider
                 'primary' => Color::hex('#C9A544'),
             ])
             ->renderHook('panels::head.end', fn () => app(\Illuminate\Foundation\Vite::class)('resources/css/app.css'))
+            ->renderHook(
+                'panels::simple-page.end',
+                fn () => view('filament.auth.quick-login', [
+                    'panelLinks' => [
+                        ['label' => 'Panel Admin', 'url' => '/admin-panel'],
+                        ['label' => 'Panel Barber', 'url' => '/barber-panel'],
+                    ],
+                ]),
+                scopes: \App\Filament\Kasir\Pages\Login::class,
+            )
             ->renderHook(
                 'panels::content.end',
                 fn () => \Illuminate\Support\Facades\Blade::render('@livewire(\App\Livewire\Kasir\PosModal::class)'),

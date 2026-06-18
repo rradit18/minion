@@ -6,6 +6,7 @@ use App\Enums\BarberSignatureColor;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Barber extends Model
 {
@@ -65,6 +66,13 @@ class Barber extends Model
     public function ratings()
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function getPhotoUrlAttribute($value): ?string
+    {
+        if (!$value) return null;
+        if (str_starts_with($value, 'http')) return $value;
+        return Storage::disk('public')->url($value);
     }
 
     public function getAvgRatingAttribute(): ?float

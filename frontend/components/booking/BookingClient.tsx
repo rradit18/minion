@@ -78,6 +78,7 @@ export default function BookingClient() {
   const [preselectBarber, setPreselectBarber] = useState<string | null>(null);
 
   const [slots, setSlots] = useState<SlotT[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<SlotT | null>(null);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [serviceQuery, setServiceQuery] = useState("");
 
@@ -95,6 +96,12 @@ export default function BookingClient() {
   const [proofFile, setProofFile]   = useState<File | null>(null);
   const [uploading, setUploading]   = useState(false);
   const [uploadError, setUploadError] = useState("");
+
+  // Promo
+  const [promoCode, setPromoCode]         = useState("");
+  const [promoResult, setPromoResult]     = useState<{ name: string; discount_amount: number } | null>(null);
+  const [promoLoading, setPromoLoading]   = useState(false);
+  const [promoError, setPromoError]       = useState("");
 
   // ── Load branches + prefill ──────────────────────────────────────────────
   useEffect(() => {
@@ -126,13 +133,29 @@ export default function BookingClient() {
 
   const selectBranch = (b: BranchT) => {
     setBranch(b); setBarber(null); setService(null); setDate(""); setTime("");
+    setPromoCode(""); setPromoResult(null); setPromoError("");
     loadBranchData(b);
+  };
+
+  const applyPromo = async () => {
+    if (!promoCode.trim() || !branch || !service) return;
+    setPromoLoading(true); setPromoError(""); setPromoResult(null);
+    const res = await apiFetch<{ valid: boolean; discount_amount: number; promo: { name: string; code: string } }>("/promos/validate", {
+      method: "POST",
+      body: JSON.stringify({ code: promoCode.trim(), subtotal: service.price, branch_id: branch.id }),
+    });
+    setPromoLoading(false);
+    if (!res.ok || !res.data?.valid) {
+      setPromoError(res.message || "Kode promo tidak valid.");
+      return;
+    }
+    setPromoResult({ name: res.data.promo.name, discount_amount: res.data.discount_amount });
   };
 
   // ── Muat slot saat barber + layanan + tanggal siap ────────────────────────
   useEffect(() => {
     if (step !== 3 || !barber || !service || !date) { setSlots([]); return; }
-    setSlotsLoading(true); setTime("");
+    setSlotsLoading(true); setTime(""); setSelectedSlot(null);
     const params = new URLSearchParams({ barber_id: barber.id, date });
     params.append("service_ids[]", service.id);
     apiFetch<SlotT[]>(`/availability?${params.toString()}`)
@@ -158,7 +181,7 @@ export default function BookingClient() {
   // ── Buat booking → pindah ke pembayaran ───────────────────────────────────
   const confirmBooking = async () => {
     if (!branch || !barber || !service) return;
-    const slot = slots.find((s) => s.time === time);
+    const slot = selectedSlot ?? slots.find((s) => s.time === time);
     if (!slot) { setSubmitError("Slot tidak valid, pilih ulang jadwal."); setStep(3); return; }
 
     setSubmitting(true); setSubmitError("");
@@ -365,7 +388,7 @@ export default function BookingClient() {
                   ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                       {slots.map((s) => (
-                        <button key={s.datetime} onClick={() => setTime(s.time)}
+                        <button key={s.datetime} onClick={() => { setTime(s.time); setSelectedSlot(s); }}
                           className={`py-2 rounded-xl text-xs font-bold border-2 transition-all ${time === s.time ? "border-[#F9C74F] bg-yellow-50 text-[#1a1a1a]" : "border-gray-200 text-gray-600 hover:border-yellow-300"}`}>
                           {s.time}
                         </button>
@@ -432,10 +455,51 @@ export default function BookingClient() {
                     <span className="font-semibold text-[#1a1a1a] text-right break-words">{val}</span>
                   </div>
                 ))}
+                {promoResult && (
+                  <div className="flex justify-between gap-3 text-green-600">
+                    <span className="flex-shrink-0">Promo ({promoResult.name})</span>
+                    <span className="font-semibold">-{fmt(promoResult.discount_amount)}</span>
+                  </div>
+                )}
                 <div className="border-t border-gray-300 pt-3">
-                  <div className="flex justify-between font-black text-[#1a1a1a] text-base"><span>Total</span><span className="text-[#F9C74F]">{fmt(service?.price ?? 0)}</span></div>
+                  <div className="flex justify-between font-black text-[#1a1a1a] text-base">
+                    <span>Total</span>
+                    <span className="text-[#F9C74F]">{fmt(Math.max(0, (service?.price ?? 0) - (promoResult?.discount_amount ?? 0)))}</span>
+                  </div>
                 </div>
               </div>
+
+              {/* Input kode promo */}
+              <div className="mt-4">
+                <label className="block text-sm font-bold text-[#1a1a1a] mb-2">Punya Kode Promo?</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(""); setPromoResult(null); }}
+                    placeholder="Masukkan kode promo"
+                    className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm text-[#1a1a1a] font-mono placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors uppercase"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyPromo}
+                    disabled={promoLoading || !promoCode.trim()}
+                    className="px-4 py-2.5 bg-[#1a1a1a] text-white text-sm font-bold rounded-xl hover:bg-black transition-colors disabled:opacity-40 flex items-center gap-1.5 whitespace-nowrap"
+                  >
+                    {promoLoading ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                    ) : "Terapkan"}
+                  </button>
+                </div>
+                {promoError && <p className="text-red-500 text-xs mt-1.5 font-medium">{promoError}</p>}
+                {promoResult && (
+                  <p className="text-green-600 text-xs mt-1.5 font-medium flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                    Promo &quot;{promoResult.name}&quot; berhasil diterapkan! Tunjukkan kode <strong>{promoCode}</strong> ke kasir.
+                  </p>
+                )}
+              </div>
+
               {submitError && <p className="text-red-500 text-sm mt-3 font-medium">{submitError}</p>}
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(4)} disabled={submitting} className="flex-1 border-2 border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40">← Kembali</button>

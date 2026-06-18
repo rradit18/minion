@@ -127,11 +127,10 @@ const AboutSection = () => {
               <img src="/brand/minion.png" alt="Minion Barbershop" className="w-64 md:w-80 object-contain" />
             </div>
             <p className="text-base md:text-lg font-medium leading-relaxed border-l-4 border-[#1a1a1a] pl-5 md:pl-8 text-gray-700">
-              &ldquo;Minion ga cuma barbershop biasa, king. Kami{" "}
-              <span className="font-bold text-[#1a1a1a]">pencari kesempurnaan.</span>{" "}
-              Mastiin tiap pelanggan dapat{" "}
-              <span className="font-bold italic text-[#178E81]">perfection</span>{" "}
-              dalam penampilan — itu tugas kami.&rdquo;
+              Nama &ldquo;Minion&rdquo; dipilih sebagai representasi dari awal perjalanan usaha yang dimulai dari skala kecil dan sederhana. Nama tersebut mencerminkan{" "}
+              <span className="font-bold text-[#1a1a1a]">semangat perjuangan, kerja keras, dan komitmen</span>{" "}
+              pemilik dalam mengembangkan usaha dari nol hingga menjadi salah satu barbershop yang{" "}
+              <span className="font-bold italic text-[#178E81]">dikenal oleh masyarakat.</span>
             </p>
           </div>
         </div>
@@ -184,7 +183,7 @@ const AboutSection = () => {
 
       {/* ── 3. DNA Kami ── */}
       <motion.section className="bg-[#178E81] text-white py-16 md:py-20 px-6 relative overflow-hidden" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
-        <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: "url(/pattern.png)" }} />
+        <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: "url(/ui/pattern.png)" }} />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="mb-10 md:mb-12">
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-white/70 mb-2">Yang Bikin Kami Beda</p>
@@ -227,7 +226,7 @@ const AboutSection = () => {
       {/* ── 6. CTA penutup ── */}
       <motion.section className="max-w-7xl mx-auto px-6 py-16 md:py-20" initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}>
         <div className="relative overflow-hidden rounded-3xl bg-[#1a1a1a] text-white px-8 py-12 md:px-14 md:py-16 text-center">
-          <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ backgroundImage: "url(/pattern.png)" }} />
+          <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ backgroundImage: "url(/ui/pattern.png)" }} />
           <div className="relative z-10">
             <h2 className="text-3xl sm:text-4xl font-black mb-3">
               Siap nulis cerita lo <span className="text-[#F9C74F]">bareng kami?</span>

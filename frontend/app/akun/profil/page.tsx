@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { getSession } from "@/src/lib/localStorage";
 import { apiFetch, loadMe, firstError } from "@/src/lib/auth";
 
 export default function ProfilPage() {
+  const searchParams = useSearchParams();
+  const forceChange  = searchParams.get("force_change") === "1";
+
   const [session, setSessionState] = useState(typeof window !== "undefined" ? getSession() : null);
-  const [tab, setTab] = useState<"profil" | "password">("profil");
+  const [tab, setTab] = useState<"profil" | "password">(forceChange ? "password" : "profil");
   const [saved, setSaved] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -86,6 +90,12 @@ export default function ProfilPage() {
         ))}
       </div>
 
+      {forceChange && tab === "password" && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+          Akun kamu memerlukan ganti password sebelum bisa digunakan. Silakan buat password baru.
+        </div>
+      )}
       {saved && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl">✓ Perubahan berhasil disimpan</div>}
       {err   && <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">{err}</div>}
 

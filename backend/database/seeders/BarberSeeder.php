@@ -9,7 +9,6 @@ use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class BarberSeeder extends Seeder
 {
@@ -20,11 +19,11 @@ class BarberSeeder extends Seeder
         $barbers = [
             [
                 'user' => [
-                    'name'     => 'Rizky Pratama',
-                    'phone'    => '08111000001',
-                    'email'    => 'rizky@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Rizky Pratama',
+                    'phone'     => '08111000001',
+                    'email'     => 'rizky@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -37,15 +36,15 @@ class BarberSeeder extends Seeder
                     'instagram'       => '@rizky.cuts',
                     'is_active'       => true,
                 ],
-                'branches' => ['pusat', 'batu-8'],
+                'branches' => ['pramuka', 'batu-9'],
             ],
             [
                 'user' => [
-                    'name'     => 'Dani Saputra',
-                    'phone'    => '08111000002',
-                    'email'    => 'dani@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Dani Saputra',
+                    'phone'     => '08111000002',
+                    'email'     => 'dani@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -58,15 +57,15 @@ class BarberSeeder extends Seeder
                     'instagram'       => '@dani.barber',
                     'is_active'       => true,
                 ],
-                'branches' => ['pusat'],
+                'branches' => ['pramuka'],
             ],
             [
                 'user' => [
-                    'name'     => 'Fauzan Hidayat',
-                    'phone'    => '08111000003',
-                    'email'    => 'fauzan@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Fauzan Hidayat',
+                    'phone'     => '08111000003',
+                    'email'     => 'fauzan@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -79,15 +78,15 @@ class BarberSeeder extends Seeder
                     'tiktok'          => '@fauzan.cuts',
                     'is_active'       => true,
                 ],
-                'branches' => ['batu-8'],
+                'branches' => ['batu-9'],
             ],
             [
                 'user' => [
-                    'name'     => 'Hendra Wijaya',
-                    'phone'    => '08111000004',
-                    'email'    => 'hendra@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Hendra Wijaya',
+                    'phone'     => '08111000004',
+                    'email'     => 'hendra@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -100,15 +99,15 @@ class BarberSeeder extends Seeder
                     'instagram'       => '@hendra.barber',
                     'is_active'       => true,
                 ],
-                'branches' => ['batu-8', 'batu-12'],
+                'branches' => ['batu-9', 'kijang-kota'],
             ],
             [
                 'user' => [
-                    'name'     => 'Bagas Nugroho',
-                    'phone'    => '08111000005',
-                    'email'    => 'bagas@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Bagas Nugroho',
+                    'phone'     => '08111000005',
+                    'email'     => 'bagas@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -122,15 +121,15 @@ class BarberSeeder extends Seeder
                     'tiktok'          => '@bagasbarber',
                     'is_active'       => true,
                 ],
-                'branches' => ['batu-12'],
+                'branches' => ['kijang-kota'],
             ],
             [
                 'user' => [
-                    'name'     => 'Aldi Firmansyah',
-                    'phone'    => '08111000006',
-                    'email'    => 'aldi@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Aldi Firmansyah',
+                    'phone'     => '08111000006',
+                    'email'     => 'aldi@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -143,21 +142,21 @@ class BarberSeeder extends Seeder
                     'instagram'       => '@aldi.firm',
                     'is_active'       => true,
                 ],
-                'branches' => ['batu-12', 'bintan-center'],
+                'branches' => ['kijang-kota', 'ganet'],
             ],
             [
                 'user' => [
-                    'name'     => 'Kevin Santoso',
-                    'phone'    => '08111000007',
-                    'email'    => 'kevin@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Kevin Santoso',
+                    'phone'     => '08111000007',
+                    'email'     => 'kevin@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
                     'name'            => 'Kevin Santoso',
                     'slug'            => 'kevin-santoso',
-                    'bio'             => 'Barber stylish di Bintan Center. Menggabungkan teknik modern dengan sentuhan lokal yang khas.',
+                    'bio'             => 'Barber stylish di Jl. Ganet. Menggabungkan teknik modern dengan sentuhan lokal yang khas.',
                     'tagline'         => 'Style lokal, kelas internasional.',
                     'signature_color' => BarberSignatureColor::Violet,
                     'specializations' => ['Taper Fade', 'Slick Back', 'Mullet'],
@@ -165,15 +164,15 @@ class BarberSeeder extends Seeder
                     'tiktok'          => '@kevin.barbershop',
                     'is_active'       => true,
                 ],
-                'branches' => ['bintan-center'],
+                'branches' => ['ganet'],
             ],
             [
                 'user' => [
-                    'name'     => 'Reza Maulana',
-                    'phone'    => '08111000008',
-                    'email'    => 'reza@minionbarbershop.com',
-                    'password' => Hash::make('barber123'),
-                    'role'     => UserRole::Barber,
+                    'name'      => 'Reza Maulana',
+                    'phone'     => '08111000008',
+                    'email'     => 'reza@minionbarbershop.com',
+                    'password'  => Hash::make('barber123'),
+                    'role'      => UserRole::Barber,
                     'is_active' => true,
                 ],
                 'barber' => [
@@ -186,7 +185,7 @@ class BarberSeeder extends Seeder
                     'instagram'       => '@reza.maulana',
                     'is_active'       => true,
                 ],
-                'branches' => ['pusat', 'bintan-center'],
+                'branches' => ['pramuka', 'ganet'],
             ],
         ];
 

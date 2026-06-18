@@ -23,14 +23,17 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    // Backend memakai nomor HP sebagai identitas login
     const res = await login(form.phone, form.password);
     if (!res.ok) {
       setError(firstError(res));
       setLoading(false);
       return;
     }
-    router.push("/akun");
+    if (res.data?.force_password_change) {
+      router.push("/akun/profil?force_change=1");
+    } else {
+      router.push("/akun");
+    }
   };
 
   return (
