@@ -19,7 +19,7 @@ export default function LupaPasswordPage() {
   )}`;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F5EFE4] px-6 py-14">
+    <div className="min-h-dvh flex items-center justify-center bg-[#F5EFE4] px-6 py-14">
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex flex-col items-center mb-10">

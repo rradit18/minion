@@ -60,7 +60,7 @@ function SuksesInner() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5EFE4] flex items-center justify-center px-6 py-14">
+    <div className="min-h-dvh bg-[#F5EFE4] flex items-center justify-center px-6 py-14">
       <div className="max-w-md w-full text-center">
         <div className="w-20 h-20 bg-[#178E81] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
           <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
