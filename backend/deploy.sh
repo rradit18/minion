@@ -33,10 +33,8 @@ done
 # ─── 5. Post-deploy tasks ─────────────────────────────────────────────────────
 echo "[5/5] Running post-deploy tasks..."
 
-# migrate --force: AMAN — hanya jalankan migration baru, tidak hapus/reset data
-docker exec $APP_CONTAINER php artisan migrate --force
-
-# optimize cache
+# Migrations sudah dijalankan oleh entrypoint.sh saat container start.
+# Hanya perlu clear + rebuild cache setelah kode baru.
 docker exec $APP_CONTAINER php artisan optimize:clear
 docker exec $APP_CONTAINER php artisan optimize
 
