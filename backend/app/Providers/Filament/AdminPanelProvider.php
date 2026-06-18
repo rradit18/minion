@@ -25,7 +25,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin-panel')
-            ->login()
+            ->login(\App\Filament\Admin\Pages\Login::class)
             ->profile()
             ->darkMode(true)
             ->sidebarCollapsibleOnDesktop()
@@ -33,6 +33,16 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::hex('#C9A544'),
             ])
             ->renderHook('panels::head.end', fn () => app(\Illuminate\Foundation\Vite::class)('resources/css/app.css'))
+            ->renderHook(
+                'panels::simple-page.end',
+                fn () => view('filament.auth.quick-login', [
+                    'panelLinks' => [
+                        ['label' => 'Panel Kasir', 'url' => '/kasir-panel'],
+                        ['label' => 'Panel Barber', 'url' => '/barber-panel'],
+                    ],
+                ]),
+                scopes: \App\Filament\Admin\Pages\Login::class,
+            )
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([

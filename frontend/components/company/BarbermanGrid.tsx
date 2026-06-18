@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfileCard from "@/components/ui/ProfileCard";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface Barber {
   slug: string;
@@ -15,21 +16,25 @@ interface Barber {
   hue: number;
 }
 
-const barbers: Barber[] = [
-  { slug: "aldi",    name: "Aldi",             title: "Fade Specialist",       handle: "fadeking",     rating: "4.9", reviewCount: "2300+", image: "/aldi.png",    hue: 174 },
-  { slug: "wanda",   name: "Wanda",            title: "Classic & Modern Cut",  handle: "thesculptor",  rating: "4.9", reviewCount: "1850+", image: "/wanda.png",   hue: 266 },
-  { slug: "roni",    name: "Roni",             title: "Line Up & Design",      handle: "sharpie",      rating: "4.8", reviewCount: "1420+", image: "/roni.png",    hue: 45  },
-  { slug: "ali",     name: "Ali",              title: "Color & Beard Art",     handle: "theartist",    rating: "4.9", reviewCount: "1980+", image: "/ali.png",     hue: 24  },
-  { slug: "ferdi",   name: "Ferdi",            title: "Texture & Curly Cut",   handle: "curlmaster",   rating: "4.7", reviewCount: "1190+", image: "/ferdi.png",   hue: 200 },
-  { slug: "gevan",   name: "Gevan",            title: "Pompadour Expert",      handle: "slickstyle",   rating: "4.8", reviewCount: "1650+", image: "/gevan.png",   hue: 320 },
-  { slug: "ipan",    name: "Ipan",             title: "Mullet & Edgy Cut",     handle: "rebelcuts",    rating: "4.9", reviewCount: "2050+", image: "/ipan.png",    hue: 12  },
-  { slug: "iyan",    name: "Iyan",             title: "Buzz Cut Specialist",   handle: "shortnclean",  rating: "4.6", reviewCount: "980+",  image: "/iyan.png",    hue: 88  },
-  { slug: "panda",   name: "Panda",            title: "Crop & Quiff Master",   handle: "topknotpro",   rating: "4.8", reviewCount: "1340+", image: "/panda.png",   hue: 145 },
-  { slug: "ian",     name: "Ian",              title: "Vintage Pomade Style",  handle: "oldschoolcut", rating: "4.7", reviewCount: "1100+", image: "/ian.png",     hue: 300 },
-  { slug: "randy",   name: "Randy",           title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/randy.png",   hue: 230 },
-  { slug: "pandu",   name: "Pandu",            title: "Kids & Family Cut",     handle: "littlebarber", rating: "4.8", reviewCount: "1480+", image: "/pandu.png",   hue: 8   },
-  { slug: "emon",    name: "Fil Emon",         title: "Hair Tattoo Design",    handle: "inkedhair",    rating: "4.9", reviewCount: "1920+", image: "/emon.png",    hue: 280 },
+const STATIC_BARBERS: Barber[] = [
+  { slug: "aldi",    name: "Aldi",     title: "Fade Specialist",       handle: "fadeking",     rating: "4.9", reviewCount: "2300+", image: "/barbers/aldi.png",    hue: 174 },
+  { slug: "wanda",   name: "Wanda",   title: "Classic & Modern Cut",  handle: "thesculptor",  rating: "4.9", reviewCount: "1850+", image: "/barbers/wanda.png",   hue: 266 },
+  { slug: "roni",    name: "Roni",    title: "Line Up & Design",      handle: "sharpie",      rating: "4.8", reviewCount: "1420+", image: "/barbers/roni.png",    hue: 45  },
+  { slug: "ali",     name: "Ali",     title: "Color & Beard Art",     handle: "theartist",    rating: "4.9", reviewCount: "1980+", image: "/barbers/ali.png",     hue: 24  },
+  { slug: "ferdi",   name: "Ferdi",   title: "Texture & Curly Cut",   handle: "curlmaster",   rating: "4.7", reviewCount: "1190+", image: "/barbers/ferdi.png",   hue: 200 },
+  { slug: "gevan",   name: "Gevan",   title: "Pompadour Expert",      handle: "slickstyle",   rating: "4.8", reviewCount: "1650+", image: "/barbers/gevan.png",   hue: 320 },
+  { slug: "ipan",    name: "Ipan",    title: "Mullet & Edgy Cut",     handle: "rebelcuts",    rating: "4.9", reviewCount: "2050+", image: "/barbers/ipan.png",    hue: 12  },
+  { slug: "iyan",    name: "Iyan",    title: "Buzz Cut Specialist",   handle: "shortnclean",  rating: "4.6", reviewCount: "980+",  image: "/barbers/iyan.png",    hue: 88  },
+  { slug: "panda",   name: "Panda",   title: "Crop & Quiff Master",   handle: "topknotpro",   rating: "4.8", reviewCount: "1340+", image: "/barbers/panda.png",   hue: 145 },
+  { slug: "ian",     name: "Ian",     title: "Vintage Pomade Style",  handle: "oldschoolcut", rating: "4.7", reviewCount: "1100+", image: "/barbers/ian.png",     hue: 300 },
+  { slug: "randy",   name: "Randy",   title: "Undercut Specialist",   handle: "underdog",     rating: "4.6", reviewCount: "870+",  image: "/barbers/randy.png",   hue: 230 },
+  { slug: "pandu",   name: "Pandu",   title: "Kids & Family Cut",     handle: "littlebarber", rating: "4.8", reviewCount: "1480+", image: "/barbers/pandu.png",   hue: 8   },
+  { slug: "emon",    name: "Fil Emon",title: "Hair Tattoo Design",    handle: "inkedhair",    rating: "4.9", reviewCount: "1920+", image: "/barbers/emon.png",    hue: 280 },
 ];
+
+const COLOR_HUE: Record<string, number> = {
+  teal: 174, coral: 24, violet: 266, yellow: 45,
+};
 
 // Holographic behind-gradient yang mengikuti warna aksen tiap barber (tema terang)
 // offset1/offset2 menambah variasi karakter gradien antar barber tanpa mengubah struktur visual
@@ -53,6 +58,30 @@ export default function BarbermanGrid() {
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
   const [hint, setHint] = useState(true);
+  // null = masih loading; [] = sudah load tapi kosong → tampilkan empty state
+  const [barbers, setBarbers] = useState<Barber[] | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/barbers`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: Record<string, unknown>[] = json?.data ?? [];
+        setBarbers(
+          data.map((b, i) => ({
+            slug:        String(b.slug),
+            name:        String(b.name),
+            title:       String(b.tagline ?? "Barber Professional"),
+            handle:      String(b.slug),
+            rating:      b.avg_rating ? Number(b.avg_rating).toFixed(1) : "—",
+            reviewCount: "—",
+            image:       String(b.photo_url ?? `/barbers/${b.slug}.png`),
+            hue:         COLOR_HUE[String(b.signature_color ?? '')] ?? (174 + i * 23) % 360,
+          }))
+        );
+      })
+      // Kalau backend lagi ngambek, jangan bikin halaman kosong — pakai data cadangan
+      .catch(() => setBarbers(STATIC_BARBERS));
+  }, []);
 
   const updateArrows = useCallback(() => {
     const el = scrollRef.current;
@@ -88,6 +117,20 @@ export default function BarbermanGrid() {
     if (!el) return;
     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
   };
+
+  if (barbers === null) {
+    return <div className="py-10" aria-hidden />; // loading — hindari layout jump
+  }
+
+  if (barbers.length === 0) {
+    return (
+      <EmptyState
+        emoji="💈"
+        title="Barberman-nya lagi sibuk ✂️"
+        subtitle="Belum ada maestro yang nongol. Tim kami lagi nyukur, balik lagi nanti ya!"
+      />
+    );
+  }
 
   return (
     <div className="relative -mx-6 px-6">

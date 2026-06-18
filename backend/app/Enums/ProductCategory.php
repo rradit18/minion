@@ -5,6 +5,8 @@ namespace App\Enums;
 enum ProductCategory: string
 {
     case ClayPomade       = 'clay_pomade';
+    case CurlCare         = 'curl_care';
+    case StylingPowder    = 'styling_powder';
     case Skincare         = 'skincare';
     case ToolsAccessories = 'tools_accessories';
     case Fragrance        = 'fragrance';
@@ -15,6 +17,8 @@ enum ProductCategory: string
     {
         return match ($this) {
             self::ClayPomade       => 'Clay & Pomade',
+            self::CurlCare         => 'Curl Care',
+            self::StylingPowder    => 'Styling Powder',
             self::Skincare         => 'Skincare',
             self::ToolsAccessories => 'Tools & Accessories',
             self::Fragrance        => 'Fragrance',

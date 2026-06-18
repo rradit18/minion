@@ -20,7 +20,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
       {/* Logo */}
       <div className="flex items-center">
         <img
-          src="/minion.png"
+          src="/brand/minion.png"
           alt="Minion Barbershop Logo"
           className="h-10 md:h-12 w-auto object-contain"
         />

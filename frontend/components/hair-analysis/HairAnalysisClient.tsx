@@ -169,7 +169,7 @@ export default function HairAnalysisClient() {
   return (
     <div className="relative min-h-screen bg-[#FAF7EE] text-[#1a1a1a] selection:bg-[#F9C74F] selection:text-[#1a1a1a]">
       {/* Latar doodle compro */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[url('/pattern.png')] bg-cover bg-center opacity-50" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[url('/ui/pattern.png')] bg-cover bg-center opacity-50" />
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7EE]/50 via-transparent to-[#FAF7EE]/90" />
       <div aria-hidden className="pointer-events-none absolute -top-16 -left-10 h-56 w-56 rounded-full bg-[#F9C74F]/30 blur-2xl" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 -right-12 h-64 w-64 rounded-full bg-[#178E81]/15 blur-2xl" />

@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { register, firstError } from "@/src/lib/auth";
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -12,18 +15,42 @@ export default function SignUpPage() {
     confirm: "",
   });
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const value = e.target.name === "phone"
+      ? e.target.value.replace(/\D/g, "")
+      : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
+    setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirm) {
-      alert("Password tidak cocok!");
+      setError("Password tidak cocok!");
       return;
     }
-    // TODO: POST /api/auth/register
+    if (form.password.length < 8) {
+      setError("Password minimal 8 karakter!");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    const res = await register({
+      name: form.name,
+      phone: form.phone,
+      email: form.email.trim() || undefined,
+      password: form.password,
+      password_confirmation: form.confirm,
+    });
+    if (!res.ok) {
+      setError(firstError(res));
+      setLoading(false);
+      return;
+    }
+    router.push("/akun");
   };
 
   return (
@@ -68,12 +95,6 @@ export default function SignUpPage() {
             ))}
           </ul>
         </div>
-
-        <div className="opacity-10 absolute bottom-14 right-12">
-          <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
-          </svg>
-        </div>
       </div>
 
       {/* ── Right Panel — form ── */}
@@ -96,6 +117,12 @@ export default function SignUpPage() {
             </Link>
           </p>
 
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-4">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Nama */}
             <div>
@@ -113,10 +140,10 @@ export default function SignUpPage() {
             {/* Email */}
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="email">
-                Email
+                Email <span className="text-gray-400 font-normal">(opsional)</span>
               </label>
               <input
-                id="email" name="email" type="email" required
+                id="email" name="email" type="email"
                 value={form.email} onChange={handleChange}
                 placeholder="email@kamu.com"
                 className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm"
@@ -128,17 +155,12 @@ export default function SignUpPage() {
               <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5" htmlFor="phone">
                 No. WhatsApp
               </label>
-              <div className="flex">
-                <span className="bg-white border-2 border-r-0 border-gray-200 rounded-l-xl px-4 flex items-center text-sm text-gray-500 font-medium">
-                  +62
-                </span>
-                <input
-                  id="phone" name="phone" type="tel" required
-                  value={form.phone} onChange={handleChange}
-                  placeholder="8123456789"
-                  className="flex-1 bg-white border-2 border-l-0 border-gray-200 rounded-r-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm"
-                />
-              </div>
+              <input
+                id="phone" name="phone" type="tel" inputMode="numeric" required
+                value={form.phone} onChange={handleChange}
+                placeholder="08123456789"
+                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm"
+              />
             </div>
 
             {/* Password */}
@@ -212,9 +234,18 @@ export default function SignUpPage() {
 
             <button
               type="submit"
-              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors"
+              disabled={loading}
+              className="w-full bg-[#F9C74F] text-[#1a1a1a] font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-widest hover:bg-yellow-400 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Buat Akun
+              {loading ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Mendaftarkan...
+                </>
+              ) : "Buat Akun"}
             </button>
           </form>
         </div>

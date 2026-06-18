@@ -20,7 +20,7 @@ export default function BarberPage({
       className="relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm flex items-center hover:shadow-xl hover:border-gray-200 cursor-pointer
                  min-h-[160px] sm:min-h-[200px] lg:min-h-[220px] xl:min-h-[240px]"
       style={{
-        backgroundImage: "url('/pattern.png')",
+        backgroundImage: "url('/ui/pattern.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

@@ -1,39 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { ReactCompareSliderImage } from 'react-compare-slider';
 import TiltCard from '@/components/ui/TiltCard';
+import EmptyState from '@/components/ui/EmptyState';
 
 const ReactCompareSlider = dynamic(
   () => import('react-compare-slider').then((mod) => mod.ReactCompareSlider),
   { ssr: false }
 );
 
-const galleryImages = [
-  "/gallery (1).jpg",  "/gallery (2).JPG",  "/gallery (3).JPG",
-  "/gallery (4).png",  "/gallery (5).png",  "/gallery (6).png",
-  "/gallery (7).png",  "/gallery (8).png",  "/gallery (9).png",
-  "/gallery (10).png", "/gallery (11).png", "/gallery (12).png",
-  "/gallery (13).png", "/gallery (14).png", "/gallery (15).png",
-  "/gallery (16).png", "/gallery (17).png", "/gallery (18).png",
-  "/gallery (19).png", "/gallery (20).png", "/gallery (21).png",
-  "/gallery (22).png", "/gallery (23).png", "/gallery (24).png",
-  "/gallery (25).png", "/gallery (26).png", "/gallery (27).png",
-  "/gallery (28).png", "/gallery (29).png", "/gallery (30).png",
-  "/gallery (31).png", "/gallery (32).png", "/gallery (33).png",
-  "/gallery (34).png", "/gallery (35).png", "/gallery (36).png",
-  "/gallery (37).png", "/gallery (38).png", "/gallery (39).png",
-  "/gallery (40).png", "/gallery (41).png", "/gallery (42).png",
-  "/gallery (43).png", "/gallery (44).png", "/gallery (45).png",
-  "/gallery (46).png", "/gallery (47).png", "/gallery (48).png",
-  "/gallery (49).png", "/gallery (50).png", "/gallery (51).png",
-  "/gallery (52).png", "/gallery (53).png", "/gallery (54).png",
-  "/gallery (55).png", "/gallery (56).png", "/gallery (57).png",
-  "/gallery (58).png", "/gallery (59).png", "/gallery (60).png",
-];
+const STATIC_GALLERY: string[] = Array.from({ length: 60 }, (_, i) =>
+  `/gallery/gallery (${i + 1}).${i === 0 ? 'jpg' : i < 3 ? 'JPG' : 'png'}`
+);
 
 // 6 kolom di desktop = 1 baris, awal tampil 2 baris = 12 foto
 const COLS = 6;
@@ -57,24 +39,40 @@ const GalleryCard = ({ imageUrl, priority }: { imageUrl: string; priority: boole
 );
 
 const GalleryPage = () => {
+  // null = masih loading; [] = sudah load tapi kosong → empty state
+  const [galleryImages, setGalleryImages] = useState<string[] | null>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_ROWS * COLS);
 
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'}/gallery`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        const data: { image_url: string }[] = json?.data ?? [];
+        setGalleryImages(data.map((g) => g.image_url));
+      })
+      // Backend down → pakai cadangan biar galeri nggak ompong
+      .catch(() => setGalleryImages(STATIC_GALLERY));
+  }, []);
+
+  const images = galleryImages ?? [];
+
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + ROWS_PER_LOAD * COLS, galleryImages.length));
+    setVisibleCount((prev) => Math.min(prev + ROWS_PER_LOAD * COLS, images.length));
   };
 
   const handleLoadLess = () => {
     setVisibleCount(INITIAL_ROWS * COLS);
   };
 
-  const visibleImages = galleryImages.slice(0, visibleCount);
-  const hasMore = visibleCount < galleryImages.length;
+  const visibleImages = images.slice(0, visibleCount);
+  const hasMore = visibleCount < images.length;
+  const isEmpty = galleryImages !== null && galleryImages.length === 0;
 
   return (
     <div 
       className="font-sans text-[#1a1a1a] min-h-screen pb-10"
       style={{
-        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/pattern.png')`,
+        backgroundImage: `linear-gradient(rgba(252,251,247,0.93), rgba(252,251,247,0.93)), url('/ui/pattern.png')`,
         backgroundSize: "cover",
         backgroundColor: "#FAF7EE",
       }}
@@ -111,15 +109,15 @@ const GalleryPage = () => {
           
           <div className="absolute inset-0 z-0 opacity-[5] pointer-events-none"
             style={{
-              backgroundImage: "url('/pattern.png')",
+              backgroundImage: "url('/ui/pattern.png')",
               backgroundRepeat: "repeat"
             }}
           />
 
           <div className="w-full md:w-72 flex-shrink-0 relative overflow-hidden bg-[#d0c8bc] z-10">
             <ReactCompareSlider
-              itemOne={<ReactCompareSliderImage src="/sebelum.jpeg" alt="Sebelum" />}
-              itemTwo={<ReactCompareSliderImage src="/sesudah.jpeg" alt="Sesudah" />}
+              itemOne={<ReactCompareSliderImage src="/gallery/sebelum.jpeg" alt="Sebelum" />}
+              itemTwo={<ReactCompareSliderImage src="/gallery/sesudah.jpeg" alt="Sesudah" />}
               className="h-full min-h-[300px]"
             />
             <span className="absolute top-3.5 left-3.5 bg-[#178E81] text-white text-[10px] font-bold px-2.5 py-1 rounded-md z-20 tracking-wide pointer-events-none">
@@ -159,16 +157,24 @@ const GalleryPage = () => {
       </motion.div>
 
       {/* ── Gallery Grid ── */}
-      <div className="max-w-7xl mx-auto px-6 space-y-2.5">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
-          {visibleImages.map((item, i) => (
-            <GalleryCard key={i} imageUrl={item} priority={i < INITIAL_ROWS * COLS} />
-          ))}
+      {isEmpty ? (
+        <EmptyState
+          emoji="📸"
+          title="Galeri masih kosong melompong"
+          subtitle="Fotografernya lagi nyari angle paling cakep. Karya-karya kece bakal muncul di sini!"
+        />
+      ) : (
+        <div className="max-w-7xl mx-auto px-6 space-y-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+            {visibleImages.map((item, i) => (
+              <GalleryCard key={i} imageUrl={item} priority={i < INITIAL_ROWS * COLS} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Load More / Less ── */}
-      <div className="relative text-center py-8">
+      <div className={`relative text-center py-8 ${isEmpty ? 'hidden' : ''}`}>
         <div className="flex items-center justify-center gap-3">
           {hasMore && (
             <button
