@@ -36,12 +36,18 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "SomeRandomStringOf32CharsMinimum" ]; the
 fi
 
 # ─── Run migrations ──────────────────────────────────────────────────────────
+# Aman: hanya jalankan migration baru, tidak menghapus data yang ada
 echo "[entrypoint] Running migrations..."
 php artisan migrate --force
 
-# ─── Seed database ───────────────────────────────────────────────────────────
-echo "[entrypoint] Seeding database..."
-php artisan db:seed --force
+# ─── Seed hanya saat first run (tabel users kosong) ──────────────────────────
+USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | tail -1 | tr -d '[:space:]')
+if [ "$USER_COUNT" = "0" ]; then
+    echo "[entrypoint] First run detected — seeding database..."
+    php artisan db:seed --force
+else
+    echo "[entrypoint] Database sudah ada data (${USER_COUNT} users) — skip seeding."
+fi
 
 # ─── Storage link ────────────────────────────────────────────────────────────
 php artisan storage:link 2>/dev/null || true

@@ -9,10 +9,14 @@ use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\GalleryController;
+use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\ServiceController;
 use Illuminate\Support\Facades\Route;
+
+// ─── Health Check ──────────────────────────────────────────────────────────
+Route::get('/health', HealthController::class);
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {

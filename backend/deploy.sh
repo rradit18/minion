@@ -32,10 +32,13 @@ done
 
 # ─── 5. Post-deploy tasks ─────────────────────────────────────────────────────
 echo "[5/5] Running post-deploy tasks..."
+
+# migrate --force: AMAN — hanya jalankan migration baru, tidak hapus/reset data
 docker exec $APP_CONTAINER php artisan migrate --force
+
+# optimize cache
 docker exec $APP_CONTAINER php artisan optimize:clear
 docker exec $APP_CONTAINER php artisan optimize
-docker exec $APP_CONTAINER php artisan storage:link 2>/dev/null || true
 
 # ─── Cleanup image lama ───────────────────────────────────────────────────────
 echo "[cleanup] Removing dangling images..."
