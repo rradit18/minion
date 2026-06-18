@@ -92,7 +92,6 @@ export default function BarbermanGrid() {
   }, []);
 
   useEffect(() => {
-    updateArrows();
     const el = scrollRef.current;
     if (!el) return;
 
@@ -111,6 +110,13 @@ export default function BarbermanGrid() {
       window.clearTimeout(timer);
     };
   }, [updateArrows]);
+
+  // Re-check arrows after barbers load and DOM updates
+  useEffect(() => {
+    if (!barbers?.length) return;
+    const frame = requestAnimationFrame(updateArrows);
+    return () => cancelAnimationFrame(frame);
+  }, [barbers, updateArrows]);
 
   const scrollByCards = (dir: 1 | -1) => {
     const el = scrollRef.current;
@@ -166,31 +172,47 @@ export default function BarbermanGrid() {
         })}
       </div>
 
-      {canLeft && (
-        <button
-          type="button"
-          onClick={() => scrollByCards(-1)}
-          aria-label="Geser ke kiri"
-          className={`${hint ? "animate-arrow-blink" : ""} absolute left-2 top-1/2 -translate-y-1/2 z-20 grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white/90 text-[#1a1a1a] shadow-lg backdrop-blur transition-colors hover:bg-white`}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => scrollByCards(-1)}
+        disabled={!canLeft}
+        aria-label="Geser ke kiri"
+        className={`
+          absolute left-1 top-1/2 -translate-y-1/2 z-20
+          grid h-12 w-12 place-items-center rounded-full
+          border border-[#C9A544]/40 bg-[#1a1a1a]/80 text-[#C9A544]
+          shadow-xl backdrop-blur-sm
+          transition-all duration-200
+          hover:bg-[#1a1a1a] hover:border-[#C9A544] hover:scale-110
+          disabled:opacity-0 disabled:pointer-events-none
+          ${hint && canLeft ? "animate-arrow-blink" : ""}
+        `}
+      >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
 
-      {canRight && (
-        <button
-          type="button"
-          onClick={() => scrollByCards(1)}
-          aria-label="Geser ke kanan"
-          className={`${hint ? "animate-arrow-blink" : ""} absolute right-2 top-1/2 -translate-y-1/2 z-20 grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white/90 text-[#1a1a1a] shadow-lg backdrop-blur transition-colors hover:bg-white`}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => scrollByCards(1)}
+        disabled={!canRight}
+        aria-label="Geser ke kanan"
+        className={`
+          absolute right-1 top-1/2 -translate-y-1/2 z-20
+          grid h-12 w-12 place-items-center rounded-full
+          border border-[#C9A544]/40 bg-[#1a1a1a]/80 text-[#C9A544]
+          shadow-xl backdrop-blur-sm
+          transition-all duration-200
+          hover:bg-[#1a1a1a] hover:border-[#C9A544] hover:scale-110
+          disabled:opacity-0 disabled:pointer-events-none
+          ${hint && canRight ? "animate-arrow-blink" : ""}
+        `}
+      >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
     </div>
   );
 }

@@ -32,7 +32,10 @@ composer install --no-interaction --prefer-dist --optimize-autoloader
 # ─── Generate APP_KEY if missing ─────────────────────────────────────────────
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "SomeRandomStringOf32CharsMinimum" ]; then
     echo "[entrypoint] Generating APP_KEY..."
-    php artisan key:generate --force
+    NEW_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+    sed -i "s|^APP_KEY=.*|APP_KEY=${NEW_KEY}|" .env
+    export APP_KEY="${NEW_KEY}"
+    echo "[entrypoint] APP_KEY generated."
 fi
 
 # ─── Run migrations ──────────────────────────────────────────────────────────

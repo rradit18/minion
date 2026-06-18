@@ -15,7 +15,7 @@ class BranchController extends Controller
     {
         $branches = Branch::where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'slug', 'address', 'city', 'phone', 'latitude', 'longitude', 'opening_time', 'closing_time', 'google_maps_url', 'image_path'])
+            ->get(['id', 'name', 'slug', 'address', 'city', 'phone', 'latitude', 'longitude', 'opening_time', 'closing_time', 'google_maps_url', 'image_path', 'qris_image_path'])
             ->map(fn($b) => [
                 'id'              => $b->id,
                 'name'            => $b->name,
@@ -30,6 +30,9 @@ class BranchController extends Controller
                 'google_maps_url' => $b->google_maps_url,
                 'image_url'       => $b->image_path
                     ? \Illuminate\Support\Facades\Storage::disk('public')->url($b->image_path)
+                    : null,
+                'qris_image_url'  => $b->qris_image_path
+                    ? \Illuminate\Support\Facades\Storage::disk('public')->url($b->qris_image_path)
                     : null,
             ]);
 
@@ -61,6 +64,9 @@ class BranchController extends Controller
             'opening_time'    => $branch->opening_time,
             'closing_time'    => $branch->closing_time,
             'google_maps_url' => $branch->google_maps_url,
+            'qris_image_url'  => $branch->qris_image_path
+                ? \Illuminate\Support\Facades\Storage::disk('public')->url($branch->qris_image_path)
+                : null,
             'bank_accounts'   => $branch->bankAccounts->map(fn($b) => [
                 'bank_name'      => $b->bank_name,
                 'account_number' => $b->account_number,
