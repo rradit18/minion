@@ -1,44 +1,65 @@
 "use client";
 
-import { useState } from "react";
-import { getSession, setSession, saveUser, findUserByEmail } from "@/src/lib/localStorage";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { getSession } from "@/src/lib/localStorage";
+import { apiFetch, loadMe, firstError } from "@/src/lib/auth";
 
 export default function ProfilPage() {
-  const session = getSession();
-  const [tab, setTab]   = useState<"profil" | "password">("profil");
-  const [saved, setSaved] = useState(false);
-  const [err, setErr]   = useState("");
+  const searchParams = useSearchParams();
+  const forceChange  = searchParams.get("force_change") === "1";
 
-  const [form, setForm] = useState({
-    name:  session?.name  ?? "",
-    email: session?.email ?? "",
-    phone: session?.phone ?? "",
-  });
+  const [session, setSessionState] = useState(typeof window !== "undefined" ? getSession() : null);
+  const [tab, setTab] = useState<"profil" | "password">(forceChange ? "password" : "profil");
+  const [saved, setSaved] = useState(false);
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [passForm, setPassForm] = useState({ old: "", new: "", confirm: "" });
 
-  if (!session) return null;
+  useEffect(() => {
+    loadMe().then((u) => {
+      const s = u ?? getSession();
+      setSessionState(s);
+      if (s) setForm({ name: s.name, email: s.email ?? "", phone: s.phone ?? "" });
+    });
+  }, []);
 
-  const handleSaveProfil = (e: React.FormEvent) => {
+  const flashSaved = () => { setSaved(true); setTimeout(() => setSaved(false), 2500); };
+
+  const handleSaveProfil = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErr("");
-    const updated = { ...session, name: form.name, phone: form.phone };
-    saveUser(updated);
-    setSession(updated);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setErr(""); setBusy(true);
+    const res = await apiFetch("/customer/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ name: form.name, phone: form.phone, email: form.email.trim() || undefined }),
+    });
+    setBusy(false);
+    if (!res.ok) { setErr(firstError(res)); return; }
+    await loadMe();
+    setSessionState(getSession());
+    flashSaved();
   };
 
-  const handleSavePassword = (e: React.FormEvent) => {
+  const handleSavePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
-    const user = findUserByEmail(session.email);
-    if (!user || user.password !== passForm.old) { setErr("Password lama salah."); return; }
-    if (passForm.new.length < 6) { setErr("Password baru minimal 6 karakter."); return; }
+    if (passForm.new.length < 8) { setErr("Password baru minimal 8 karakter."); return; }
     if (passForm.new !== passForm.confirm) { setErr("Password tidak cocok."); return; }
-    saveUser({ ...user, password: passForm.new });
+    setBusy(true);
+    const res = await apiFetch("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({
+        current_password: passForm.old,
+        password: passForm.new,
+        password_confirmation: passForm.confirm,
+      }),
+    });
+    setBusy(false);
+    if (!res.ok) { setErr(firstError(res)); return; }
     setPassForm({ old: "", new: "", confirm: "" });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    flashSaved();
   };
 
   const inputCls = "w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-[#1a1a1a] placeholder-gray-400 focus:outline-none focus:border-[#F9C74F] transition-colors text-sm";
@@ -50,12 +71,12 @@ export default function ProfilPage() {
       {/* Avatar */}
       <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
         <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#F9C74F] rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-black text-black flex-shrink-0">
-          {session.name[0]}
+          {(session?.name ?? "M")[0]}
         </div>
         <div className="min-w-0">
-          <p className="font-black text-[#1a1a1a] text-base sm:text-lg truncate">{session.name}</p>
-          <p className="text-xs sm:text-sm text-gray-400 truncate">{session.email}</p>
-          <span className="inline-block bg-[#178E81] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest mt-1">{session.role}</span>
+          <p className="font-black text-[#1a1a1a] text-base sm:text-lg truncate">{session?.name ?? "Pelanggan"}</p>
+          <p className="text-xs sm:text-sm text-gray-400 truncate">{session?.phone ?? session?.email ?? ""}</p>
+          <span className="inline-block bg-[#178E81] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest mt-1">Member</span>
         </div>
       </div>
 
@@ -69,6 +90,12 @@ export default function ProfilPage() {
         ))}
       </div>
 
+      {forceChange && tab === "password" && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+          Akun kamu memerlukan ganti password sebelum bisa digunakan. Silakan buat password baru.
+        </div>
+      )}
       {saved && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl">✓ Perubahan berhasil disimpan</div>}
       {err   && <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">{err}</div>}
 
@@ -80,15 +107,15 @@ export default function ProfilPage() {
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Email</label>
-              <input type="email" disabled value={form.email} className={`${inputCls} opacity-50 cursor-not-allowed`} />
-              <p className="text-xs text-gray-400 mt-1">Email tidak dapat diubah</p>
+              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">No. WhatsApp</label>
+              <input type="tel" inputMode="numeric" value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })} className={inputCls} placeholder="08123456789" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">No. WhatsApp</label>
-              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputCls} placeholder="+628..." />
+              <label className="block text-sm font-bold text-[#1a1a1a] mb-1.5">Email <span className="text-gray-400 font-normal">(opsional)</span></label>
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputCls} placeholder="email@kamu.com" />
             </div>
-            <button type="submit" className="w-full bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors">Simpan Perubahan</button>
+            <button type="submit" disabled={busy} className="w-full bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors disabled:opacity-50">Simpan Perubahan</button>
           </form>
         ) : (
           <form onSubmit={handleSavePassword} className="space-y-4">
@@ -104,7 +131,7 @@ export default function ProfilPage() {
                   className={inputCls} placeholder="••••••••" />
               </div>
             ))}
-            <button type="submit" className="w-full bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors">Simpan Password</button>
+            <button type="submit" disabled={busy} className="w-full bg-[#F9C74F] text-black font-extrabold py-3 rounded-xl text-sm hover:bg-yellow-400 transition-colors disabled:opacity-50">Simpan Password</button>
           </form>
         )}
       </div>

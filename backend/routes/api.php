@@ -8,9 +8,15 @@ use App\Http\Controllers\Api\BookingPaymentController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\GalleryController;
+use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\ServiceController;
 use Illuminate\Support\Facades\Route;
+
+// ─── Health Check ──────────────────────────────────────────────────────────
+Route::get('/health', HealthController::class);
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
@@ -33,11 +39,14 @@ Route::get('/branches/{branchId}/barbers', [ServiceController::class, 'barbersBy
 Route::get('/barbers',       [BarberController::class, 'index']);
 Route::get('/barbers/{slug}',[BarberController::class, 'show']);
 
-Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/services',  [ServiceController::class, 'index']);
+Route::get('/gallery',   [GalleryController::class, 'index']);
+Route::get('/products',  [ProductController::class, 'index']);
 
 Route::get('/availability', [AvailabilityController::class, 'index']);
 
-Route::post('/bookings', [BookingController::class, 'store']);
+// Booking publik — optional.auth agar customer login otomatis terhubung ke booking-nya
+Route::middleware('optional.auth')->post('/bookings', [BookingController::class, 'store']);
 
 Route::middleware('optional.auth')->group(function () {
     Route::post('/feedback', [FeedbackController::class, 'store']);

@@ -80,7 +80,7 @@ const PromoBanner = () => {
 
           {/* Mascot kiri — absolut di sudut kiri (bingkai) */}
           <img
-            src="/doodle.png"
+            src="/ui/doodle.png"
             alt="Mascot Doodle"
             className="absolute bottom-0 left-2 sm:left-4 h-[100px] sm:h-[120px] md:h-[140px] object-contain pointer-events-none hidden sm:block"
           />
@@ -114,7 +114,7 @@ const PromoBanner = () => {
 
           {/* Love mascot kanan — hidden di mobile */}
           <img
-            src="/love.png"
+            src="/ui/love.png"
             alt="Love Icon"
             className="absolute bottom-0 right-0 sm:right-2 w-14 sm:w-16 md:w-20 h-14 sm:h-16 md:h-20 object-contain pointer-events-none hidden sm:block"
           />

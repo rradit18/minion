@@ -73,6 +73,13 @@ class BranchResource extends Resource
                             ->label('Google Maps URL')
                             ->url()
                             ->columnSpanFull(),
+                        FileUpload::make('image_path')
+                            ->label('Foto Cabang')
+                            ->image()
+                            ->disk('public')
+                            ->directory('branches')
+                            ->imageEditor()
+                            ->columnSpanFull(),
                         FileUpload::make('qris_image_path')
                             ->label('Barcode QRIS')
                             ->image()

@@ -53,7 +53,7 @@ export interface ProfileCardProps {
 }
 
 const ProfileCardComponent: React.FC<ProfileCardProps> = ({
-  avatarUrl = "/owner.png",
+  avatarUrl = "/owner/owner.png",
   behindGradient,
   innerGradient,
   showBehindGradient = true,

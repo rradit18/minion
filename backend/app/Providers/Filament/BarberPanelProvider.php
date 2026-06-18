@@ -24,12 +24,22 @@ class BarberPanelProvider extends PanelProvider
         return $panel
             ->id('barber')
             ->path('barber-panel')
-            ->login()
+            ->login(\App\Filament\Barber\Pages\Login::class)
             ->profile()
             ->darkMode(true)
             ->sidebarCollapsibleOnDesktop()
             ->colors(['primary' => Color::hex('#C9A544')])
             ->renderHook('panels::head.end', fn () => app(\Illuminate\Foundation\Vite::class)('resources/css/app.css'))
+            ->renderHook(
+                'panels::simple-page.end',
+                fn () => view('filament.auth.quick-login', [
+                    'panelLinks' => [
+                        ['label' => 'Panel Admin', 'url' => '/admin-panel'],
+                        ['label' => 'Panel Kasir', 'url' => '/kasir-panel'],
+                    ],
+                ]),
+                scopes: \App\Filament\Barber\Pages\Login::class,
+            )
             ->discoverResources(in: app_path('Filament/Barber/Resources'), for: 'App\\Filament\\Barber\\Resources')
             ->discoverPages(in: app_path('Filament/Barber/Pages'), for: 'App\\Filament\\Barber\\Pages')
             ->pages([Dashboard::class])

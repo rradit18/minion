@@ -1,9 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { getSession, getUpcomingBookings, getLoyaltyPunches } from "@/src/lib/localStorage";
+import { useEffect, useState } from "react";
+import { getSession } from "@/src/lib/localStorage";
+import { apiFetch } from "@/src/lib/auth";
 
 const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
+
+interface ApiBooking {
+  id: string; booking_number: string; status: string; scheduled_at: string; total_price: number | string;
+  barber?: { name: string } | null; branch?: { name: string } | null; services?: { service_name: string }[];
+}
 
 const ScissorsIcon = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -12,11 +19,14 @@ const ScissorsIcon = () => (
 );
 
 export default function AkunPage() {
-  const session  = getSession();
-  const upcoming = getUpcomingBookings();
-  const punches  = getLoyaltyPunches();
+  const session = typeof window !== "undefined" ? getSession() : null;
+  const [upcoming, setUpcoming] = useState<ApiBooking[]>([]);
+  const [punches, setPunches] = useState(0);
 
-  if (!session) return null;
+  useEffect(() => {
+    apiFetch<ApiBooking[]>("/customer/bookings?status=upcoming").then((r) => setUpcoming(r.data ?? []));
+    apiFetch<{ punch_count: number }>("/customer/loyalty").then((r) => setPunches(r.data?.punch_count ?? 0));
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -24,10 +34,9 @@ export default function AkunPage() {
       <div className="bg-[#1a1a1a] rounded-2xl p-5 sm:p-6 flex items-center justify-between overflow-hidden relative">
         <div className="min-w-0 pr-16">
           <p className="text-[#F9C74F] text-xs font-bold uppercase tracking-widest mb-1">Member</p>
-          <h2 className="text-xl sm:text-2xl font-black text-white truncate">{session.name}</h2>
-          <p className="text-gray-400 text-xs sm:text-sm mt-1 truncate">{session.email}</p>
+          <h2 className="text-xl sm:text-2xl font-black text-white truncate">{session?.name ?? "Pelanggan"}</h2>
+          <p className="text-gray-400 text-xs sm:text-sm mt-1 truncate">{session?.phone ?? session?.email ?? ""}</p>
         </div>
-        {/* Barber pole icon decoration */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-10">
           <svg className="w-20 h-20" fill="none" stroke="white" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
@@ -38,7 +47,7 @@ export default function AkunPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-100">
-          <p className="text-xs text-gray-400 mb-1">Booking Upcoming</p>
+          <p className="text-xs text-gray-400 mb-1">Booking Aktif</p>
           <p className="text-2xl sm:text-3xl font-black text-[#1a1a1a]">{upcoming.length}</p>
         </div>
         <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-100">
@@ -67,7 +76,7 @@ export default function AkunPage() {
       {upcoming.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-black text-[#1a1a1a]">Booking Upcoming</h3>
+            <h3 className="font-black text-[#1a1a1a]">Booking Aktif</h3>
             <Link href="/akun/riwayat" className="text-xs text-[#F9C74F] font-semibold hover:underline">Lihat Semua →</Link>
           </div>
           <div className="space-y-3">
@@ -77,11 +86,11 @@ export default function AkunPage() {
                   <ScissorsIcon />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#1a1a1a] text-sm truncate">{b.service_name}</p>
-                  <p className="text-xs text-gray-500 truncate">{b.barber_name} · {b.branch_name}</p>
-                  <p className="text-xs text-[#178E81] font-semibold mt-0.5">{new Date(b.date).toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" })} · {b.time}</p>
+                  <p className="font-bold text-[#1a1a1a] text-sm truncate">{(b.services ?? []).map((s) => s.service_name).join(", ") || "Layanan"}</p>
+                  <p className="text-xs text-gray-500 truncate">{b.barber?.name ?? "-"} · {b.branch?.name ?? "-"}</p>
+                  <p className="text-xs text-[#178E81] font-semibold mt-0.5">{new Date(b.scheduled_at).toLocaleString("id-ID", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</p>
                 </div>
-                <p className="text-xs sm:text-sm font-black text-[#1a1a1a] flex-shrink-0">{fmt(b.final_price)}</p>
+                <p className="text-xs sm:text-sm font-black text-[#1a1a1a] flex-shrink-0">{fmt(Number(b.total_price))}</p>
               </div>
             ))}
           </div>

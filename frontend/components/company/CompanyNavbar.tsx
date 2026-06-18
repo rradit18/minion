@@ -86,7 +86,7 @@ const CompanyNavbar = ({ onMenuClick: _onMenuClick }: NavbarProps) => {
       <div className="max-w-[1280px] mx-auto flex items-center justify-between px-6 py-3">
         <div className="flex-shrink-0">
           {/* Tinggi logo konstan supaya tidak ada layout shift saat scroll */}
-          <img src="/minion.png" alt="Logo" className="w-auto object-contain h-14 md:h-16" />
+          <img src="/brand/minion.png" alt="Logo" className="w-auto object-contain h-14 md:h-16" />
         </div>
 
         <div className="hidden lg:flex items-center justify-center gap-6 font-display font-bold text-[#1a1a1a] text-sm">

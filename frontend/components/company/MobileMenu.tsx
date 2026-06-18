@@ -29,7 +29,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         className="absolute inset-0"
         style={{
           backgroundColor: "#F5EFE4",
-          backgroundImage: "url('/pattern.png')",
+          backgroundImage: "url('/ui/pattern.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -47,7 +47,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {/* Logo */}
           <div>
             <img
-              src="/minion.png"
+              src="/brand/minion.png"
               alt="Minion Barbershop Logo"
               className="h-24 w-auto object-contain"/>
           </div>

@@ -14,6 +14,7 @@ class Product extends Model
     protected $fillable = [
         'branch_id',
         'name',
+        'description',
         'image_path',
         'category',
         'sku',
@@ -21,6 +22,7 @@ class Product extends Model
         'stock_qty',
         'low_stock_threshold',
         'is_active',
+        'best_seller',
     ];
 
     protected function casts(): array
@@ -31,6 +33,7 @@ class Product extends Model
             'stock_qty'           => 'integer',
             'low_stock_threshold' => 'integer',
             'is_active'           => 'boolean',
+            'best_seller'         => 'boolean',
         ];
     }
 

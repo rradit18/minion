@@ -130,11 +130,11 @@ const Sparkle4 = ({ color }: { color: string }) => (
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const happyCustomers = [
-  { id: 1, name: 'Rizky', designation: 'Fade Cut',   image: '/gallery%20(1).jpg' },
-  { id: 2, name: 'Dimas', designation: 'Pompadour',  image: '/gallery%20(2).png' },
-  { id: 3, name: 'Arif',  designation: 'Buzz Cut',   image: '/gallery%20(3).png' },
-  { id: 4, name: 'Bagas', designation: 'Mohawk',     image: '/gallery%20(4).png' },
-  { id: 5, name: 'Yoga',  designation: 'Crop Fade',  image: '/gallery%20(5).png' },
+  { id: 1, name: 'Rizky', designation: 'Fade Cut',   image: '/gallery/gallery%20(1).jpg' },
+  { id: 2, name: 'Dimas', designation: 'Pompadour',  image: '/gallery/gallery%20(2).png' },
+  { id: 3, name: 'Arif',  designation: 'Buzz Cut',   image: '/gallery/gallery%20(3).png' },
+  { id: 4, name: 'Bagas', designation: 'Mohawk',     image: '/gallery/gallery%20(4).png' },
+  { id: 5, name: 'Yoga',  designation: 'Crop Fade',  image: '/gallery/gallery%20(5).png' },
 ];
 
 const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
@@ -143,7 +143,7 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
       {/* ── Background pola doodle full-width, dibuat pudar agar konten depan menonjol ── */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[url('/pattern.png')] bg-cover bg-center opacity-50"
+        className="pointer-events-none absolute inset-0 bg-[url('/ui/pattern.png')] bg-cover bg-center opacity-50"
       />
       <div
         aria-hidden
@@ -158,7 +158,7 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
             <div className="absolute -top-2 right-2 w-5 h-5 pointer-events-none hidden md:block"><Sparkle4 color="#F9C74F" /></div>
 
             <motion.div className="flex justify-center md:hidden mb-1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={stagger(0)}>
-              <img src="/minion.png" alt="Minion Logo" className="h-25 w-auto object-contain" />
+              <img src="/brand/minion.png" alt="Minion Logo" className="h-25 w-auto object-contain" />
             </motion.div>
             <motion.p className="text-[#178E81] text-[12px] font-bold tracking-[2px] uppercase font-body" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={stagger(0)}>
               Premium Grooming
@@ -222,7 +222,7 @@ const HeroSection = ({ onMenuClick: _ }: HeroSectionProps) => {
 
             {/* Foto owner */}
             <div className="relative z-10 w-full max-w-[320px] lg:max-w-[1000px] h-full flex items-end justify-center">
-              <img src="/owner.png" alt="Barber Professional" className="w-full h-full object-contain object-bottom" />
+              <img src="/owner/owner.png" alt="Barber Professional" className="w-full h-full object-contain object-bottom" />
             </div>
 
             {/* ── Doodles kiri ── */}

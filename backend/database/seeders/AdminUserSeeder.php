@@ -23,7 +23,7 @@ class AdminUserSeeder extends Seeder
             ]
         );
 
-        $branch = Branch::where('slug', 'pusat')->first();
+        $branch = Branch::where('slug', 'pramuka')->first();
 
         User::firstOrCreate(
             ['phone' => '08117771002'],

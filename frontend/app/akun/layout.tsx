@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { getSession, clearSession } from "@/src/lib/localStorage";
+import { getSession } from "@/src/lib/localStorage";
+import { getToken, loadMe, logout } from "@/src/lib/auth";
 
 const tabs = [
   { href: "/akun",         label: "Dashboard",
@@ -24,10 +25,21 @@ export default function AkunLayout({ children }: { children: React.ReactNode }) 
   const session  = getSession();
 
   useEffect(() => {
-    if (!session) router.push("/login");
-  }, [session, router]);
+    // Tanpa token = belum login → lempar ke halaman login
+    if (!getToken()) {
+      router.push("/login");
+      return;
+    }
+    // Segarkan profil dari server (mis. setelah refresh)
+    loadMe();
+  }, [router]);
 
-  if (!session) return null;
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
+
+  if (!session && !getToken()) return null;
 
   return (
     <div className="min-h-screen bg-[#F5EFE4]">
@@ -37,13 +49,13 @@ export default function AkunLayout({ children }: { children: React.ReactNode }) 
           <div>
             <p className="text-xs text-gray-400">Halo,</p>
             <p className="font-black text-[#1a1a1a] text-sm sm:text-base flex items-center gap-1.5">
-              {session.name}
+              {session?.name ?? "Pelanggan"}
               <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
               </svg>
             </p>
           </div>
-          <button onClick={() => { clearSession(); router.push("/"); }}
+          <button onClick={handleLogout}
             className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium">
             Keluar
           </button>
